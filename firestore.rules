@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.admin == true || 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true
+      );
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) && 
+                    !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin', 'points', 'isVerified']);
+      allow delete: if isAdmin();
+    }
+
+    // Posts collection
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update: if isAdmin() || (isOwner(resource.data.createdBy) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']));
+      allow delete: if isAdmin() || isOwner(resource.data.createdBy);
+    }
+
+    // Chats collection
+    match /chats/{chatId} {
+      allow read, write: if isSignedIn() && request.auth.uid in resource.data.participants;
+      allow create: if isSignedIn();
+      
+      match /messages/{messageId} {
+        allow read: if isSignedIn() && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+        allow create: if isSignedIn() && request.auth.uid == request.resource.data.senderId;
+      }
+    }
+
+    // Claims collection
+    match /claims/{claimId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin() || isOwner(resource.data.claimerId);
+    }
+
+    // Categories collection
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Reports collection
+    match /reports/{reportId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Notifications collection
+    // Notifications collection - Allow reading explicitly by owner
+    match /notifications/{userId}/{document=**} {
+      allow read: if isOwner(userId);
+      allow write: if isAdmin();
+    }
+    
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

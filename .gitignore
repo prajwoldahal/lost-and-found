@@ -1,0 +1,19 @@
+# Node dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Frontend builds
+dist/
+build/
+
+# Firebase
+.firebase/
+.firebaserc
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+
+backend/firebase-service-account.json

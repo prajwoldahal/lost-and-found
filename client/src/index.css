@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        @apply bg-background text-textPrimary antialiased transition-colors duration-500;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+        @apply tracking-tight text-textPrimary dark:text-white;
+    }
+}
+
+@layer utilities {
+    .font-outfit {
+        font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+    }
+
+    .font-inter {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+}
+
+@layer components {
+
+    /* Button Styles */
+    .btn-primary {
+        @apply bg-primary text-white hover:bg-primary-dark transition-all duration-300 font-bold px-6 py-3 rounded-2xl shadow-lg shadow-primary/20 active:scale-95 flex items-center justify-center gap-2;
+    }
+
+    .btn-success {
+        @apply bg-accent text-white hover:bg-green-600 transition-all duration-300 font-bold px-6 py-3 rounded-2xl shadow-lg shadow-accent/20 active:scale-95 flex items-center justify-center gap-2;
+    }
+
+    .btn-secondary {
+        @apply bg-secondary text-white hover:bg-blue-600 transition-all duration-300 font-bold px-6 py-3 rounded-2xl shadow-lg shadow-secondary/20 active:scale-95 flex items-center justify-center gap-2;
+    }
+
+    .btn-outline {
+        @apply border-2 border-primary/20 text-primary hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 font-bold px-6 py-3 rounded-2xl active:scale-95 flex items-center justify-center gap-2;
+    }
+
+    /* Card Styles */
+    .card {
+        @apply bg-surface dark:bg-gray-800 rounded-[2rem] shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-gray-700 transition-all duration-300;
+    }
+
+    .card-hover {
+        @apply card hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 dark:hover:border-primary/30;
+    }
+
+    /* Badge Styles */
+    .badge-lost {
+        @apply bg-error/10 text-error px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-error/20;
+    }
+
+    .badge-found {
+        @apply bg-accent/10 text-accent px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-accent/20;
+    }
+
+    .badge-active {
+        @apply bg-info/10 text-info px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-info/20;
+    }
+
+    .badge-claimed {
+        @apply bg-warning/10 text-warning px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-warning/20;
+    }
+
+    .badge-returned {
+        @apply bg-success/10 text-success px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-success/20;
+    }
+}
+
+.leaflet-container {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Glassmorphism utility */
+.glass {
+    @apply bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-white/20 dark:border-gray-700/50;
+}
