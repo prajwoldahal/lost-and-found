@@ -26,7 +26,7 @@ export default function Dashboard() {
 
     // Auto-redirect admin to admin panel
     // Side Effect: This code block executes automatically when this page mounts on the user screen
-useEffect(() => {
+    useEffect(() => {
         if (userData?.isAdmin) {
             navigate('/admin');
         }
@@ -34,7 +34,7 @@ useEffect(() => {
 
     // Get user location
     // Side Effect: This code block executes automatically when this page mounts on the user screen
-useEffect(() => {
+    useEffect(() => {
         const handleLocationError = (error) => {
             console.error('Geolocation error:', error);
             // Default to a fallback location (e.g., Kathmandu) if permission denied
@@ -59,7 +59,7 @@ useEffect(() => {
 
     // Fetch posts from backend
     // Side Effect: This code block executes automatically when this page mounts on the user screen
-useEffect(() => {
+    useEffect(() => {
         if (!currentUser) return;
 
         const fetchPosts = async () => {
@@ -79,7 +79,7 @@ useEffect(() => {
 
     // Fetch leaderboard
     // Side Effect: This code block executes automatically when this page mounts on the user screen
-useEffect(() => {
+    useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
                 const response = await userAPI.getLeaderboard();
@@ -93,7 +93,7 @@ useEffect(() => {
 
     // Apply filters
     // Side Effect: This code block executes automatically when this page mounts on the user screen
-useEffect(() => {
+    useEffect(() => {
         let result = posts;
 
         if (filter !== 'all' && filter !== 'near_me') {

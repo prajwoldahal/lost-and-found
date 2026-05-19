@@ -25,8 +25,7 @@ export default function Search() {
     const [statusFilter, setStatusFilter] = useState('all');
     const [sortBy, setSortBy] = useState('recent');
 
-    const [radiusFilter, setRadiusFilter] = useState('3');
-    const [userLocation, setUserLocation] = useState(null);
+        const [userLocation, setUserLocation] = useState(null);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const categories = ['All', 'Electronics', 'Documents', 'Accessories', 'Pets', 'Clothing', 'Keys', 'Bags', 'Other'];
@@ -63,12 +62,8 @@ useEffect(() => {
                 },
                 (error) => {
                     console.error('Geolocation error:', error);
-                    // If location access denied, default to 'all' to avoid returning empty results unexpectedly
-                    setRadiusFilter('all');
                 }
             );
-        } else {
-            setRadiusFilter('all');
         }
     }, []);
 
@@ -134,24 +129,6 @@ useEffect(() => {
             result = result.filter(item => item.status?.toLowerCase() === statusFilter.toLowerCase());
         }
 
-        // Radius Filter
-        if (radiusFilter !== 'all' && userLocation) {
-            const radius = parseInt(radiusFilter);
-            result = result.filter(item => {
-                // If item has no location, we can't filter by radius, so we exclude it (safe default)
-                // or include it? Usually exclude if strict distance.
-                if (!item.location || !item.location.lat || !item.location.lng) return false;
-
-                const dist = calculateDistance(
-                    userLocation.lat,
-                    userLocation.lng,
-                    item.location.lat,
-                    item.location.lng
-                );
-                return dist <= radius;
-            });
-        }
-
         // Date Filter
         if (startDate || endDate) {
             result = result.filter(item => {
@@ -190,7 +167,7 @@ useEffect(() => {
         }
 
         setFilteredItems(result);
-    }, [searchTerm, typeFilter, categoryFilter, statusFilter, sortBy, radiusFilter, userLocation, items, startDate, endDate]);
+    }, [searchTerm, typeFilter, categoryFilter, statusFilter, sortBy, userLocation, items, startDate, endDate]);
 
     const clearFilters = () => {
         setSearchTerm('');
@@ -198,7 +175,6 @@ useEffect(() => {
         setCategoryFilter('all');
         setStatusFilter('all');
         setSortBy('recent');
-        setRadiusFilter('all'); // Reset radius too
         setStartDate('');
         setEndDate('');
     };
@@ -307,25 +283,7 @@ useEffect(() => {
                             </select>
                         </div>
 
-                        {/* Radius Filter */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center justify-between">
-                                {t('distance')}
-                                {!userLocation && <span className="text-[10px] text-orange-500">(Loc Required)</span>}
-                            </label>
-                            <select
-                                value={radiusFilter}
-                                onChange={(e) => setRadiusFilter(e.target.value)}
-                                disabled={!userLocation}
-                                className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-100 dark:disabled:bg-gray-900 disabled:text-gray-400 dark:text-white"
-                                title={!userLocation ? "Location permission required" : "Filter by distance"}
-                            >
-                                <option value="3">Within 3 km (Default)</option>
-                                <option value="10">Within 10 km</option>
-                                <option value="25">Within 25 km</option>
-                                <option value="all">Show All (Slow)</option>
-                            </select>
-                        </div>
+                        
 
                         {/* Sort By */}
                         <div>
@@ -375,11 +333,7 @@ useEffect(() => {
             <div className="flex items-center justify-between mb-6">
                 <div className="text-gray-600 dark:text-gray-400 text-sm">
                     <span className="font-semibold text-gray-900 dark:text-white">{filteredItems.length}</span> items found
-                    {radiusFilter !== 'all' && userLocation && (
-                        <span className="ml-2 text-sm text-primary bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full border border-blue-100 dark:border-blue-900/20">
-                            Within {radiusFilter}km
-                        </span>
-                    )}
+                    
                 </div>
                 <div className="flex gap-2">
                     <button
