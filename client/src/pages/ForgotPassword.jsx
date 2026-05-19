@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { Mail, ArrowLeft, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function ForgotPassword() {
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
@@ -35,12 +37,12 @@ export default function ForgotPassword() {
                         <Mail className="h-8 w-8 text-primary" />
                     </div>
                     <h2 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
-                        Reset Password
+                        {t('resetPasswordTitle')}
                     </h2>
                     <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 font-medium">
                         {submitted
-                            ? "Check your inbox for password reset instructions."
-                            : "Enter your email address and we'll send you a link to reset your password."
+                            ? t('resetPasswordSubmitted')
+                            : t('resetPasswordInstructions')
                         }
                     </p>
                 </div>
@@ -50,7 +52,7 @@ export default function ForgotPassword() {
                         <div className="space-y-4">
                             <div>
                                 <label htmlFor="email-address" className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2 px-1">
-                                    Email Address
+                                    {t('emailAddress')}
                                 </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -65,7 +67,7 @@ export default function ForgotPassword() {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         className="appearance-none block w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
-                                        placeholder="Enter your email"
+                                        placeholder={t('enterYourEmail')}
                                     />
                                 </div>
                             </div>
@@ -80,7 +82,7 @@ export default function ForgotPassword() {
                                 {loading ? (
                                     <Loader2 className="h-5 w-5 animate-spin" />
                                 ) : (
-                                    "Send Reset Link"
+                                    t('sendResetLink')
                                 )}
                             </button>
                         </div>
@@ -88,7 +90,7 @@ export default function ForgotPassword() {
                         <div className="text-center">
                             <Link to="/login" className="inline-flex items-center text-sm font-black text-primary hover:text-primary-dark uppercase tracking-tight">
                                 <ArrowLeft className="h-4 w-4 mr-2" />
-                                Back to Login
+                                {t('backToLogin')}
                             </Link>
                         </div>
                     </form>
@@ -98,15 +100,15 @@ export default function ForgotPassword() {
                             <CheckCircle2 className="h-10 w-10 text-green-500" />
                         </div>
                         <div className="space-y-2">
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Email Sent!</h3>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t('emailSent')}</h3>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                                We've sent a password reset link to <span className="font-bold text-gray-900 dark:text-white">{email}</span>.
+                                {t('resetLinkSentTo')} <span className="font-bold text-gray-900 dark:text-white">{email}</span>.
                             </p>
                         </div>
                         <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
                             <Link to="/login" className="inline-flex items-center text-sm font-black text-primary hover:text-primary-dark uppercase tracking-tight">
                                 <ArrowLeft className="h-4 w-4 mr-2" />
-                                Back to Login
+                                {t('backToLogin')}
                             </Link>
                         </div>
                     </div>
@@ -115,7 +117,7 @@ export default function ForgotPassword() {
                 <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 flex gap-3 items-start border border-blue-100/50 dark:border-blue-800/50">
                     <AlertCircle className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
                     <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-                        If you don't see the email, please check your spam folder or try again in a few minutes.
+                        {t('spamFolderNote')}
                     </p>
                 </div>
             </div>

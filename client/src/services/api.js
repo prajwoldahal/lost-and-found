@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { auth } from './firebase';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000/api`;
 
 const api = axios.create({
     baseURL: API_URL,
@@ -10,13 +11,40 @@ const api = axios.create({
 });
 
 // Add token to requests
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(async (config) => {
     const token = localStorage.getItem('token');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
 });
+
+// Response interceptor to handle expired tokens
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            const user = auth.currentUser;
+
+            if (user) {
+                try {
+                    const newToken = await user.getIdToken(true);
+                    localStorage.setItem('token', newToken);
+                    originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                    return api(originalRequest);
+                } catch (refreshError) {
+                    console.error("Auth: Token refresh failed", refreshError);
+                    localStorage.removeItem('token');
+                    window.location.href = '/login';
+                }
+            }
+        }
+        return Promise.reject(error);
+    }
+);
 
 // User API
 export const userAPI = {
@@ -72,6 +100,15 @@ export const chatAPI = {
     acceptChat: (chatId) => api.put(`/chats/${chatId}/accept`),
     rejectChat: (chatId) => api.put(`/chats/${chatId}/reject`),
     markRead: (chatId) => api.put(`/chats/${chatId}/read`),
+    deleteMessage: (chatId, messageId) => api.delete(`/chats/${chatId}/messages/${messageId}`),
+};
+
+// Block API (integrated into chats backend)
+export const blockAPI = {
+    block: (userId) => api.post(`/chats/block/${userId}`),
+    unblock: (userId) => api.delete(`/chats/block/${userId}`),
+    getList: () => api.get('/chats/blocked'),
+    checkStatus: (userId) => api.get(`/chats/block-status/${userId}`),
 };
 
 // Admin API

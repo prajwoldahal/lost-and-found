@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { Navigate } from 'react-router-dom';
 import { ShieldAlert, LogOut, Mail, Clock } from 'lucide-react';
 
 export default function Suspended() {
+    const { t } = useTranslation();
     const { userData, logout } = useAuth();
     const [timeLeft, setTimeLeft] = useState('');
 
@@ -51,9 +53,9 @@ export default function Suspended() {
                 </div>
 
                 <div className="space-y-2">
-                    <h1 className="text-2xl font-bold text-gray-900">Account Suspended</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">{t('accountSuspended')}</h1>
                     <p className="text-gray-600 font-medium">
-                        Your account access has been restricted.
+                        {t('accountRestricted')}
                     </p>
                 </div>
 
@@ -61,18 +63,18 @@ export default function Suspended() {
                     <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 flex flex-col items-center gap-2">
                         <div className="flex items-center gap-2 text-amber-700 text-sm font-bold uppercase tracking-wider">
                             <Clock className="h-4 w-4" />
-                            Access Restored In:
+                            {t('accessRestoredIn')}
                         </div>
                         <div className="text-2xl font-mono font-bold text-amber-800 tabular-nums">
-                            {timeLeft || 'Calculating...'}
+                            {timeLeft || t('calculating')}
                         </div>
                     </div>
                 )}
 
                 <div className="bg-red-50 border border-red-100 rounded-xl p-6 text-left">
-                    <h3 className="text-sm font-semibold text-red-800 uppercase tracking-wider mb-2">Reason for suspension:</h3>
+                    <h3 className="text-sm font-semibold text-red-800 uppercase tracking-wider mb-2">{t('reasonForSuspension')}</h3>
                     <p className="text-red-700 italic">
-                        "{userData.suspensionReason || 'No specific reason provided.'}"
+                        "{userData.suspensionReason || t('noReasonProvided')}"
                     </p>
                 </div>
 
@@ -82,19 +84,19 @@ export default function Suspended() {
                         className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
                     >
                         <Mail className="h-4 w-4" />
-                        Contact Support
+                        {t('contactSupport')}
                     </button>
                     <button
                         onClick={logout}
                         className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
                     >
                         <LogOut className="h-4 w-4" />
-                        Log Out
+                        {t('logOut')}
                     </button>
                 </div>
 
                 <p className="text-xs text-gray-400">
-                    If you believe this is a mistake, please reach out via email.
+                    {t('suspensionMistake')}
                 </p>
             </div>
         </div>

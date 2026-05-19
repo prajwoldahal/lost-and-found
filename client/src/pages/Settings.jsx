@@ -3,21 +3,21 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import {
-    User, Lock, Mail, Bell, Map as MapIcon, Trophy, Share2,
+    User, Lock, Mail, Bell, Map as MapIcon, MapPin, Trophy, Share2,
     Accessibility, Globe, Shield, HelpCircle, AlertTriangle,
     ChevronRight, LogOut, Trash2, Camera, Eye, EyeOff,
     Smartphone, QrCode, Sliders, Info, Loader2, Crown, Moon, Sun,
-    CheckCircle, CheckCircle2, Save
+    CheckCircle, CheckCircle2, Save, MessageSquare
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTheme } from '../context/ThemeContext';
-import { userAPI, notificationAPI } from '../services/api';
+import { userAPI, notificationAPI, blockAPI } from '../services/api';
 import { updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import VerifiedBadge from '../components/VerifiedBadge';
 
 export default function Settings() {
-    const { currentUser, userData, logout } = useAuth();
+    const { currentUser, userData, logout, updateProfileData, updateUserEmail } = useAuth();
     const { isDarkMode, toggleTheme } = useTheme();
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
@@ -28,6 +28,8 @@ export default function Settings() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showVerificationModal, setShowVerificationModal] = useState(false); // Can be removed later
     const [isVerifying, setIsVerifying] = useState(false);
+    const [blockedUsers, setBlockedUsers] = useState([]);
+    const [loadingBlocked, setLoadingBlocked] = useState(false);
 
     // Admin Specific States
     const [adminPasswords, setAdminPasswords] = useState({
@@ -53,7 +55,8 @@ export default function Settings() {
         displayName: '',
         bio: '',
         phone: '',
-        dob: ''
+        dob: '',
+        email: ''
     });
     const [uploadingPhoto, setUploadingPhoto] = useState(false);
     const fileInputRef = useRef(null);
@@ -115,7 +118,7 @@ export default function Settings() {
         }
     };
 
-    const { updateProfileData } = useAuth();
+
     const handlePhotoChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -145,8 +148,33 @@ export default function Settings() {
     useEffect(() => {
         if (currentUser) {
             fetchUserData();
+            fetchBlockedUsers();
         }
     }, [currentUser]);
+
+    const fetchBlockedUsers = async () => {
+        if (userData?.isAdmin) return;
+        try {
+            setLoadingBlocked(true);
+            const response = await blockAPI.getList();
+            setBlockedUsers(response.data);
+        } catch (error) {
+            console.error("Failed to fetch blocked users:", error);
+        } finally {
+            setLoadingBlocked(false);
+        }
+    };
+
+    const handleUnblock = async (userId) => {
+        try {
+            await blockAPI.unblock(userId);
+            setBlockedUsers(prev => prev.filter(u => u.uid !== userId));
+            toast.success(t('userUnblocked', 'User unblocked successfully'));
+        } catch (error) {
+            console.error("Unblock Error:", error);
+            toast.error(t('unblockError', 'Failed to unblock user'));
+        }
+    };
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -163,12 +191,14 @@ export default function Settings() {
                 displayName: response.data.displayName || '',
                 bio: response.data.bio || '',
                 phone: response.data.phone || '',
-                dob: response.data.dob || ''
+                dob: response.data.dob || '',
+                email: response.data.email || ''
             });
         } catch (error) {
             console.error("Failed to fetch user settings:", error);
         }
     };
+
 
     const handleSaveProfile = async () => {
         // Validation
@@ -187,11 +217,24 @@ export default function Settings() {
         }
 
         try {
-            await updateProfileData(editedProfile);
+            // Check if email has changed
+            if (editedProfile.email && editedProfile.email !== userData?.email) {
+                await updateUserEmail(editedProfile.email);
+                toast.success('Verification email sent to ' + editedProfile.email + '. Please verify to complete the change.');
+            }
+
+            // Update other profile data (excluding email which is handled by Firebase Auth)
+            const { email, ...otherData } = editedProfile;
+            await updateProfileData(otherData);
+            
             toast.success('Profile updated successfully!');
             setIsEditingProfile(false);
         } catch (error) {
-            toast.error('Failed to update profile');
+            console.error('Profile Update Error:', error);
+            const message = error.code === 'auth/requires-recent-login' 
+                ? 'Please log out and log back in to change your email address for security reasons.'
+                : error.message || 'Failed to update profile';
+            toast.error(message);
         }
     };
 
@@ -325,15 +368,16 @@ export default function Settings() {
     };
 
     const sections = [
-        { id: 'profile', label: 'My Profile', icon: User, color: 'text-blue-600' },
-        { id: 'security', label: 'Security', icon: Shield, color: 'text-red-600' },
-        ...(!userData?.isAdmin ? [{ id: 'verification', label: 'Verification', icon: CheckCircle, color: 'text-primary' }] : []),
-        { id: 'notifications', label: 'Notifications', icon: Bell, color: 'text-purple-600' },
-        { id: 'location', label: 'Map & Alerts', icon: MapIcon },
-        { id: 'rewards', label: 'Rewards', icon: Trophy },
-        { id: 'accessibility', label: 'Appearance', icon: Accessibility },
-        { id: 'support', label: 'Support', icon: HelpCircle },
-        { id: 'danger', label: 'Danger Zone', icon: Trash2, color: 'text-red-600' }
+        { id: 'profile', label: t('myProfile'), icon: User, color: 'text-blue-600' },
+        { id: 'security', label: t('security'), icon: Shield, color: 'text-red-600' },
+        ...(!userData?.isAdmin ? [{ id: 'verification', label: t('verification'), icon: CheckCircle, color: 'text-primary' }] : []),
+        { id: 'notifications', label: t('notifications'), icon: Bell, color: 'text-purple-600' },
+        { id: 'location', label: t('mapAndAlerts'), icon: MapIcon },
+        { id: 'rewards', label: t('rewards'), icon: Trophy },
+        ...(!userData?.isAdmin ? [{ id: 'blocked', label: t('blockedUsers', 'Blocked Users'), icon: Shield, color: 'text-gray-600' }] : []),
+        { id: 'accessibility', label: t('appearance'), icon: Accessibility },
+        { id: 'support', label: t('support'), icon: HelpCircle },
+        { id: 'danger', label: t('dangerZone'), icon: Trash2, color: 'text-red-600' }
     ];
 
     const renderHeader = (title, description) => (
@@ -366,161 +410,240 @@ export default function Settings() {
         switch (activeSection) {
             case 'profile':
                 return (
-                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
-                        {renderHeader('My Profile', 'Manage your public identity')}
-                        <input type="file" ref={fileInputRef} onChange={handlePhotoChange} accept="image/*" className="hidden" />
+                    <div className="space-y-12">
+                        {renderHeader(t('myProfile'), t('managePublicIdentity'))}
 
-                        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-8">
-                            <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
-                                <div className="relative group">
-                                    <div className="relative w-32 h-32">
-                                        {(userData?.photoURL || currentUser?.photoURL) ? (
-                                            <img
-                                                src={userData?.photoURL || currentUser?.photoURL}
-                                                alt={userData?.displayName}
-                                                className={`w-32 h-32 rounded-full border-4 border-white dark:border-gray-700 shadow-xl object-cover bg-white ${uploadingPhoto ? 'opacity-50' : ''}`}
-                                            />
-                                        ) : (
-                                            <div className="w-32 h-32 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center border-4 border-white dark:border-gray-700">
-                                                <User className="h-10 w-10 text-gray-400" />
-                                            </div>
-                                        )}
-                                        {uploadingPhoto && <div className="absolute inset-0 flex items-center justify-center bg-black/10 rounded-full"><Loader2 className="h-8 w-8 text-primary animate-spin" /></div>}
-                                    </div>
-                                    <button
-                                        onClick={() => fileInputRef.current?.click()}
-                                        disabled={uploadingPhoto}
-                                        className="absolute bottom-0 right-0 bg-primary text-white p-2.5 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all z-20"
-                                    >
-                                        <Camera className="h-4 w-4" />
-                                    </button>
+                        <div className="flex flex-col md:flex-row gap-12 items-start">
+                            <div className="relative group mx-auto md:mx-0">
+                                <div className="w-40 h-40 rounded-[2.5rem] overflow-hidden border-4 border-white dark:border-gray-700 shadow-2xl relative">
+                                    {userData?.photoURL ? (
+                                        <img src={userData.photoURL} alt="Profile" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+                                            <User className="h-20 w-20 text-primary opacity-20" />
+                                        </div>
+                                    )}
+                                    {isEditingProfile && (
+                                        <button
+                                            onClick={() => fileInputRef.current?.click()}
+                                            disabled={uploadingPhoto}
+                                            className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition duration-500 backdrop-blur-sm"
+                                        >
+                                            <Camera className="h-8 w-8 mb-2 animate-bounce" />
+                                            <span className="text-[10px] font-black uppercase tracking-widest">{uploadingPhoto ? t('processing') : t('uploadImage')}</span>
+                                        </button>
+                                    )}
                                 </div>
-
-                                <div className="flex-1 space-y-6 w-full">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">Display Name</label>
-                                            <input
-                                                type="text"
-                                                value={editedProfile.displayName}
-                                                onChange={(e) => setEditedProfile({ ...editedProfile, displayName: e.target.value })}
-                                                className="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all"
-                                                placeholder="Your Name"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">Phone Number</label>
-                                            <input
-                                                type="tel"
-                                                value={editedProfile.phone}
-                                                onChange={(e) => setEditedProfile({ ...editedProfile, phone: e.target.value })}
-                                                className="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all"
-                                                placeholder="Phone"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">Date of Birth</label>
-                                            <input
-                                                type="date"
-                                                value={editedProfile.dob}
-                                                onChange={(e) => setEditedProfile({ ...editedProfile, dob: e.target.value })}
-                                                className="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all"
-                                            />
-                                        </div>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={handlePhotoChange}
+                                />
+                                {userData?.isVerified && (
+                                    <div className="absolute -bottom-2 -right-2 bg-white dark:bg-gray-800 p-1.5 rounded-2xl shadow-xl">
+                                        <VerifiedBadge />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">Profile Bio</label>
-                                        <textarea
-                                            value={editedProfile.bio}
-                                            onChange={(e) => setEditedProfile({ ...editedProfile, bio: e.target.value })}
-                                            className="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all resize-none"
-                                            rows="3"
-                                            placeholder="Tell us about yourself..."
+                                )}
+                            </div>
+
+                            <div className="flex-1 space-y-8 w-full">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">{t('displayName')}</label>
+                                        <input
+                                            type="text"
+                                            value={editedProfile.displayName}
+                                            onChange={(e) => setEditedProfile({ ...editedProfile, displayName: e.target.value })}
+                                            disabled={!isEditingProfile}
+                                            className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all disabled:opacity-50"
+                                            placeholder={t('enterName')}
                                         />
                                     </div>
-                                    <button
-                                        onClick={handleSaveProfile}
-                                        className="px-10 py-3.5 bg-primary text-white rounded-2xl hover:bg-primary-dark transition font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 flex items-center gap-2"
-                                    >
-                                        <Save className="h-4 w-4" />
-                                        Save Changes
-                                    </button>
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">{t('phoneNumber')}</label>
+                                        <input
+                                            type="tel"
+                                            value={editedProfile.phone}
+                                            onChange={(e) => setEditedProfile({ ...editedProfile, phone: e.target.value })}
+                                            disabled={!isEditingProfile}
+                                            className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all disabled:opacity-50"
+                                            placeholder="98XXXXXXXX"
+                                        />
+                                    </div>
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">{t('dateOfBirth')}</label>
+                                        <input
+                                            type="date"
+                                            value={editedProfile.dob}
+                                            onChange={(e) => setEditedProfile({ ...editedProfile, dob: e.target.value })}
+                                            disabled={!isEditingProfile}
+                                            className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all disabled:opacity-50"
+                                        />
+                                    </div>
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">{t('emailAddress')}</label>
+                                        {isEditingProfile ? (
+                                            <div className="relative group">
+                                                <input
+                                                    type="email"
+                                                    value={editedProfile.email}
+                                                    onChange={(e) => setEditedProfile({ ...editedProfile, email: e.target.value })}
+                                                    className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all"
+                                                    placeholder={t('emailAddress')}
+                                                />
+                                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[8px] font-black text-primary uppercase tracking-widest opacity-0 group-focus-within:opacity-100 transition-opacity">Verifies on save</div>
+                                            </div>
+                                        ) : (
+                                            <div className="w-full px-6 py-4 bg-gray-100 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 rounded-2xl text-gray-500 font-bold flex items-center gap-3 overflow-hidden">
+                                                <Mail className="h-4 w-4 flex-shrink-0" />
+                                                <span className="break-all">{userData?.email}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">{t('profileBio')}</label>
+                                    <textarea
+                                        rows="4"
+                                        value={editedProfile.bio}
+                                        onChange={(e) => setEditedProfile({ ...editedProfile, bio: e.target.value })}
+                                        disabled={!isEditingProfile}
+                                        className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all disabled:opacity-50 resize-none"
+                                        placeholder={t('tellUsAboutYourself')}
+                                    />
+                                </div>
+
+                                <div className="pt-6">
+                                    {isEditingProfile ? (
+                                        <div className="flex gap-4">
+                                            <button
+                                                onClick={handleSaveProfile}
+                                                className="flex-1 bg-primary text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-primary-dark transition shadow-2xl shadow-primary/30"
+                                            >
+                                                {t('saveChanges')}
+                                            </button>
+                                            <button
+                                                onClick={() => setIsEditingProfile(false)}
+                                                className="px-10 py-5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+                                            >
+                                                {t('cancel')}
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => setIsEditingProfile(true)}
+                                            className="w-full md:w-auto px-12 py-5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl font-black uppercase tracking-widest text-xs hover:scale-105 transition-all duration-300"
+                                        >
+                                            {t('editProfile')}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
 
-                        {/* Recent Activity Stats */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className={`bg-white dark:bg-gray-800 p-8 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-sm relative overflow-hidden group ${userData?.isAdmin ? 'md:col-span-2' : ''}`}>
-                                <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">Total Points</p>
-                                <p className="text-4xl font-black text-primary mt-2">{userData?.points || 0}</p>
-                                <Trophy className="absolute top-6 right-6 h-12 w-12 text-primary/10 group-hover:scale-110 transition duration-300" />
-                            </div>
-                            {!userData?.isAdmin && (
-                                <div className="bg-white dark:bg-gray-800 p-8 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-sm relative overflow-hidden group">
-                                    <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">Verification Status</p>
-                                    <div className="mt-2 flex items-center gap-3">
-                                        {userData?.isVerified ? (
-                                            <>
-                                                <CheckCircle2 className="h-6 w-6 text-green-500" />
-                                                <span className="text-lg font-black text-green-600 uppercase tracking-tight">Verified</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <AlertTriangle className="h-6 w-6 text-amber-500" />
-                                                <span className="text-lg font-black text-amber-600 uppercase tracking-tight">Unverified</span>
-                                            </>
-                                        )}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-12 border-t border-gray-100 dark:border-gray-700">
+                            <div className="p-8 bg-blue-50 dark:bg-blue-900/10 rounded-[2.5rem] border border-blue-100 dark:border-blue-900/20">
+                                <div className="flex items-center gap-4 mb-4">
+                                    <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-2xl text-blue-600">
+                                        <Trophy className="h-6 w-6" />
                                     </div>
+                                    <span className="font-black text-blue-900 dark:text-blue-400 uppercase tracking-tighter">{t('totalPoints')}</span>
                                 </div>
-                            )}
+                                <p className="text-4xl font-black text-blue-600 tracking-tighter">{userData?.points || 0}</p>
+                            </div>
+                            <div className="p-8 bg-green-50 dark:bg-green-900/10 rounded-[2.5rem] border border-green-100 dark:border-green-900/20">
+                                <div className="flex items-center gap-4 mb-4">
+                                    <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-2xl text-green-600">
+                                        <Shield className="h-6 w-6" />
+                                    </div>
+                                    <span className="font-black text-green-900 dark:text-green-400 uppercase tracking-tighter">{t('verificationStatus')}</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className={`w-3 h-3 rounded-full ${userData?.isVerified ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                                    <p className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
+                                        {userData?.isVerified ? t('verified') : t('unverified')}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 );
 
             case 'security':
                 return (
-                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
-                        {renderHeader('Security Settings', 'Manage your account security and password')}
-                        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-8">
-                            <h3 className="font-extrabold text-lg mb-6 flex items-center gap-3 dark:text-white">
-                                <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
-                                    <Lock className="h-5 w-5 text-red-600" />
+                    <div className="space-y-12">
+                        {renderHeader(t('securitySettings'), t('manageAccountSecurity'))}
+
+                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-[3rem] p-10 shadow-2xl space-y-10">
+                            <div>
+                                <h3 className="text-lg font-black text-gray-900 dark:text-white mb-6 uppercase tracking-tight flex items-center gap-3">
+                                    <Lock className="h-5 w-5 text-red-500" />
+                                    {t('accountSecurity')}
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <button className="flex items-center justify-between p-6 bg-gray-50 dark:bg-gray-900 rounded-3xl hover:bg-gray-100 dark:hover:bg-gray-700 transition group border border-gray-100 dark:border-gray-800">
+                                        <div className="text-left">
+                                            <p className="font-black text-gray-900 dark:text-white uppercase text-xs tracking-wider mb-1">{t('changeEmailAddress')}</p>
+                                            <p className="text-[10px] text-gray-500 font-bold">{t('currentEmail')} {userData?.email}</p>
+                                        </div>
+                                        <ChevronRight className="h-5 w-5 text-gray-300 group-hover:text-primary transition" />
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const section = document.getElementById('update-password-section');
+                                            section?.scrollIntoView({ behavior: 'smooth' });
+                                        }}
+                                        className="flex items-center justify-between p-6 bg-gray-50 dark:bg-gray-900 rounded-3xl hover:bg-gray-100 dark:hover:bg-gray-700 transition group border border-gray-100 dark:border-gray-800"
+                                    >
+                                        <div className="text-left">
+                                            <p className="font-black text-gray-900 dark:text-white uppercase text-xs tracking-wider mb-1">{t('updatePassword')}</p>
+                                            <p className="text-[10px] text-gray-500 font-bold">{t('changeLoginCredentials')}</p>
+                                        </div>
+                                        <ChevronRight className="h-5 w-5 text-gray-300 group-hover:text-primary transition" />
+                                    </button>
                                 </div>
-                                Account Security
-                            </h3>
-                            <div className="space-y-4">
-                                <button className="w-full flex items-center justify-between p-5 bg-gray-50 dark:bg-gray-900/30 rounded-2xl border border-gray-100 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 transition group">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center shadow-sm">
-                                            <Mail className="h-5 w-5 text-gray-500" />
-                                        </div>
-                                        <div className="text-left">
-                                            <p className="font-bold text-gray-900 dark:text-white">Change Email Address</p>
-                                            <p className="text-xs text-gray-400">Current: {userData?.email}</p>
-                                        </div>
-                                    </div>
-                                    <ChevronRight className="h-4 w-4 text-gray-400" />
-                                </button>
-                                <button className="w-full flex items-center justify-between p-5 bg-gray-50 dark:bg-gray-900/30 rounded-2xl border border-gray-100 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 transition group">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center shadow-sm">
-                                            <Lock className="h-5 w-5 text-gray-500" />
-                                        </div>
-                                        <div className="text-left">
-                                            <p className="font-bold text-gray-900 dark:text-white">Update Password</p>
-                                            <p className="text-xs text-gray-400">Change your login credentials</p>
-                                        </div>
-                                    </div>
-                                    <ChevronRight className="h-4 w-4 text-gray-400" />
-                                </button>
+                            </div>
+
+                            <div className="pt-10 border-t border-gray-100 dark:border-gray-700">
+                                <h3 className="text-lg font-black text-gray-900 dark:text-white mb-6 uppercase tracking-tight flex items-center gap-3">
+                                    <Smartphone className="h-5 w-5 text-blue-500" />
+                                    {t('advancedSecurity')}
+                                </h3>
+                                <div className="space-y-2">
+                                    {renderToggle(t('twoFactorAuth'), t('twoFactorAuthDesc'), 'privacy', 'twoFactor')}
+                                    {renderToggle(t('loginAlerts'), t('loginAlertsDesc'), 'privacy', 'loginAlerts')}
+                                </div>
                             </div>
                         </div>
 
-                        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-8">
-                            <h3 className="font-extrabold mb-6 text-gray-900 dark:text-white">Advanced Security</h3>
-                            {renderToggle('Two-Factor Auth', 'Require code on every sign-in attempt', 'privacy', 'twoFactor')}
-                            {renderToggle('Login Alerts', 'Get notified about new login sessions', 'notifications', 'loginAlerts')}
+                        <div id="update-password-section" className="bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 rounded-[3rem] p-10">
+                            <h3 className="text-lg font-black text-red-900 dark:text-red-400 mb-8 uppercase tracking-tight">{t('updatePassword')}</h3>
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-red-800 dark:text-red-400 uppercase tracking-widest ml-1">{t('currentPassword')}</label>
+                                        <input
+                                            type="password"
+                                            className="w-full px-6 py-4 bg-white dark:bg-gray-900 border border-red-100 dark:border-red-900/30 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500 dark:text-white font-bold"
+                                            placeholder="••••••••"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-red-800 dark:text-red-400 uppercase tracking-widest ml-1">{t('newPassword')}</label>
+                                        <input
+                                            type="password"
+                                            className="w-full px-6 py-4 bg-white dark:bg-gray-900 border border-red-100 dark:border-red-900/30 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500 dark:text-white font-bold"
+                                            placeholder="••••••••"
+                                        />
+                                    </div>
+                                </div>
+                                <button className="w-full py-5 bg-red-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-red-700 transition shadow-xl shadow-red-500/20">
+                                    {t('updatePassword')}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 );
@@ -528,148 +651,133 @@ export default function Settings() {
             case 'verification':
                 return (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
-                        {renderHeader('Account Verification', 'Verify your ID to unlock all community features')}
+                        {renderHeader(t('accountVerification'), t('verifyIDToUnlockFeatures'))}
 
                         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-[2.5rem] p-10 text-center shadow-xl">
                             {userData?.isVerified ? (
-                                <div className="py-10 space-y-6">
+                                <div className="space-y-6">
                                     <div className="w-24 h-24 bg-green-100 dark:bg-green-900/40 rounded-[2rem] flex items-center justify-center mx-auto text-green-600">
                                         <CheckCircle2 className="h-12 w-12" />
                                     </div>
-                                    <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase">Your ID is Verified</h3>
+                                    <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase">{t('yourIdVerified')}</h3>
                                     <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto text-sm font-medium">
-                                        Thank you for verifying your identity. You now have full access to claim items and participate in our rewards system.
+                                        {t('verifiedThankYou')}
                                     </p>
                                 </div>
                             ) : userData?.verificationPending ? (
-                                <div className="py-10 space-y-6">
+                                <div className="space-y-6">
                                     <div className="w-24 h-24 bg-blue-100 dark:bg-blue-900/40 rounded-[2rem] flex items-center justify-center mx-auto text-blue-600">
                                         <Loader2 className="h-12 w-12 animate-spin" />
                                     </div>
-                                    <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase block">Verification Pending</h3>
+                                    <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase block">{t('verificationPending')}</h3>
                                     <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto text-sm font-medium">
-                                        We are currently reviewing your documents. You'll be notified as soon as your account is verified.
+                                        {t('verificationReview')}
                                     </p>
                                 </div>
                             ) : (
-                                <div className="py-6 space-y-6">
-                                    <div className="w-24 h-24 bg-primary/10 rounded-[2.5rem] flex items-center justify-center mx-auto text-primary shadow-2xl">
-                                        <Shield className="h-12 w-12" />
-                                    </div>
-                                    <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase">Verify Your Identity</h3>
-                                    <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto text-sm font-medium leading-relaxed">
-                                        To protect our users and prevent fraud, we require ID verification to claim items.
-                                    </p>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-xl mx-auto text-left py-8 border-t border-gray-100 dark:border-gray-700 mt-8">
-                                        <div className="flex gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/50">
-                                            <div className="h-8 w-8 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm text-primary font-black">1</div>
-                                            <p className="text-[11px] font-bold text-gray-600 dark:text-gray-400 mt-1 uppercase tracking-tight">Upload ID Photo</p>
+                                <div className="space-y-10">
+                                    <div className="flex flex-col items-center gap-6">
+                                        <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-3xl flex items-center justify-center">
+                                            <Shield className="h-10 w-10 text-gray-400" />
                                         </div>
-                                        <div className="flex gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/50">
-                                            <div className="h-8 w-8 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm text-primary font-black">2</div>
-                                            <p className="text-[11px] font-bold text-gray-600 dark:text-gray-400 mt-1 uppercase tracking-tight">Wait for Review</p>
+                                        <div className="space-y-2">
+                                            <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase">{t('verifyYourIdentity')}</h3>
+                                            <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto text-sm font-medium">
+                                                {t('verifyIdProtection')}
+                                            </p>
                                         </div>
                                     </div>
 
-                                    <form onSubmit={handleSubmitVerification} className="space-y-8 text-left max-w-2xl mx-auto border-t border-gray-100 dark:border-gray-700 pt-10 mt-10">
+                                    <form onSubmit={handleSubmitVerification} className="max-w-xl mx-auto space-y-8 text-left">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">ID Type</label>
+                                            <div className="space-y-3">
+                                                <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">{t('idType')}</label>
                                                 <select
                                                     value={verifForm.idType}
                                                     onChange={(e) => setVerifForm({ ...verifForm, idType: e.target.value })}
-                                                    className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all text-sm"
-                                                    required
+                                                    className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all appearance-none"
                                                 >
-                                                    <option value="">Select ID Type...</option>
-                                                    <option value="passport">Passport</option>
-                                                    <option value="citizenship">Citizenship Certificate</option>
-                                                    <option value="nationalId">National ID Card</option>
-                                                    <option value="drivingLicense">Driving License</option>
+                                                    <option value="">{t('selectIdTypeLabel')}</option>
+                                                    <option value="passport">{t('passport')}</option>
+                                                    <option value="citizenship">{t('citizenshipCertificate')}</option>
+                                                    <option value="national_id">{t('nationalIdCard')}</option>
+                                                    <option value="license">{t('drivingLicense')}</option>
                                                 </select>
                                             </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">ID Number</label>
+                                            <div className="space-y-3">
+                                                <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">{t('idNumber')}</label>
                                                 <input
                                                     type="text"
                                                     value={verifForm.idNumber}
                                                     onChange={(e) => setVerifForm({ ...verifForm, idNumber: e.target.value })}
-                                                    placeholder="Enter ID Number"
-                                                    className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all text-sm"
-                                                    required
+                                                    className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all"
+                                                    placeholder={t('enterIdNumberLabel')}
                                                 />
                                             </div>
                                         </div>
 
-                                        <div className="space-y-6">
-                                            <div className="space-y-2">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-4">
                                                 <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">
-                                                    {verifForm.idType === 'citizenship' ? 'Front Side ID Photo' : 'Upload ID Photo'}
+                                                    {verifForm.idType === 'citizenship' ? t('frontSideIdPhoto') : t('uploadIdPhotoLabel')}
                                                 </label>
                                                 <div
-                                                    className={`relative border-2 border-dashed rounded-[2rem] p-8 transition-all text-center group ${verifForm.previewUrl
-                                                        ? 'border-primary/50 bg-primary/5'
-                                                        : 'border-gray-200 dark:border-gray-700 hover:border-primary bg-gray-50 dark:bg-gray-900'
-                                                        }`}
+                                                    onClick={() => !isVerifying && document.getElementById('id-front').click()}
+                                                    className={`relative aspect-[4/3] rounded-3xl border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer overflow-hidden ${verifForm.previewUrl ? 'border-primary' : 'border-gray-200 dark:border-gray-700 hover:border-primary'}`}
                                                 >
-                                                    <input
-                                                        type="file"
-                                                        id="settings-id-upload-front"
-                                                        accept="image/*"
-                                                        onChange={(e) => handleVerifFileChange(e, 'front')}
-                                                        className="hidden"
-                                                        required={!verifForm.previewUrl}
-                                                    />
-                                                    <label htmlFor="settings-id-upload-front" className="cursor-pointer">
-                                                        {verifForm.previewUrl ? (
-                                                            <div className="space-y-4">
-                                                                <img src={verifForm.previewUrl} className="h-40 w-auto object-cover rounded-xl shadow-lg mx-auto" alt="Preview Front" />
-                                                                <p className="text-primary font-black uppercase tracking-widest text-[10px]">Click to Replace</p>
+                                                    {verifForm.previewUrl ? (
+                                                        <>
+                                                            <img src={verifForm.previewUrl} className="w-full h-full object-cover" />
+                                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition">
+                                                                <span className="text-white font-black text-[10px] uppercase tracking-widest">{t('clickToReplace')}</span>
                                                             </div>
-                                                        ) : (
-                                                            <div className="py-4">
-                                                                <Camera className="h-8 w-8 text-gray-400 mx-auto mb-3" />
-                                                                <p className="font-bold text-gray-900 dark:text-white text-xs mb-1">Click to Upload Front Photo</p>
-                                                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">JPG, PNG (max 5MB)</p>
-                                                            </div>
-                                                        )}
-                                                    </label>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Camera className="h-10 w-10 text-gray-300 mb-2" />
+                                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('clickToUploadFrontPhoto')}</span>
+                                                            <span className="text-[8px] text-gray-400 mt-1 uppercase">{t('jpgPngMax')}</span>
+                                                        </>
+                                                    )}
                                                 </div>
+                                                <input
+                                                    id="id-front"
+                                                    type="file"
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    onChange={(e) => handleVerifFileChange(e, 'front')}
+                                                />
                                             </div>
 
                                             {verifForm.idType === 'citizenship' && (
-                                                <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                                                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">Back Side ID Photo</label>
+                                                <div className="space-y-4">
+                                                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">{t('backSideIdPhoto')}</label>
                                                     <div
-                                                        className={`relative border-2 border-dashed rounded-[2rem] p-8 transition-all text-center group ${verifForm.previewUrlBack
-                                                            ? 'border-primary/50 bg-primary/5'
-                                                            : 'border-gray-200 dark:border-gray-700 hover:border-primary bg-gray-50 dark:bg-gray-900'
-                                                            }`}
+                                                        onClick={() => !isVerifying && document.getElementById('id-back').click()}
+                                                        className={`relative aspect-[4/3] rounded-3xl border-2 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer overflow-hidden ${verifForm.previewUrlBack ? 'border-primary' : 'border-gray-200 dark:border-gray-700 hover:border-primary'}`}
                                                     >
-                                                        <input
-                                                            type="file"
-                                                            id="settings-id-upload-back"
-                                                            accept="image/*"
-                                                            onChange={(e) => handleVerifFileChange(e, 'back')}
-                                                            className="hidden"
-                                                            required={verifForm.idType === 'citizenship' && !verifForm.previewUrlBack}
-                                                        />
-                                                        <label htmlFor="settings-id-upload-back" className="cursor-pointer">
-                                                            {verifForm.previewUrlBack ? (
-                                                                <div className="space-y-4">
-                                                                    <img src={verifForm.previewUrlBack} className="h-40 w-auto object-cover rounded-xl shadow-lg mx-auto" alt="Preview Back" />
-                                                                    <p className="text-primary font-black uppercase tracking-widest text-[10px]">Click to Replace</p>
+                                                        {verifForm.previewUrlBack ? (
+                                                            <>
+                                                                <img src={verifForm.previewUrlBack} className="w-full h-full object-cover" />
+                                                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition">
+                                                                    <span className="text-white font-black text-[10px] uppercase tracking-widest">{t('clickToReplace')}</span>
                                                                 </div>
-                                                            ) : (
-                                                                <div className="py-4">
-                                                                    <Camera className="h-8 w-8 text-gray-400 mx-auto mb-3" />
-                                                                    <p className="font-bold text-gray-900 dark:text-white text-xs mb-1">Click to Upload Back Photo</p>
-                                                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">JPG, PNG (max 5MB)</p>
-                                                                </div>
-                                                            )}
-                                                        </label>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Camera className="h-10 w-10 text-gray-300 mb-2" />
+                                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('clickToUploadBackPhoto')}</span>
+                                                                <span className="text-[8px] text-gray-400 mt-1 uppercase">{t('jpgPngMax')}</span>
+                                                            </>
+                                                        )}
                                                     </div>
+                                                    <input
+                                                        id="id-back"
+                                                        type="file"
+                                                        className="hidden"
+                                                        accept="image/*"
+                                                        onChange={(e) => handleVerifFileChange(e, 'back')}
+                                                    />
                                                 </div>
                                             )}
                                         </div>
@@ -677,10 +785,10 @@ export default function Settings() {
                                         <button
                                             type="submit"
                                             disabled={isVerifying}
-                                            className="w-full py-5 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/30 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+                                            className="w-full py-5 bg-primary text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-primary-dark transition shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 disabled:opacity-50"
                                         >
                                             {isVerifying ? <Loader2 className="h-5 w-5 animate-spin" /> : <Shield className="h-5 w-5" />}
-                                            Submit for Verification
+                                            {t('submitForVerification')}
                                         </button>
                                     </form>
                                 </div>
@@ -691,19 +799,34 @@ export default function Settings() {
 
             case 'notifications':
                 return (
-                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
-                        {renderHeader('Notification Settings', 'Control how and when you receive alerts')}
-                        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-8">
-                            <h3 className="font-extrabold mb-6 text-gray-900 dark:text-white">Item Activity</h3>
-                            {renderToggle('Found Items', 'Someone finds an item matching your search', 'notifications', 'foundItems')}
-                            {renderToggle('Claim Updates', 'Status changes on your item claims', 'notifications', 'claimAlerts')}
-                            {renderToggle('Direct Messages', 'When someone sends you a property inquiry', 'privacy', 'allowMessaging')}
-                        </div>
+                    <div className="space-y-12">
+                        {renderHeader(t('notificationSettings'), t('controlAlerts'))}
 
-                        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-8">
-                            <h3 className="font-extrabold mb-6 text-gray-900 dark:text-white">Community & Rewards</h3>
-                            {renderToggle('Reward Alerts', 'Getting points or climbing leaderboard', 'notifications', 'rewards')}
-                            {renderToggle('Security Alerts', 'Unusual activity detected on your account', 'notifications', 'securityAlerts')}
+                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-[3rem] p-4 shadow-2xl">
+                            <div className="p-8 space-y-12">
+                                <section>
+                                    <h3 className="text-lg font-black text-gray-900 dark:text-white mb-6 uppercase tracking-tight flex items-center gap-3">
+                                        <Bell className="h-5 w-5 text-purple-500" />
+                                        {t('itemActivity')}
+                                    </h3>
+                                    <div className="space-y-2">
+                                        {renderToggle(t('foundItemsNotif'), t('foundItemsNotifDesc'), 'notifications', 'foundItems')}
+                                        {renderToggle(t('claimUpdates'), t('claimUpdatesDesc'), 'notifications', 'claimAlerts')}
+                                        {renderToggle(t('directMessages'), t('directMessagesDesc'), 'notifications', 'messages')}
+                                    </div>
+                                </section>
+
+                                <section className="pt-10 border-t border-gray-100 dark:border-gray-700">
+                                    <h3 className="text-lg font-black text-gray-900 dark:text-white mb-6 uppercase tracking-tight flex items-center gap-3">
+                                        <Trophy className="h-5 w-5 text-amber-500" />
+                                        {t('communityAndRewards')}
+                                    </h3>
+                                    <div className="space-y-2">
+                                        {renderToggle(t('rewardAlerts'), t('rewardAlertsDesc'), 'notifications', 'rewards')}
+                                        {renderToggle(t('securityAlerts'), t('securityAlertsDesc'), 'notifications', 'security')}
+                                    </div>
+                                </section>
+                            </div>
                         </div>
                     </div>
                 );
@@ -711,23 +834,23 @@ export default function Settings() {
             case 'privacy':
                 return (
                     <div className="space-y-8">
-                        {renderHeader('Privacy & Controls', 'Choose who sees your activity and location')}
+                        {renderHeader(t('privacyAndControls'), t('choosePrivacy'))}
                         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-8">
-                            <h3 className="font-black mb-6 text-gray-900 dark:text-white">Direct Messaging</h3>
+                            <h3 className="font-black mb-6 text-gray-900 dark:text-white uppercase tracking-tight">{t('directMessaging')}</h3>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Who can message you?</label>
+                                    <label className="block text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">{t('whoCanMessage')}</label>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                        {['everyone', 'verified', 'none'].map(opt => (
+                                        {['everyone', 'verifiedOnly', 'none'].map(opt => (
                                             <button
                                                 key={opt}
                                                 onClick={() => handleSelectChange('privacy', 'allowMessaging', opt)}
-                                                className={`py-3 rounded-xl text-xs font-bold capitalize border transition-all ${settings.privacy.allowMessaging === opt
+                                                className={`py-3 rounded-xl text-xs font-bold uppercase border transition-all ${settings.privacy.allowMessaging === opt
                                                     ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20'
                                                     : 'bg-gray-50 dark:bg-gray-900/50 text-gray-500 dark:text-gray-400 border-gray-100 dark:border-gray-700'
                                                     }`}
                                             >
-                                                {opt}
+                                                {t(opt)}
                                             </button>
                                         ))}
                                     </div>
@@ -736,176 +859,123 @@ export default function Settings() {
                         </div>
 
                         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-8">
-                            <h3 className="font-black mb-6 text-gray-900 dark:text-white">Visibility</h3>
-                            {renderToggle('Location Visibility', 'Show approximate item location on map', 'privacy', 'locationVisibility')}
-                            {renderToggle('Show Points', 'Display your total points on profile', 'privacy', 'showPoints')}
+                            <h3 className="font-black mb-6 text-gray-900 dark:text-white uppercase tracking-tight">{t('visibility')}</h3>
+                            {renderToggle(t('locationVisibility'), t('locationVisibilityDesc'), 'privacy', 'locationVisibility')}
+                            {renderToggle(t('showPoints'), t('showPointsDesc'), 'privacy', 'showPoints')}
                         </div>
                     </div>
                 );
 
             case 'location':
                 return (
-                    <div className="space-y-6">
-                        {renderHeader('Area Alerts', 'Get notified about items found near you')}
-                        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-8">
-                            <h3 className="font-black mb-4 text-gray-900 dark:text-white flex items-center gap-2">
-                                <Bell className="h-5 w-5 text-primary" />
-                                Smart Neighborhood Alerts
-                            </h3>
-                            <div className="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-2xl mb-8 border border-blue-100 dark:border-blue-900/20">
-                                <p className="text-sm text-blue-700 dark:text-blue-300 leading-relaxed font-medium">
-                                    Enable this to get real-time alerts when someone reports a lost/found item within your custom watch area.
-                                </p>
-                            </div>
+                    <div className="space-y-12">
+                        {renderHeader(t('mapAndAlerts'), t('manageExperience'))}
 
-                            {renderToggle('Enable Watch Zone', 'Push notifications for items in your area', 'map', 'alertsEnabled')}
-
-                            <div className="py-8 border-t border-gray-100 dark:border-gray-700 mt-6">
-                                <div className="flex justify-between items-center mb-6">
-                                    <div>
-                                        <p className="font-black text-gray-900 dark:text-white uppercase tracking-tight">Watch Radius</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Distance around your alert location</p>
-                                    </div>
-                                    <div className="bg-primary/10 px-4 py-2 rounded-xl border border-primary/20">
-                                        <span className="text-primary font-black text-2xl">{settings.map.searchRadius}</span>
-                                        <span className="text-primary text-xs font-bold ml-1 uppercase">km</span>
-                                    </div>
-                                </div>
-                                <input
-                                    type="range"
-                                    min="1"
-                                    max="50"
-                                    value={settings.map.searchRadius}
-                                    onChange={(e) => handleSelectChange('map', 'searchRadius', parseInt(e.target.value))}
-                                    className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer accent-primary"
-                                />
-                                <div className="flex justify-between text-[10px] font-black text-gray-400 mt-3 uppercase tracking-widest">
-                                    <span>Precise (1km)</span>
-                                    <span>Wide (50km)</span>
+                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-[3rem] p-10 shadow-2xl space-y-10">
+                            <div>
+                                <h3 className="text-lg font-black text-gray-900 dark:text-white mb-6 uppercase tracking-tight flex items-center gap-3">
+                                    <MapPin className="h-5 w-5 text-emerald-500" />
+                                    {t('mapExperience')}
+                                </h3>
+                                <div className="space-y-2">
+                                    {renderToggle(t('gpsPrecision'), t('gpsPrecisionDesc'), 'location', 'highPrecision')}
+                                    {renderToggle(t('areaAlerts'), t('areaAlertsDesc'), 'location', 'areaAlerts')}
+                                    {renderToggle(t('privacyZone'), t('privacyZoneDesc'), 'location', 'privacyZone')}
                                 </div>
                             </div>
-
-                            <div className="pt-4">
-                                <button
-                                    onClick={() => {
-                                        if (navigator.geolocation) {
-                                            toast.loading("detecting area...");
-                                            navigator.geolocation.getCurrentPosition(
-                                                (pos) => {
-                                                    const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                                                    handleSelectChange('map', 'watchLocation', loc);
-                                                    userAPI.update('me', { alertLocation: loc, alertRadius: settings.map.searchRadius });
-                                                    toast.dismiss();
-                                                    toast.success("Alert zone updated Successfully!");
-                                                },
-                                                () => {
-                                                    toast.dismiss();
-                                                    toast.error("Location access required");
-                                                }
-                                            );
-                                        }
-                                    }}
-                                    className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-950 py-4 rounded-2xl font-black flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition shadow-xl"
-                                >
-                                    <MapIcon className="h-5 w-5" />
-                                    SET CURRENT LOCATION AS WATCH ZONE
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-8">
-                            <h3 className="font-black mb-6 text-gray-900 dark:text-white uppercase tracking-widest text-xs">Map Experience</h3>
-                            {renderToggle('Default to Map', 'Open map by default in dashboard', 'map', 'mapView')}
-                            {renderToggle('GPS Auto-follow', 'Follow my movements in real-time', 'map', 'autoLocation')}
                         </div>
                     </div>
                 );
 
             case 'rewards':
                 return (
-                    <div className="space-y-8">
-                        {renderHeader('Community Rewards', 'View your progress and community impact')}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-primary text-white rounded-3xl p-10 shadow-2xl relative overflow-hidden">
-                                <p className="text-blue-100 text-xs font-black uppercase tracking-widest mb-2 opacity-80">Accumulated Points</p>
-                                <h3 className="text-6xl font-black tracking-tighter">{userData?.points || 0}</h3>
-                                <div className="mt-10 bg-white/20 px-4 py-2 rounded-2xl backdrop-blur-xl inline-flex items-center gap-3 border border-white/20">
-                                    <Trophy className="h-6 w-6 text-yellow-300" />
-                                    <span className="text-sm font-black uppercase tracking-tight">Master Finder</span>
+                    <div className="space-y-12">
+                        {renderHeader(t('rewards'), t('accumulatedPoints'))}
+
+                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-[3rem] p-10 shadow-2xl">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                                <div className="space-y-8">
+                                    <h3 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight flex items-center gap-3">
+                                        <Trophy className="h-5 w-5 text-amber-500" />
+                                        {t('contributionStats')}
+                                    </h3>
+                                    <div className="space-y-4">
+                                        <div className="p-6 bg-gray-50 dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                                            <span className="font-bold text-gray-500 dark:text-gray-400 uppercase text-[10px] tracking-widest">{t('itemsReturned')}</span>
+                                            <span className="text-2xl font-black text-gray-900 dark:text-white">{userData?.itemsReturned || 0}</span>
+                                        </div>
+                                        <div className="p-6 bg-gray-50 dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                                            <span className="font-bold text-gray-500 dark:text-gray-400 uppercase text-[10px] tracking-widest">{t('totalKarma')}</span>
+                                            <span className="text-2xl font-black text-primary">{userData?.points || 0}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="absolute -bottom-8 -right-8 opacity-10">
-                                    <Crown className="h-48 w-48" />
-                                </div>
-                            </div>
-                            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-10 flex flex-col justify-center shadow-xl">
-                                <p className="text-gray-500 dark:text-gray-400 text-xs font-black uppercase tracking-widest mb-2">Total Returns</p>
-                                <h3 className="text-5xl font-black text-gray-900 dark:text-white tracking-tighter">{userData?.itemsReturned || 0}</h3>
-                                <p className="text-gray-400 text-sm mt-2">Successful item recoveries</p>
-                                <Link to="/rewards" className="mt-10 bg-gray-50 dark:bg-gray-900 p-4 rounded-2xl text-primary dark:text-blue-400 text-sm font-black hover:bg-primary hover:text-white transition text-center uppercase tracking-widest">
-                                    Open Leaderboard
-                                </Link>
                             </div>
                         </div>
-                        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-8">
-                            {renderToggle('Global Leaderboard', 'Compete with others publicly', 'privacy', 'showOnLeaderboard')}
+                    </div>
+                );
+
+            case 'blocked':
+                return (
+                    <div className="space-y-8">
+                        {renderHeader(t('blockedUsers', 'Blocked Users'), t('manageBlockedUsersDesc', 'Users you have blocked will not be able to message you or see your posts.'))}
+
+                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-[3rem] p-6 shadow-2xl">
+                            {loadingBlocked ? (
+                                <div className="flex flex-col items-center justify-center py-12">
+                                    <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+                                    <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">{t('loading', 'Loading...')}</p>
+                                </div>
+                            ) : blockedUsers.length === 0 ? (
+                                <div className="text-center py-16">
+                                    <Shield className="h-16 w-16 text-gray-200 dark:text-gray-700 mx-auto mb-4" />
+                                    <h3 className="text-lg font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tight">{t('noBlockedUsers', 'No Blocked Users')}</h3>
+                                    <p className="text-gray-500 dark:text-gray-400 text-xs font-medium max-w-xs mx-auto">{t('noBlockedUsersDesc', 'When you block someone, they will appear here.')}</p>
+                                </div>
+                            ) : (
+                                <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                                    {blockedUsers.map((user) => (
+                                        <div key={user.uid} className="flex items-center justify-between py-6 first:pt-0 last:pb-0">
+                                            <div className="flex items-center gap-4">
+                                                <img
+                                                    src={user.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
+                                                    alt={user.displayName}
+                                                    className="w-12 h-12 rounded-2xl object-cover shadow-lg"
+                                                />
+                                                <div>
+                                                    <p className="font-black text-gray-900 dark:text-white uppercase tracking-tight">{user.displayName || 'User'}</p>
+                                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{t('blockedOn', 'Blocked')}</p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => handleUnblock(user.uid)}
+                                                className="px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-sm"
+                                            >
+                                                {t('unblock', 'Unblock')}
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 );
 
             case 'accessibility':
                 return (
-                    <div className="space-y-8">
-                        {renderHeader('Personalization', 'Fine-tune the interface for your comfort')}
-                        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-8">
-                            <h3 className="font-black mb-6 text-gray-900 dark:text-white uppercase tracking-widest text-xs">Language</h3>
-                            <button
-                                onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'np' : 'en')}
-                                className="w-full flex items-center justify-between p-5 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-200 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 transition"
-                            >
-                                <div className="flex items-center gap-4">
-                                    <Globe className="h-6 w-6 text-primary" />
-                                    <span className="font-black text-gray-700 dark:text-gray-300 uppercase tracking-tight">System Language</span>
-                                </div>
-                                <span className="bg-primary text-white text-xs font-black px-4 py-2 rounded-xl shadow-lg shadow-primary/30 uppercase">{i18n.language === 'en' ? 'English' : 'Nepali'}</span>
-                            </button>
-                        </div>
+                    <div className="space-y-12">
+                        {renderHeader(t('appearance'), t('visualAccessibility'))}
 
-                        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl p-8">
-                            <h3 className="font-black mb-8 text-gray-900 dark:text-white uppercase tracking-widest text-xs">Visual Accessibility</h3>
-                            <div className="space-y-8">
-                                <div className="py-4 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                                    <p className="font-black text-gray-900 dark:text-white mb-4 uppercase tracking-tighter">Interface Scale</p>
-                                    <div className="grid grid-cols-3 gap-3">
-                                        {['small', 'medium', 'large'].map(size => (
-                                            <button
-                                                key={size}
-                                                onClick={() => handleSelectChange('accessibility', 'fontSize', size)}
-                                                className={`py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${settings.accessibility.fontSize === size
-                                                    ? 'bg-primary text-white border-primary shadow-xl shadow-primary/30'
-                                                    : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700'
-                                                    }`}
-                                            >
-                                                {size}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                                {renderToggle('High Contrast', 'Maximized color distinction', 'accessibility', 'highContrast')}
-                                <div className="flex items-center justify-between py-4 border-b border-gray-100 dark:border-gray-700 last:border-0 font-outfit">
-                                    <div className="flex-1 pr-4">
-                                        <p className="font-bold text-gray-900 dark:text-white uppercase tracking-tight">Dark Mode</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">Switch between light and dark visual themes</p>
-                                    </div>
-                                    <button
-                                        onClick={toggleTheme}
-                                        className={`relative inline-flex h-9 w-16 items-center rounded-2xl transition-all duration-300 focus:outline-none ${isDarkMode ? 'bg-primary shadow-lg shadow-primary/20' : 'bg-gray-200 dark:bg-gray-700'}`}
-                                    >
-                                        <div
-                                            className={`flex items-center justify-center h-7 w-7 transform rounded-xl bg-white shadow-md transition-all duration-500 ${isDarkMode ? 'translate-x-8 rotate-[360deg]' : 'translate-x-1'}`}
-                                        >
-                                            {isDarkMode ? <Moon className="h-4 w-4 text-primary" /> : <Sun className="h-4 w-4 text-yellow-500" />}
-                                        </div>
-                                    </button>
+                        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-[3rem] p-10 shadow-2xl space-y-10">
+                            <div>
+                                <h3 className="text-lg font-black text-gray-900 dark:text-white mb-6 uppercase tracking-tight flex items-center gap-3">
+                                    <Eye className="h-5 w-5 text-indigo-500" />
+                                    {t('visualPreferences')}
+                                </h3>
+                                <div className="space-y-2">
+                                    {renderToggle(t('highContrast'), t('highContrastDesc'), 'accessibility', 'highContrast')}
+                                    {renderToggle(t('reducedMotion'), t('reducedMotionDesc'), 'accessibility', 'reducedMotion')}
+                                    {renderToggle(t('screenReader'), t('screenReaderDesc'), 'accessibility', 'screenReader')}
                                 </div>
                             </div>
                         </div>
@@ -914,14 +984,14 @@ export default function Settings() {
 
             case 'support':
                 return (
-                    <div className="space-y-4">
-                        {renderHeader('Community Support', 'Resources and legal documentation')}
+                    <div className="space-y-8">
+                        {renderHeader(t('support'), t('communitySupport'))}
                         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl overflow-hidden shadow-2xl">
                             {[
-                                { label: 'Help Center & FAQs', icon: Info },
-                                { label: 'Report a Problem', icon: AlertTriangle },
-                                { label: 'Terms and Conditions', icon: Shield },
-                                { label: 'Privacy Policy', icon: Lock }
+                                { label: t('helpAndFaq'), icon: HelpCircle, desc: t('commonQuestions') },
+                                { label: t('reportAProblem'), icon: AlertTriangle, desc: t('reportProblemDesc') },
+                                { label: t('legalAndPolicies'), icon: Shield, desc: t('privacyAndTerms') },
+                                { label: t('legalDisclaimer'), icon: Lock, desc: t('reviewLegal') }
                             ].map((item, idx) => (
                                 <button
                                     key={idx}
@@ -931,14 +1001,17 @@ export default function Settings() {
                                         <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-2xl">
                                             <item.icon className="h-6 w-6 text-gray-500 dark:text-gray-400" />
                                         </div>
-                                        <span className="font-black text-gray-900 dark:text-white uppercase tracking-tight">{item.label}</span>
+                                        <div className="text-left">
+                                            <span className="font-black text-gray-900 dark:text-white uppercase tracking-tight block">{item.label}</span>
+                                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{item.desc}</span>
+                                        </div>
                                     </div>
                                     <ChevronRight className="h-5 w-5 text-gray-400 transition" />
                                 </button>
                             ))}
                         </div>
                         <div className="text-center py-12">
-                            <p className="text-[10px] font-black tracking-[0.4em] text-gray-400 uppercase opacity-50">Lost & Found Global v2.0</p>
+                            <p className="text-[10px] font-black tracking-[0.4em] text-gray-400 uppercase opacity-50">{t('appName')} Global v2.0</p>
                         </div>
                     </div>
                 );
@@ -946,16 +1019,16 @@ export default function Settings() {
             case 'danger':
                 return (
                     <div className="space-y-8">
-                        {renderHeader('Critical Actions', 'Manage your account permanence')}
+                        {renderHeader(t('criticalActions'), t('dangerZoneDesc'))}
                         <div className="bg-white dark:bg-gray-800 border border-red-100 dark:border-red-900/20 rounded-[2.5rem] p-10 shadow-2xl shadow-red-100 dark:shadow-none">
                             <div className="flex items-start gap-5 p-6 bg-red-50 dark:bg-red-900/10 rounded-3xl border border-red-100 dark:border-red-900/20 mb-10">
                                 <div className="p-3 bg-red-600 rounded-2xl text-white">
                                     <AlertTriangle className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <p className="font-black text-red-800 dark:text-red-400 mb-1">DATA PURGE WARNING</p>
+                                    <p className="font-black text-red-800 dark:text-red-400 mb-1">{t('dataPurgeWarning')}</p>
                                     <p className="text-xs text-red-700 dark:text-red-300 leading-relaxed">
-                                        Terminating your account is permanent. All your contributions, history, and records will be deleted from our community database instantly.
+                                        {t('deleteAccountWarning')}
                                     </p>
                                 </div>
                             </div>
@@ -968,7 +1041,7 @@ export default function Settings() {
                                     <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-2xl group-hover:bg-white/20 transition">
                                         <Trash2 className="h-7 w-7 text-red-600 group-hover:text-white" />
                                     </div>
-                                    <span className="font-black uppercase tracking-wider">Terminate My Membership</span>
+                                    <span className="font-black uppercase tracking-wider">{t('terminateMembership')}</span>
                                 </div>
                                 <ChevronRight className="h-6 w-6 text-red-400 group-hover:text-white transition group-hover:translate-x-1" />
                             </button>
@@ -982,9 +1055,9 @@ export default function Settings() {
                                         <div className="bg-red-100 dark:bg-red-900/30 w-24 h-24 rounded-[2rem] flex items-center justify-center mx-auto mb-6 transform rotate-12">
                                             <Trash2 className="h-12 w-12 text-red-600" />
                                         </div>
-                                        <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-3">Final Step</h3>
+                                        <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-3">{t('finalStep')}</h3>
                                         <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-                                            Confirm you want to erase all your data from the community.
+                                            {t('deleteAccountConfirm')}
                                         </p>
                                     </div>
                                     <div className="flex flex-col gap-4">
@@ -993,13 +1066,13 @@ export default function Settings() {
                                             disabled={isDeletingAccount}
                                             className="w-full bg-red-600 text-white py-5 rounded-2xl font-black hover:bg-red-700 transition flex items-center justify-center gap-3 shadow-2xl shadow-red-500/30"
                                         >
-                                            {isDeletingAccount ? <Loader2 className="h-6 w-6 animate-spin" /> : "YES, DELETE PERMANENTLY"}
+                                            {isDeletingAccount ? <Loader2 className="h-6 w-6 animate-spin" /> : t('yesDeletePermanently')}
                                         </button>
                                         <button
                                             onClick={() => setShowDeleteModal(false)}
                                             className="w-full py-5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-2xl font-black hover:bg-gray-200 dark:hover:bg-gray-600 transition"
                                         >
-                                            CANCEL ACTION
+                                            {t('cancelAction')}
                                         </button>
                                     </div>
                                 </div>
@@ -1017,8 +1090,8 @@ export default function Settings() {
         return (
             <div className="max-w-4xl mx-auto pb-24 px-4">
                 <div className="mb-12">
-                    <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter uppercase">Admin Profile Settings</h1>
-                    <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">Manage your administrative identity and security</p>
+                    <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter uppercase">{t('adminProfileSettings')}</h1>
+                    <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">{t('adminIdentityDesc')}</p>
                 </div>
 
                 <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-[3rem] shadow-2xl overflow-hidden p-10 md:p-16">
@@ -1027,16 +1100,16 @@ export default function Settings() {
                         <div className="space-y-4">
                             <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight flex items-center gap-3">
                                 <User className="h-6 w-6 text-primary" />
-                                Admin Identity
+                                {t('adminIdentity')}
                             </h2>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">Admin Name</label>
+                                <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">{t('adminName')}</label>
                                 <input
                                     type="text"
                                     value={editedProfile.displayName}
                                     onChange={(e) => setEditedProfile({ ...editedProfile, displayName: e.target.value })}
                                     className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all"
-                                    placeholder="Enter Admin Name"
+                                    placeholder={t('enterAdminName')}
                                     required
                                 />
                             </div>
@@ -1046,11 +1119,11 @@ export default function Settings() {
                         <div className="space-y-6 pt-6 border-t border-gray-100 dark:border-gray-700">
                             <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight flex items-center gap-3">
                                 <Lock className="h-6 w-6 text-red-500" />
-                                Security Credentials
+                                {t('securityCredentials')}
                             </h2>
                             <div className="grid grid-cols-1 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">Current Password</label>
+                                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">{t('currentPassword')}</label>
                                     <div className="relative">
                                         <input
                                             type={showPassword ? "text" : "password"}
@@ -1070,23 +1143,23 @@ export default function Settings() {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">New Password</label>
+                                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">{t('newPassword')}</label>
                                         <input
                                             type="password"
                                             value={adminPasswords.new}
                                             onChange={(e) => setAdminPasswords({ ...adminPasswords, new: e.target.value })}
                                             className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all"
-                                            placeholder="Enter New Password"
+                                            placeholder={t('enterNewPassword')}
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">Confirm New Password</label>
+                                        <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">{t('confirmNewPassword')}</label>
                                         <input
                                             type="password"
                                             value={adminPasswords.confirm}
                                             onChange={(e) => setAdminPasswords({ ...adminPasswords, confirm: e.target.value })}
                                             className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white font-bold transition-all"
-                                            placeholder="Confirm New Password"
+                                            placeholder={t('confirmNewPassword')}
                                         />
                                     </div>
                                 </div>
@@ -1100,7 +1173,7 @@ export default function Settings() {
                                 className="w-full py-5 bg-primary text-white rounded-2xl hover:bg-primary-dark transition font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-primary/20 flex items-center justify-center gap-3 disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98]"
                             >
                                 {isUpdatingAdmin ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
-                                Update Profile
+                                {t('updateProfile')}
                             </button>
                         </div>
                     </form>
@@ -1113,8 +1186,8 @@ export default function Settings() {
         <div className="max-w-7xl mx-auto pb-24 px-4">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
                 <div>
-                    <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter uppercase">Settings</h1>
-                    <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">Personalize your community experience</p>
+                    <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter uppercase">{t('settings')}</h1>
+                    <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">{t('personalizeExperience')}</p>
                 </div>
             </div>
 

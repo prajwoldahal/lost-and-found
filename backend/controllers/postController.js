@@ -77,6 +77,19 @@ export const getPosts = async (req, res) => {
         const snapshot = await query.limit(parseInt(limit)).get();
         let posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
+        // Filter out posts from blocked users if authenticated
+        if (req.user && req.user.uid) {
+            try {
+                const blockedSnapshot = await db.collection('users').doc(req.user.uid).collection('blockedUsers').get();
+                const blockedIds = blockedSnapshot.docs.map(doc => doc.id);
+                if (blockedIds.length > 0) {
+                    posts = posts.filter(post => !blockedIds.includes(post.createdBy));
+                }
+            } catch (err) {
+                console.error('Error filtering blocked users:', err);
+            }
+        }
+
         // Sort in memory instead of Firestore to avoid composite index requirements
         posts.sort((a, b) => {
             const dateA = new Date(a.createdAt || 0);

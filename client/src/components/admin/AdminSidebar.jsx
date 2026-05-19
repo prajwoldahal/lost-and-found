@@ -15,8 +15,10 @@ import {
     ScrollText
 } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminSidebar() {
+    const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
     const { userData, logout } = useAuth();
@@ -40,14 +42,14 @@ export default function AdminSidebar() {
     };
 
     const menuItems = [
-        { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
-        { path: '/admin/posts', icon: FileText, label: 'Posts' },
-        { path: '/admin/users', icon: Users, label: 'Users' },
-        { path: '/admin/reports', icon: Flag, label: 'Reports' },
-        { path: '/admin/claims', icon: Shield, label: 'Claims' },
-        { path: '/admin/categories', icon: Tags, label: 'Categories' },
-        { path: '/admin/settings', icon: Settings, label: 'Settings' },
-        { path: '/admin/logs', icon: ScrollText, label: 'Logs' },
+        { path: '/admin', icon: LayoutDashboard, label: t('dashboard') },
+        { path: '/admin/posts', icon: FileText, label: t('adminPosts') },
+        { path: '/admin/users', icon: Users, label: t('adminUsers') },
+        { path: '/admin/reports', icon: Flag, label: t('adminReports') },
+        { path: '/admin/claims', icon: Shield, label: t('adminClaims') },
+        { path: '/admin/categories', icon: Tags, label: t('adminCategories') },
+        { path: '/admin/settings', icon: Settings, label: t('settings') },
+        { path: '/admin/logs', icon: ScrollText, label: t('adminLogs') },
     ];
 
     return (
@@ -59,7 +61,7 @@ export default function AdminSidebar() {
                         {!collapsed && (
                             <div className="flex items-center gap-2">
                                 <Shield className="h-6 w-6" />
-                                <span className="font-bold text-lg">Admin Panel</span>
+                                <span className="font-bold text-lg">{t('adminPanel')}</span>
                             </div>
                         )}
                         {collapsed && <Shield className="h-6 w-6 mx-auto" />}
@@ -82,8 +84,8 @@ export default function AdminSidebar() {
                                 className="w-10 h-10 rounded-full"
                             />
                             <div className="flex-1 min-w-0">
-                                <p className="font-medium truncate">{userData?.displayName || 'Admin'}</p>
-                                <p className="text-xs text-blue-200 truncate">{userData?.role || 'Administrator'}</p>
+                                <p className="font-medium truncate">{userData?.displayName || t('admin')}</p>
+                                <p className="text-xs text-blue-200 truncate">{userData?.role || t('administrator', { defaultValue: 'Administrator' })}</p>
                             </div>
                         </div>
                     </div>
@@ -117,10 +119,10 @@ export default function AdminSidebar() {
                     <button
                         onClick={handleLogoutPress}
                         className={`flex items-center gap-3 px-3 py-2 rounded-lg transition text-blue-100 hover:bg-red-600 hover:text-white w-full ${collapsed ? 'justify-center' : ''}`}
-                        title={collapsed ? 'Logout' : ''}
+                        title={collapsed ? t('logout') : ''}
                     >
                         <LogOut className="h-5 w-5 flex-shrink-0" />
-                        {!collapsed && <span>Logout</span>}
+                        {!collapsed && <span>{t('logout')}</span>}
                     </button>
                 </div>
             </div>
@@ -133,24 +135,24 @@ export default function AdminSidebar() {
                             <div className="bg-red-100 p-2 rounded-full">
                                 <AlertTriangle className="h-6 w-6 text-red-600" />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900">Confirm Logout</h3>
+                            <h3 className="text-xl font-bold text-gray-900">{t('confirmLogoutAdmin')}</h3>
                         </div>
                         <p className="text-gray-600 mb-6">
-                            Are you sure you want to log out from the Admin Portal?
+                            {t('logoutAdminMessage')}
                         </p>
                         <div className="flex gap-3">
                             <button
                                 onClick={() => setShowLogoutModal(false)}
                                 className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
                             >
-                                Cancel
+                                {t('cancel')}
                             </button>
                             <button
                                 onClick={confirmLogout}
                                 className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium flex items-center justify-center gap-2"
                             >
                                 <LogOut className="h-4 w-4" />
-                                Logout
+                                {t('logout')}
                             </button>
                         </div>
                     </div>

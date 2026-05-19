@@ -27,10 +27,10 @@ export default function Register() {
     const navigate = useNavigate();
 
     const idTypes = [
-        { value: 'passport', label: 'Passport' },
-        { value: 'citizenship', label: 'Citizenship Certificate' },
-        { value: 'nationalId', label: 'National ID Card' },
-        { value: 'drivingLicense', label: 'Driving License' }
+        { value: 'passport', label: t('passport') },
+        { value: 'citizenship', label: t('citizenshipCertificate') },
+        { value: 'nationalId', label: t('nationalIdCard') },
+        { value: 'drivingLicense', label: t('drivingLicense') }
     ];
 
     const handleFileChange = (e) => {
@@ -112,17 +112,17 @@ export default function Register() {
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                         <div className="space-y-4">
-                            <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight border-b dark:border-gray-800 pb-2">Basic Information</h3>
+                            <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight border-b dark:border-gray-800 pb-2">{t('basicInformation')}</h3>
                             <div className="space-y-4">
                                 <div>
-                                    <label htmlFor="full-name" className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1 ml-1">Full Name</label>
+                                    <label htmlFor="full-name" className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1 ml-1">{t('fullName')}</label>
                                     <input
                                         id="full-name"
                                         name="name"
                                         type="text"
                                         required
                                         className="appearance-none relative block w-full px-4 py-3 bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 placeholder-slate-400 dark:placeholder-slate-500 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all sm:text-sm font-medium"
-                                        placeholder="Full Name"
+                                        placeholder={t('fullName')}
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                     />
@@ -168,7 +168,7 @@ export default function Register() {
                                     {/* Password Requirements */}
                                     {passwordTouched && password && (
                                         <div className="mt-3 p-3 bg-slate-50 dark:bg-gray-800 rounded-lg border border-slate-200 dark:border-gray-700">
-                                            <p className="text-xs font-bold text-slate-600 dark:text-slate-400 mb-2">Password must contain:</p>
+                                            <p className="text-xs font-bold text-slate-600 dark:text-slate-400 mb-2">{t('passwordMustContain')}</p>
                                             <div className="space-y-1">
                                                 <div className="flex items-center gap-2">
                                                     {passwordValidation.minLength ?
@@ -176,7 +176,7 @@ export default function Register() {
                                                         <X className="h-4 w-4 text-red-500" />
                                                     }
                                                     <span className={`text-xs font-medium ${passwordValidation.minLength ? 'text-green-600 dark:text-green-400' : 'text-slate-600 dark:text-slate-400'}`}>
-                                                        At least 8 characters
+                                                        {t('atLeast8Chars')}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
@@ -185,7 +185,7 @@ export default function Register() {
                                                         <X className="h-4 w-4 text-red-500" />
                                                     }
                                                     <span className={`text-xs font-medium ${passwordValidation.hasUppercase ? 'text-green-600 dark:text-green-400' : 'text-slate-600 dark:text-slate-400'}`}>
-                                                        One uppercase letter (A-Z)
+                                                        {t('oneUppercase')}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
@@ -194,7 +194,7 @@ export default function Register() {
                                                         <X className="h-4 w-4 text-red-500" />
                                                     }
                                                     <span className={`text-xs font-medium ${passwordValidation.hasLowercase ? 'text-green-600 dark:text-green-400' : 'text-slate-600 dark:text-slate-400'}`}>
-                                                        One lowercase letter (a-z)
+                                                        {t('oneLowercase')}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
@@ -203,7 +203,7 @@ export default function Register() {
                                                         <X className="h-4 w-4 text-red-500" />
                                                     }
                                                     <span className={`text-xs font-medium ${passwordValidation.hasNumber ? 'text-green-600 dark:text-green-400' : 'text-slate-600 dark:text-slate-400'}`}>
-                                                        One number (0-9)
+                                                        {t('oneNumber')}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
@@ -212,7 +212,7 @@ export default function Register() {
                                                         <X className="h-4 w-4 text-red-500" />
                                                     }
                                                     <span className={`text-xs font-medium ${passwordValidation.hasSpecial ? 'text-green-600 dark:text-green-400' : 'text-slate-600 dark:text-slate-400'}`}>
-                                                        One special character (!@#$%^&*)
+                                                        {t('oneSpecial')}
                                                     </span>
                                                 </div>
                                             </div>
@@ -250,14 +250,14 @@ export default function Register() {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Shield className={`h-5 w-5 ${showVerification ? 'text-primary' : 'text-slate-400'}`} />
-                                    <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Verify Identity (Optional)</h3>
+                                    <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{t('verifyIdentityOptional')}</h3>
                                 </div>
                                 <button
                                     type="button"
                                     onClick={() => setShowVerification(!showVerification)}
                                     className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${showVerification ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-slate-100 dark:bg-gray-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-gray-700'}`}
                                 >
-                                    {showVerification ? 'Remove Verification' : 'Add Verification'}
+                                    {showVerification ? t('removeVerification') : t('addVerification')}
                                 </button>
                             </div>
 
@@ -265,7 +265,7 @@ export default function Register() {
                                 <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-xl flex items-start gap-3 border border-blue-100 dark:border-blue-900/20">
                                     <Info className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
                                     <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed font-medium">
-                                        Verification is optional but required if you want to <strong>claim items</strong>. Verified users receive a badge and higher community trust.
+                                        {t('verificationInfo')}
                                     </p>
                                 </div>
                             )}
@@ -273,32 +273,32 @@ export default function Register() {
                             {showVerification && (
                                 <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
                                     <div>
-                                        <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1 ml-1">ID Type</label>
+                                        <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1 ml-1">{t('idType')}</label>
                                         <select
                                             value={idType}
                                             onChange={(e) => setIdType(e.target.value)}
                                             className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary transition-all sm:text-sm font-medium text-slate-900 dark:text-white"
                                             required={showVerification}
                                         >
-                                            <option value="">Select ID type...</option>
+                                            <option value="">{t('selectIdType')}</option>
                                             {idTypes.map(type => (
                                                 <option key={type.value} value={type.value}>{type.label}</option>
                                             ))}
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1 ml-1">ID Number</label>
+                                        <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1 ml-1">{t('idNumber')}</label>
                                         <input
                                             type="text"
                                             value={idNumber}
                                             onChange={(e) => setIdNumber(e.target.value)}
-                                            placeholder="Enter your ID number"
+                                            placeholder={t('enterIdNumber')}
                                             className="w-full px-4 py-3 bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary transition-all sm:text-sm font-medium text-slate-900 dark:text-white"
                                             required={showVerification}
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1 ml-1">ID Photo Upload</label>
+                                        <label className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1 ml-1">{t('idPhotoUpload')}</label>
                                         <div className="border-2 border-dashed border-slate-200 dark:border-gray-700 rounded-2xl p-8 text-center hover:border-primary dark:hover:border-primary transition-all cursor-pointer bg-slate-50 dark:bg-gray-800">
                                             <input
                                                 type="file"
@@ -317,8 +317,8 @@ export default function Register() {
                                                     </div>
                                                 ) : (
                                                     <div className="text-xs text-slate-500 dark:text-slate-400">
-                                                        <p className="font-bold mb-1">Click to upload ID photo</p>
-                                                        <p className="text-[10px] uppercase font-black tracking-tighter opacity-70">JPG, PNG or WebP (max 5MB)</p>
+                                                        <p className="font-bold mb-1">{t('clickToUploadIdPhoto')}</p>
+                                                        <p className="text-[10px] uppercase font-black tracking-tighter opacity-70">{t('jpgPngWebp')}</p>
                                                     </div>
                                                 )}
                                             </label>
@@ -333,9 +333,9 @@ export default function Register() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-primary hover:bg-primary-dark shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-all"
+                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-xl text-white bg-primary hover:bg-primary-dark shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-all"
                         >
-                            {loading ? 'Processing...' : t('signUp')}
+                            {loading ? t('processing') : t('signUp')}
                         </button>
                     </div>
                 </form>
@@ -346,7 +346,7 @@ export default function Register() {
                             <div className="w-full border-t border-slate-200 dark:border-gray-700"></div>
                         </div>
                         <div className="relative flex justify-center text-xs uppercase font-black tracking-widest">
-                            <span className="px-3 bg-white dark:bg-gray-900 text-slate-400 dark:text-slate-500">Or continue with</span>
+                            <span className="px-3 bg-white dark:bg-gray-900 text-slate-400 dark:text-slate-500">{t('orContinueWith')}</span>
                         </div>
                     </div>
 

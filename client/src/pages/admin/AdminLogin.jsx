@@ -3,8 +3,10 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Shield, Lock, Mail, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminLogin() {
+    const { t } = useTranslation();
     const { adminLogin } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -17,10 +19,10 @@ export default function AdminLogin() {
         try {
             setLoading(true);
             await adminLogin(email, password);
-            toast.success('Admin login successful!');
+            toast.success(t('adminLoginSuccessful'));
             navigate('/admin');
         } catch (error) {
-            toast.error(error.message || 'Failed to login as admin');
+            toast.error(error.message || t('failedToLoginAsAdmin'));
         } finally {
             setLoading(false);
         }
@@ -39,10 +41,10 @@ export default function AdminLogin() {
                         <Shield className="h-14 w-14 text-primary" />
                     </div>
                     <h2 className="text-6xl font-black text-slate-900 dark:text-white mb-4 tracking-tighter uppercase leading-none">
-                        Secure<br /><span className="text-primary">Terminal</span>
+                        {t('secure')}<br /><span className="text-primary">{t('terminal')}</span>
                     </h2>
                     <p className="text-slate-400 dark:text-slate-500 font-black uppercase tracking-[0.2em] text-[10px]">
-                        Authorized Personnel Only — Division 01
+                        {t('authorizedPersonnelOnly')}
                     </p>
                 </div>
 
@@ -52,7 +54,7 @@ export default function AdminLogin() {
                         {/* Email Field */}
                         <div>
                             <label htmlFor="email" className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2 ml-1">
-                                Admin Email
+                                {t('adminEmail')}
                             </label>
                             <div className="relative group">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-primary">
@@ -65,7 +67,7 @@ export default function AdminLogin() {
                                     autoComplete="email"
                                     required
                                     className="appearance-none block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-2xl placeholder-slate-400 dark:placeholder-slate-500 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all sm:text-sm font-medium"
-                                    placeholder="admin@lostandfound.com"
+                                    placeholder={t('adminEmailPlaceholder')}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
@@ -75,7 +77,7 @@ export default function AdminLogin() {
                         {/* Password Field */}
                         <div>
                             <label htmlFor="password" self="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2 ml-1">
-                                Password
+                                {t('adminPassword')}
                             </label>
                             <div className="relative group">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-primary">
@@ -88,7 +90,7 @@ export default function AdminLogin() {
                                     autoComplete="current-password"
                                     required
                                     className="appearance-none block w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-2xl placeholder-slate-400 dark:placeholder-slate-500 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all sm:text-sm font-medium"
-                                    placeholder="Enter admin password"
+                                    placeholder={t('adminPasswordPlaceholder')}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
@@ -103,7 +105,7 @@ export default function AdminLogin() {
                                 className="w-full flex justify-center items-center gap-3 py-5 bg-primary text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition shadow-2xl shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <Shield className="h-5 w-5" />
-                                {loading ? 'Authenticating...' : 'Establish Connection'}
+                                {loading ? t('authenticating') : t('establishConnection')}
                             </button>
                         </div>
                     </form>
@@ -113,7 +115,7 @@ export default function AdminLogin() {
                             <div className="w-full border-t border-slate-200 dark:border-gray-700"></div>
                         </div>
                         <div className="relative flex justify-center text-xs font-black uppercase tracking-widest">
-                            <span className="px-3 bg-white dark:bg-gray-900 text-slate-400 dark:text-slate-500">Not an admin?</span>
+                            <span className="px-3 bg-white dark:bg-gray-900 text-slate-400 dark:text-slate-500">{t('notAnAdmin')}</span>
                         </div>
                     </div>
 
@@ -123,13 +125,13 @@ export default function AdminLogin() {
                             to="/login"
                             className="text-sm font-medium text-secondary hover:text-primary transition"
                         >
-                            Sign in as regular user →
+                            {t('signInAsRegularUser')}
                         </Link>
                     </div>
                 </div>
 
                 <p className="mt-8 text-center text-xs font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 opacity-60">
-                    Proprietary Administrative System
+                    {t('proprietaryAdminSystem')}
                 </p>
             </div>
         </div>

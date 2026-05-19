@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { Mail, RefreshCw, LogOut, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 export default function VerifyEmail() {
+    const { t } = useTranslation();
     const { currentUser, logout, sendVerification } = useAuth();
     const [loading, setLoading] = useState(false);
     const [cooldown, setCooldown] = useState(0);
@@ -56,10 +58,10 @@ export default function VerifyEmail() {
                         <Mail className="h-10 w-10 text-primary" />
                     </div>
                     <h2 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
-                        Verify Your Email
+                        {t('verifyYourEmail')}
                     </h2>
                     <p className="mt-3 text-sm text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
-                        We've sent a verification link to <br />
+                        {t('verificationLinkSent')} <br />
                         <span className="font-bold text-gray-900 dark:text-white text-base">{currentUser.email}</span>
                     </p>
                 </div>
@@ -67,7 +69,7 @@ export default function VerifyEmail() {
                 <div className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 space-y-6">
                     <div className="space-y-4">
                         <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                            Please click the link in the email to verify your account. If you don't see it, check your spam folder.
+                            {t('checkSpamFolder')}
                         </p>
 
                         <div className="grid grid-cols-1 gap-4">
@@ -76,7 +78,7 @@ export default function VerifyEmail() {
                                 className="w-full flex items-center justify-center gap-2 py-4 px-4 bg-primary text-white font-black uppercase tracking-widest rounded-2xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/20"
                             >
                                 <RefreshCw className="h-5 w-5" />
-                                I've Verified
+                                {t('iveVerified')}
                             </button>
 
                             <button
@@ -88,7 +90,7 @@ export default function VerifyEmail() {
                                     <Loader2 className="h-5 w-5 animate-spin" />
                                 ) : (
                                     <>
-                                        {cooldown > 0 ? `Resend In ${cooldown}s` : 'Resend Email'}
+                                        {cooldown > 0 ? t('resendIn', { seconds: cooldown }) : t('resendEmail')}
                                     </>
                                 )}
                             </button>
@@ -101,7 +103,7 @@ export default function VerifyEmail() {
                             className="w-full flex items-center justify-center gap-2 py-3 text-sm font-black text-red-500 hover:text-red-600 uppercase tracking-widest transition-colors"
                         >
                             <LogOut className="h-4 w-4" />
-                            Sign Out and try another account
+                            {t('signOutTryAnother')}
                         </button>
                     </div>
                 </div>
@@ -109,7 +111,7 @@ export default function VerifyEmail() {
                 <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 flex gap-3 items-start border border-blue-100/50 dark:border-blue-800/50">
                     <AlertCircle className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
                     <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-                        Verification is required to post items, message owners, and claim rewards. This helps keep our community safe.
+                        {t('verificationRequired')}
                     </p>
                 </div>
             </div>

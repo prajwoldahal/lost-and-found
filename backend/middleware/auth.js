@@ -64,6 +64,40 @@ export const authMiddleware = async (req, res, next) => {
 };
 
 /**
+ * Middleware that populates req.user if a valid token is present,
+ * but allows the request to continue if no token is provided.
+ */
+export const optionalAuthMiddleware = async (req, res, next) => {
+    try {
+        const authHeader = req.header('Authorization');
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return next();
+        }
+
+        const token = authHeader.replace('Bearer ', '');
+
+        try {
+            const decodedToken = await auth.verifyIdToken(token);
+            const uid = decodedToken.uid;
+            const userDoc = await db.collection('users').doc(uid).get();
+
+            req.user = {
+                uid: uid,
+                email: decodedToken.email,
+                ...(userDoc.exists ? userDoc.data() : { isNewUser: true })
+            };
+        } catch (verifyError) {
+            // Silently fail for optional auth
+            console.log('Optional auth token verification failed:', verifyError.message);
+        }
+        next();
+    } catch (error) {
+        console.error('Optional Auth Middleware Error:', error);
+        next();
+    }
+};
+
+/**
  * Middleware to restrict access to admin users
  */
 export const adminMiddleware = async (req, res, next) => {

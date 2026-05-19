@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { postAPI, chatAPI, userAPI, claimAPI } from '../services/api';
+import { postAPI, chatAPI, userAPI, claimAPI, blockAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import {
     Calendar, MapPin, Tag, User, MessageCircle, Share2,
     AlertCircle, ChevronLeft, Loader2, Map as MapIcon,
@@ -36,6 +37,7 @@ export default function PostDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { currentUser, userData } = useAuth();
+    const { t } = useTranslation();
 
     const [post, setPost] = useState(null);
     const [creator, setCreator] = useState(null);
@@ -57,6 +59,9 @@ export default function PostDetails() {
     const [showReportModal, setShowReportModal] = useState(false);
     const [showReportUserModal, setShowReportUserModal] = useState(false);
     const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
+    const [isBlockedByMe, setIsBlockedByMe] = useState(false);
+    const [isBlockedByOther, setIsBlockedByOther] = useState(false);
+    const [isBlocking, setIsBlocking] = useState(false);
 
     useEffect(() => {
         const fetchPostAndCreator = async () => {
@@ -113,6 +118,20 @@ export default function PostDetails() {
         if (id && currentUser) checkExistingChat();
     }, [id, currentUser]);
 
+    useEffect(() => {
+        const checkBlock = async () => {
+            if (!currentUser || !post?.createdBy) return;
+            try {
+                const response = await blockAPI.checkStatus(post.createdBy);
+                setIsBlockedByMe(response.data.blockedByMe);
+                setIsBlockedByOther(response.data.blockedByOther);
+            } catch (err) {
+                console.error("Failed to check block status:", err);
+            }
+        };
+        if (post?.createdBy && currentUser) checkBlock();
+    }, [post?.createdBy, currentUser]);
+
     const handleShare = async () => {
         try {
             await navigator.share({
@@ -123,7 +142,7 @@ export default function PostDetails() {
         } catch (err) {
             const url = window.location.href;
             await navigator.clipboard.writeText(url);
-            toast.success("Link copied to clipboard!");
+            toast.success(t('linkCopied', 'Link copied to clipboard!'));
         }
     };
 
@@ -133,13 +152,13 @@ export default function PostDetails() {
 
     const handleContact = async () => {
         if (!currentUser) {
-            toast.error("Please login to contact the owner");
+            toast.error(t('loginToContact', 'Please login to contact the owner'));
             navigate('/login');
             return;
         }
 
         if (currentUser.uid === post.createdBy) {
-            toast.error("This is your own post!");
+            toast.error(t('ownPostError', 'This is your own post!'));
             return;
         }
 
@@ -181,15 +200,40 @@ export default function PostDetails() {
             if (response.data.message === 'Chat already exists') {
                 navigate(`/messages?chatId=${response.data.id}`);
             } else {
-                toast.success("Message request sent!");
+                toast.success(t('messageRequestSent', 'Message request sent!'));
                 setShowMessageRequestModal(false);
                 navigate(`/messages`);
             }
         } catch (error) {
             console.error("Failed to send request:", error);
-            toast.error("Failed to send message request");
+            toast.error(error.response?.data?.error || t('messageRequestError', 'Failed to send message request'));
         } finally {
             setSendingRequest(false);
+        }
+    };
+
+    const handleBlockUser = async () => {
+        if (!currentUser) {
+            toast.error(t('loginToBlock', 'Please login to block users'));
+            return;
+        }
+
+        if (!window.confirm(t('confirmBlock', 'Are you sure you want to block this user? You will no longer see their posts or be able to chat with them.'))) {
+            return;
+        }
+
+        try {
+            setIsBlocking(true);
+            await blockAPI.block(post.createdBy);
+            setIsBlockedByMe(true);
+            toast.success(t('userBlocked', 'User blocked successfully'));
+            // Optionally redirect to dashboard since the post should be hidden now
+            navigate('/dashboard');
+        } catch (error) {
+            console.error("Block Error:", error);
+            toast.error(t('blockError', 'Failed to block user'));
+        } finally {
+            setIsBlocking(false);
         }
     };
 
@@ -197,13 +241,13 @@ export default function PostDetails() {
         if (isClaiming) return;
 
         if (!currentUser) {
-            toast.error("Please login to claim an item");
+            toast.error(t('loginToClaim', 'Please login to claim an item'));
             navigate('/login');
             return;
         }
 
         if (!userData?.isVerified) {
-            toast.error("Account verification required to claim items");
+            toast.error(t('verificationRequiredToClaim', 'Account verification required to claim items'));
             navigate('/settings?section=verification');
             return;
         }
@@ -218,7 +262,7 @@ export default function PostDetails() {
     const handleImageSelect = (e) => {
         const files = Array.from(e.target.files);
         if (claimImages.length + files.length > 5) {
-            return toast.error("Maximum 5 evidence images allowed");
+            return toast.error(t('maxImagesError', 'Maximum 5 evidence images allowed'));
         }
 
         const newPreviews = files.map(file => URL.createObjectURL(file));
@@ -233,7 +277,7 @@ export default function PostDetails() {
 
     const submitClaim = async () => {
         if (!claimEvidence.trim()) {
-            return toast.error("Please provide ownership evidence");
+            return toast.error(t('provideEvidenceError', 'Please provide ownership evidence'));
         }
 
         try {
@@ -248,14 +292,14 @@ export default function PostDetails() {
             });
 
             await claimAPI.create(formData);
-            toast.success("Claim submitted successfully!");
+            toast.success(t('claimSubmitted', 'Claim submitted successfully!'));
             setShowClaimModal(false);
             setClaimEvidence('');
             setClaimImages([]);
             setClaimImagePreviews([]);
         } catch (error) {
             console.error("Claim Error:", error);
-            toast.error("Failed to submit claim");
+            toast.error(t('claimError', 'Failed to submit claim'));
         } finally {
             setIsSubmittingClaim(false);
         }
@@ -266,20 +310,20 @@ export default function PostDetails() {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh]">
                 <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-                <p className="text-gray-500 font-medium tracking-wide">Fetching item details...</p>
+                <p className="text-gray-500 font-medium tracking-wide">{t('fetchingItemDetails', 'Fetching item details...')}</p>
             </div>
         );
     }
 
     if (error || !post) {
         return (
-            <div className="max-w-2xl mx-auto text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
+            <div className="max-w-2xl mx-auto text-center py-20 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
                 <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Oops! Post Not Found</h2>
-                <p className="text-gray-600 mb-8">{error || "The post you are looking for might have been deleted."}</p>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t('postNotFound', 'Oops! Post Not Found')}</h2>
+                <p className="text-gray-600 dark:text-gray-400 mb-8">{error || t('postNotFoundDesc', 'The post you are looking for might have been deleted.')}</p>
                 <Link to="/dashboard" className="btn-primary px-8 py-3 rounded-xl inline-flex items-center gap-2">
                     <ChevronLeft className="h-5 w-5" />
-                    Back to Feed
+                    {t('backToFeed', 'Back to Feed')}
                 </Link>
             </div>
         );
@@ -298,30 +342,30 @@ export default function PostDetails() {
                         <div className="bg-white dark:bg-gray-900 p-2.5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 group-hover:bg-primary group-hover:text-white transition-all transform group-hover:-translate-x-1">
                             <ChevronLeft className="h-5 w-5" />
                         </div>
-                        <span className="uppercase tracking-widest text-xs">Return to Feed</span>
+                        <span className="uppercase tracking-widest text-xs">{t('returnToFeed', 'Return to Feed')}</span>
                     </button>
                     <div className="flex gap-3">
                         {post.status === 'resolved' && (
                             <button
                                 onClick={() => generateReturnReceipt(post, userData)}
                                 className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-xl shadow-sm hover:bg-green-100 dark:hover:bg-green-900/40 text-green-600 dark:text-green-400 transition hover:shadow-md flex items-center gap-2"
-                                title="Download Return Receipt"
+                                title={t('downloadReceipt', 'Download Return Receipt')}
                             >
                                 <FileCheck className="h-5 w-5" />
-                                <span className="text-sm font-bold hidden sm:inline">Receipt</span>
+                                <span className="text-sm font-bold hidden sm:inline">{t('receipt', 'Receipt')}</span>
                             </button>
                         )}
                         <button
                             onClick={() => setShowQRModal(true)}
                             className="p-3 bg-surface dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm hover:border-primary hover:text-primary transition hover:shadow-md dark:text-gray-300"
-                            title="Generate QR Code"
+                            title={t('downloadQR', 'Generate QR Code')}
                         >
                             <QrCode className="h-5 w-5" />
                         </button>
                         <button
                             onClick={handleShare}
                             className="p-3 bg-surface dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm hover:border-primary hover:text-primary transition hover:shadow-md dark:text-gray-300"
-                            title="Share Post"
+                            title={t('sharePost', 'Share Post')}
                         >
                             <Share2 className="h-5 w-5" />
                         </button>
@@ -364,7 +408,11 @@ export default function PostDetails() {
                                 </div>
 
                                 <div className="flex justify-center mb-4">
-                                    <QRGenerator value={window.location.href} />
+                                    <QRGenerator value={
+                                        window.location.href.includes('localhost') || window.location.href.includes('127.0.0.1')
+                                            ? window.location.href.replace('localhost', import.meta.env.VITE_LOCAL_IP || 'localhost').replace('127.0.0.1', import.meta.env.VITE_LOCAL_IP || '127.0.0.1')
+                                            : window.location.href
+                                    } />
                                 </div>
                             </div>
                         </div>
@@ -415,7 +463,7 @@ export default function PostDetails() {
                                 ) : (
                                     <div className="flex flex-col items-center justify-center text-gray-400 dark:text-gray-700">
                                         <Package className="h-20 w-20 mb-4 opacity-20" />
-                                        <p className="font-black uppercase tracking-widest text-xs">No media attached</p>
+                                        <p className="font-black uppercase tracking-widest text-xs">{t('noMediaAttached', 'No media attached')}</p>
                                     </div>
                                 )}
                             </div>
@@ -461,13 +509,13 @@ export default function PostDetails() {
                                 </span>
                                 <div className="ml-auto flex items-center gap-2 text-[10px] text-gray-400 font-black uppercase tracking-widest">
                                     <Clock className="h-4 w-4" />
-                                    <p>Reported {postDate}</p>
+                                    <p>{t('reported', 'Reported')} {postDate}</p>
                                 </div>
                             </div>
 
                             <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-4 tracking-tight uppercase leading-tight">
                                 {post.title}
-                                {post.isEdited && <span className="text-xs font-bold text-gray-400 ml-3 italic normal-case low tracking-tight">(Edited)</span>}
+                                {post.isEdited && <span className="text-xs font-bold text-gray-400 ml-3 italic normal-case low tracking-tight">{t('edited', '(Edited)')}</span>}
                             </h1>
 
                             <div className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
@@ -480,7 +528,7 @@ export default function PostDetails() {
                                         <Calendar className="h-6 w-6" />
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-[0.2em]">Discovery Date</p>
+                                        <p className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-[0.2em]">{t('discoveryDate', 'Discovery Date')}</p>
                                         <p className="font-black text-gray-900 dark:text-white text-lg tracking-tight">{post.date}</p>
                                     </div>
                                 </div>
@@ -489,7 +537,7 @@ export default function PostDetails() {
                                         <MapPin className="h-6 w-6" />
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-[0.2em]">Last Known Location</p>
+                                        <p className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-[0.2em]">{t('lastKnownLocation', 'Last Known Location')}</p>
                                         <p className="font-black text-gray-900 dark:text-white text-lg tracking-tight truncate max-w-[200px]">{post.locationName}</p>
                                     </div>
                                 </div>
@@ -502,7 +550,7 @@ export default function PostDetails() {
                                     <div className="p-2 bg-primary/10 rounded-lg">
                                         <MapMarker className="h-4 w-4 text-primary" />
                                     </div>
-                                    Item Location
+                                    {t('itemLocation', 'Item Location')}
                                 </h3>
                                 <div className="h-[300px] rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-inner">
                                     <MapContainer center={[post.location.lat, post.location.lng]} zoom={15} style={{ height: '100%', width: '100%' }}>
@@ -520,7 +568,7 @@ export default function PostDetails() {
 
                     <div className="lg:col-span-4 space-y-4">
                         <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 sticky top-4">
-                            <h3 className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4">Original Poster</h3>
+                            <h3 className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4">{t('originalPoster', 'Original Poster')}</h3>
 
                             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-50 dark:border-gray-700/50">
                                 <img
@@ -530,10 +578,10 @@ export default function PostDetails() {
                                 />
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <h4 className="font-black text-gray-900 dark:text-white uppercase tracking-tight">{creator?.displayName || post.creatorName || 'Anonymous'}</h4>
+                                        <h4 className="font-black text-gray-900 dark:text-white uppercase tracking-tight">{creator?.displayName || post.creatorName || t('anonymous', 'Anonymous')}</h4>
                                         {(creator?.isVerified || post.createdBy === 'mock-admin') && <VerifiedBadge verified={true} size="h-4 w-4" />}
                                     </div>
-                                    <p className="text-gray-500 dark:text-gray-400 text-[10px] font-black uppercase tracking-widest mt-1">Division Member</p>
+                                    <p className="text-gray-500 dark:text-gray-400 text-[10px] font-black uppercase tracking-widest mt-1">{t('divisionMember', 'Division Member')}</p>
                                 </div>
                                 {currentUser?.uid !== post.createdBy && (
                                     <button
@@ -542,6 +590,16 @@ export default function PostDetails() {
                                         title="Report User"
                                     >
                                         <AlertTriangle className="h-4 w-4" />
+                                    </button>
+                                )}
+                                {currentUser?.uid !== post.createdBy && !isBlockedByMe && (
+                                    <button
+                                        onClick={handleBlockUser}
+                                        disabled={isBlocking}
+                                        className="p-2 text-gray-400 hover:text-red-500 transition rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        title={t('blockUser', 'Block User')}
+                                    >
+                                        {isBlocking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Shield className="h-4 w-4" />}
                                     </button>
                                 )}
                             </div>
@@ -555,7 +613,7 @@ export default function PostDetails() {
                                                 className="w-full bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 cursor-not-allowed border border-gray-200 dark:border-gray-800"
                                             >
                                                 <Clock className="h-5 w-5" />
-                                                Transmission Pending
+                                                {t('transmissionPending', 'Transmission Pending')}
                                             </button>
                                         ) : hasChat && chatStatus === 'active' ? (
                                             <button
@@ -564,7 +622,7 @@ export default function PostDetails() {
                                                 className="w-full bg-primary text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition shadow-2xl shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 {isContacting ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessageCircle className="h-5 w-5" />}
-                                                Message Owner
+                                                {t('messageOwner', 'Message Owner')}
                                             </button>
                                         ) : (
                                             <button
@@ -573,7 +631,7 @@ export default function PostDetails() {
                                                 className="w-full bg-primary text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition shadow-2xl shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 {isContacting ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessageCircle className="h-5 w-5" />}
-                                                Send Message Request
+                                                {t('sendMessageRequest', 'Send Message Request')}
                                             </button>
                                         )}
                                         <button
@@ -582,18 +640,18 @@ export default function PostDetails() {
                                             className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-950 py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition shadow-2xl disabled:opacity-50"
                                         >
                                             {isClaiming ? <Loader2 className="h-5 w-5 animate-spin" /> : <Shield className="h-5 w-5" />}
-                                            {post?.type === 'found' ? 'Claim Item' : 'Report Found Item'}
+                                            {post?.type === 'found' ? t('claimItem', 'Claim Item') : t('reportFoundItem', 'Report Found Item')}
                                         </button>
                                         <div className="p-4 bg-primary/5 dark:bg-primary/10 rounded-2xl text-center border border-primary/10">
                                             <p className="text-[10px] text-primary font-black uppercase tracking-widest leading-relaxed">
-                                                Encrypted coordination via Internal Messaging
+                                                {t('encryptedCoordination', 'Encrypted coordination via Internal Messaging')}
                                             </p>
                                         </div>
                                     </div>
                                 ) : (
                                     <div className="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-[1.5rem] border border-blue-100 dark:border-blue-800 text-center">
                                         <Shield className="h-6 w-6 text-primary mx-auto mb-3" />
-                                        <p className="text-primary text-[10px] font-black uppercase tracking-widest leading-relaxed">You are the author of this record</p>
+                                        <p className="text-primary text-[10px] font-black uppercase tracking-widest leading-relaxed">{t('youAreAuthor', 'You are the author of this record')}</p>
                                     </div>
                                 )
                             }
@@ -603,13 +661,13 @@ export default function PostDetails() {
                         <div className="bg-red-50 dark:bg-red-900/10 p-4 rounded-xl border border-red-100 dark:border-red-900/20">
                             <h4 className="font-black text-red-600 dark:text-red-400 text-[10px] mb-3 flex items-center gap-2 uppercase tracking-wider">
                                 <AlertCircle className="h-4 w-4" />
-                                Safety Tips
+                                {t('safetyTips', 'Safety Tips')}
                             </h4>
                             <ul className="text-[10px] font-bold uppercase tracking-wide text-red-900/60 dark:text-red-400/60 space-y-2 leading-relaxed">
-                                <li className="flex gap-2"><span>•</span> Meet in designated public safety zones</li>
-                                <li className="flex gap-2"><span>•</span> Verify identity through independent witnesses</li>
-                                <li className="flex gap-2"><span>•</span> Maintain all records within the system</li>
-                                <li className="flex gap-2"><span>•</span> Report suspicious activities immediately</li>
+                                <li className="flex gap-2"><span>•</span> {t('safetyTip1', 'Meet in designated public safety zones')}</li>
+                                <li className="flex gap-2"><span>•</span> {t('safetyTip2', 'Verify identity through independent witnesses')}</li>
+                                <li className="flex gap-2"><span>•</span> {t('safetyTip3', 'Maintain all records within the system')}</li>
+                                <li className="flex gap-2"><span>•</span> {t('safetyTip4', 'Report suspicious activities immediately')}</li>
                             </ul>
                         </div>
                     </div>
@@ -638,23 +696,23 @@ export default function PostDetails() {
                         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                             <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-200">
                                 <div className="flex justify-between items-center mb-4">
-                                    <h3 className="text-xl font-bold text-gray-900">Send Message Request</h3>
+                                    <h3 className="text-xl font-bold text-gray-900">{t('sendMessageRequest', 'Send Message Request')}</h3>
                                     <button onClick={() => setShowMessageRequestModal(false)} className="text-gray-400 hover:text-gray-600">
                                         <X className="h-5 w-5" />
                                     </button>
                                 </div>
                                 <form onSubmit={handleSendRequest}>
                                     <div className="mb-4">
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('message', 'Message')}</label>
                                         <textarea
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary h-32 resize-none"
-                                            placeholder={`Hi I found your ${post.title}...`}
+                                            placeholder={`${t('messagePlaceholder', 'Hi I found your')} ${post.title}...`}
                                             value={requestMessage}
                                             onChange={(e) => setRequestMessage(e.target.value)}
                                             required
                                         />
                                         <p className="text-xs text-gray-500 mt-1">
-                                            The recipient will need to accept your request before you can chat freely.
+                                            {t('recipientMustAccept', 'The recipient will need to accept your request before you can chat freely.')}
                                         </p>
                                     </div>
                                     <button
@@ -665,12 +723,12 @@ export default function PostDetails() {
                                         {sendingRequest ? (
                                             <>
                                                 <Loader2 className="h-4 w-4 animate-spin" />
-                                                Sending...
+                                                {t('sending', 'Sending...')}
                                             </>
                                         ) : (
                                             <>
                                                 <Send className="h-4 w-4" />
-                                                Send Request
+                                                {t('sendRequest', 'Send Request')}
                                             </>
                                         )}
                                     </button>
@@ -687,8 +745,8 @@ export default function PostDetails() {
                         <div className="p-10">
                             <div className="flex justify-between items-start mb-8">
                                 <div>
-                                    <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">Claim Item</h3>
-                                    <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">Provide details to verify ownership</p>
+                                    <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">{t('claimItemTitle', 'Claim Item')}</h3>
+                                    <p className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">{t('provideOwnershipDetails', 'Provide details to verify ownership')}</p>
                                 </div>
                                 <button
                                     onClick={() => setShowClaimModal(false)}
@@ -702,26 +760,26 @@ export default function PostDetails() {
                                 <div className="bg-primary/5 dark:bg-primary/10 p-6 rounded-2xl border border-primary/10">
                                     <div className="flex items-center gap-3 text-primary mb-2">
                                         <Info className="h-4 w-4" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Ownership Tip</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest">{t('ownershipTip', 'Ownership Tip')}</span>
                                     </div>
                                     <p className="text-[11px] text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
-                                        Provide specific details that only the owner would know, such as unique marks, contents of a bag, or serial numbers not shown in photos.
+                                        {t('ownershipTipDesc', 'Provide specific details that only the owner would know, such as unique marks, contents of a bag, or serial numbers not shown in photos.')}
                                     </p>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">Ownership Evidence</label>
+                                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">{t('ownershipEvidence', 'Ownership Evidence')}</label>
                                     <textarea
                                         value={claimEvidence}
                                         onChange={(e) => setClaimEvidence(e.target.value)}
-                                        placeholder="Describe your item in detail..."
+                                        placeholder={t('describeYourItem', 'Describe your item in detail...')}
                                         className="w-full px-6 py-5 bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800 rounded-[1.5rem] focus:outline-none focus:ring-2 focus:ring-primary/50 dark:text-white font-bold transition-all text-sm h-32 resize-none"
                                         required
                                     />
                                 </div>
 
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">Photo Evidence (Optional, Max 5)</label>
+                                    <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">{t('photoEvidence', 'Photo Evidence (Optional, Max 5)')}</label>
                                     <div className="grid grid-cols-5 gap-3">
                                         {claimImagePreviews.map((preview, index) => (
                                             <div key={index} className="relative aspect-square rounded-xl overflow-hidden group border border-gray-100 dark:border-gray-800">
@@ -754,7 +812,7 @@ export default function PostDetails() {
                                         onClick={() => setShowClaimModal(false)}
                                         className="flex-1 py-4 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all hover:bg-gray-200 dark:hover:bg-gray-700"
                                     >
-                                        Cancel
+                                        {t('cancel', 'Cancel')}
                                     </button>
                                     <button
                                         onClick={submitClaim}
@@ -762,7 +820,7 @@ export default function PostDetails() {
                                         className="flex-[2] py-4 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
                                     >
                                         {isSubmittingClaim ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-                                        Submit Claim
+                                        {t('submitClaim', 'Submit Claim')}
                                     </button>
                                 </div>
                             </div>

@@ -93,8 +93,8 @@ export default function CreatePost() {
                 if (isImage) {
                     const img = new Image();
                     img.onload = () => {
-                        if (img.width < 200 || img.height < 200) {
-                            toast.error(`${file.name} resolution is too low (minimum 200x200px)`);
+                        if (img.width < 100 || img.height < 100) {
+                            toast.error(`${file.name} resolution is very low (minimum 100x100px for better quality)`);
                         } else {
                             setMedia(prev => [...prev, file]);
                             setMediaPreviews(prev => [...prev, { url: event.target.result, type: 'image' }]);
@@ -230,12 +230,12 @@ export default function CreatePost() {
         <div className="max-w-3xl mx-auto">
 
             <div className="bg-white p-8 rounded-2xl shadow-xl">
-                <h1 className="text-3xl font-bold mb-2 text-gray-900">{isEditMode ? 'Edit Post' : t('createPost')}</h1>
-                <p className="text-gray-600 mb-8">{isEditMode ? 'Update your post details below' : 'Fill in the details to post your item'}</p>
+                <h1 className="text-3xl font-bold mb-2 text-gray-900">{isEditMode ? t('editPost') : t('createPost')}</h1>
+                <p className="text-gray-600 mb-8">{isEditMode ? t('updatePostDetails') : t('fillPostDetails')}</p>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-3">Item Type</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-3">{t('itemType')}</label>
                         <div className="grid grid-cols-2 gap-4">
                             <button
                                 type="button"
@@ -315,7 +315,7 @@ export default function CreatePost() {
 
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-3">
-                            {t('image')} <span className="text-gray-500 text-xs">(Maximum 5 images)</span>
+                            {t('image')} <span className="text-gray-500 text-xs">({t('maximum5Images')})</span>
                         </label>
 
                         {/* Existing Media (Edit Mode) */}
@@ -406,8 +406,8 @@ export default function CreatePost() {
                                     <p className={`font-medium transition-colors ${isDragging ? 'text-primary' : 'text-gray-600'
                                         }`}>
                                         {isDragging
-                                            ? '📂 Drop files here!'
-                                            : `Click to upload ${media.length > 0 ? 'more files' : 'files'} or drag & drop`
+                                            ? t('dropFilesHere')
+                                            : t('clickToUploadFiles')
                                         }
                                     </p>
                                     <p className="text-sm text-gray-400 mt-1">

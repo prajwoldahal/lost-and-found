@@ -29,6 +29,12 @@ export default function Dashboard() {
 
     // Get user location
     useEffect(() => {
+        const handleLocationError = (error) => {
+            console.error('Geolocation error:', error);
+            // Default to a fallback location (e.g., Kathmandu) if permission denied
+            setUserLocation({ lat: 27.7172, lng: 85.3240 });
+        };
+
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -37,8 +43,11 @@ export default function Dashboard() {
                         lng: position.coords.longitude
                     });
                 },
-                (error) => console.error('Geolocation error:', error)
+                handleLocationError,
+                { timeout: 5000 } // Add timeout to prevent hanging
             );
+        } else {
+            handleLocationError({ message: 'Geolocation not supported' });
         }
     }, []);
 
@@ -116,11 +125,11 @@ export default function Dashboard() {
                             </h1>
                             <div className="mt-6 flex gap-6">
                                 <div className="bg-white/20 px-4 py-2 rounded-lg backdrop-blur-sm">
-                                    <p className="text-xs uppercase font-bold text-blue-200">Your Points</p>
+                                    <p className="text-xs uppercase font-bold text-blue-200">{t('yourPoints')}</p>
                                     <p className="text-2xl font-black">{userData?.points || 0}</p>
                                 </div>
                                 <div className="bg-white/20 px-4 py-2 rounded-lg backdrop-blur-sm">
-                                    <p className="text-xs uppercase font-bold text-blue-200">Items Returned</p>
+                                    <p className="text-xs uppercase font-bold text-blue-200">{t('itemsReturned')}</p>
                                     <p className="text-2xl font-black">{userData?.itemsReturned || 0}</p>
                                 </div>
                             </div>
@@ -137,9 +146,9 @@ export default function Dashboard() {
                         <div className="p-5 border-b border-gray-50 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/40 flex items-center justify-between">
                             <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                 <Crown className="h-5 w-5 text-yellow-500" />
-                                Community Heroes
+                                {t('communityHeroes')}
                             </h3>
-                            <Link to="/rewards" className="text-xs font-bold text-primary dark:text-blue-400 hover:underline">View All</Link>
+                            <Link to="/rewards" className="text-xs font-bold text-primary dark:text-blue-400 hover:underline">{t('viewAll')}</Link>
                         </div>
                         <div className="p-4 space-y-4">
                             {leaderboard.length > 0 ? (
@@ -166,7 +175,7 @@ export default function Dashboard() {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{user.displayName}</p>
-                                            <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold tracking-tighter">{user.points || 0} Points</p>
+                                            <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold tracking-tighter">{user.points || 0} {t('points')}</p>
                                         </div>
                                         {idx === 0 && <Award className="h-4 w-4 text-yellow-500" />}
                                     </div>
@@ -282,7 +291,7 @@ export default function Dashboard() {
                                     </div>
                                     {post.status === 'resolved' && (
                                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                            <span className="bg-green-500 text-white px-4 py-2 rounded-lg font-bold uppercase tracking-widest text-xs border-2 border-white">Returned</span>
+                                            <span className="bg-green-500 text-white px-4 py-2 rounded-lg font-bold uppercase tracking-widest text-xs border-2 border-white">{t('returned')}</span>
                                         </div>
                                     )}
                                 </div>
@@ -294,14 +303,14 @@ export default function Dashboard() {
                                             className="h-8 w-8 rounded-full border-2 border-white dark:border-gray-700 shadow-sm object-cover"
                                         />
                                         <div>
-                                            <p className="text-xs font-bold text-gray-900 dark:text-white leading-none">{post.creatorName || 'Member'}</p>
-                                            <p className="text-[10px] text-gray-500 dark:text-gray-400">Community Scout</p>
+                                            <p className="text-xs font-bold text-gray-900 dark:text-white leading-none">{post.creatorName || t('member')}</p>
+                                            <p className="text-[10px] text-gray-500 dark:text-gray-400">{t('communityScout')}</p>
                                         </div>
                                     </div>
 
                                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-1 group-hover:text-primary transition">
                                         {post.title}
-                                        {post.isEdited && <span className="text-[10px] font-medium text-gray-400 ml-2 italic normal-case">(Edited)</span>}
+                                        {post.isEdited && <span className="text-[10px] font-medium text-gray-400 ml-2 italic normal-case">{t('edited')}</span>}
                                     </h3>
                                     <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2 mb-6 h-10">{post.description}</p>
 
@@ -323,7 +332,7 @@ export default function Dashboard() {
                     <div className="col-span-full text-center py-20 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800">
                         <Search className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-lg font-bold text-gray-700 dark:text-gray-300">{t('noResults')}</h3>
-                        <p className="text-gray-500 dark:text-gray-400">Try adjusting your filters or search terms</p>
+                        <p className="text-gray-500 dark:text-gray-400">{t('tryAdjusting')}</p>
                     </div>
                 )}
             </div>

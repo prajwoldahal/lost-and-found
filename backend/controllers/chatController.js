@@ -1,10 +1,28 @@
 import { db } from '../config/firebase.js';
 import { uploadToCloudinary } from '../utils/cloudinaryUpload.js';
 
+// Helper: check if either user has blocked the other
+const checkBlocked = async (uid1, uid2) => {
+    const [block1, block2] = await Promise.all([
+        db.collection('users').doc(uid1).collection('blockedUsers').doc(uid2).get(),
+        db.collection('users').doc(uid2).collection('blockedUsers').doc(uid1).get()
+    ]);
+    return {
+        blockedByMe: block1.exists,   // uid1 blocked uid2
+        blockedByOther: block2.exists  // uid2 blocked uid1
+    };
+};
+
 export const createChat = async (req, res) => {
     try {
         const { recipientId, postId, postTitle, message } = req.body;
         const { uid, displayName, photoURL } = req.user;
+
+        // Block check
+        const blockStatus = await checkBlocked(uid, recipientId);
+        if (blockStatus.blockedByMe || blockStatus.blockedByOther) {
+            return res.status(403).json({ error: 'Unable to create chat. User unavailable.' });
+        }
 
         // Check if chat already exists
         const snapshot = await db.collection('chats')
@@ -75,6 +93,15 @@ export const sendMessage = async (req, res) => {
             return res.status(404).json({ error: 'Chat not found' });
         }
 
+        // Block check
+        const otherUid = chatDoc.data().participants.find(p => p !== uid);
+        if (otherUid) {
+            const blockStatus = await checkBlocked(uid, otherUid);
+            if (blockStatus.blockedByMe || blockStatus.blockedByOther) {
+                return res.status(403).json({ error: 'Unable to send message. User unavailable.' });
+            }
+        }
+
         let attachment = null;
         if (req.files) {
             if (req.files['image']) {
@@ -115,6 +142,62 @@ export const sendMessage = async (req, res) => {
     }
 };
 
+export const deleteMessage = async (req, res) => {
+    try {
+        const { chatId, messageId } = req.params;
+        const { uid } = req.user;
+
+        const msgRef = db.collection('chats').doc(chatId).collection('messages').doc(messageId);
+        const msgDoc = await msgRef.get();
+
+        if (!msgDoc.exists) {
+            return res.status(404).json({ error: 'Message not found' });
+        }
+
+        // Only the sender can delete their own message
+        if (msgDoc.data().senderId !== uid) {
+            return res.status(403).json({ error: 'You can only delete your own messages' });
+        }
+
+        // Soft-delete: mark as deleted so both sides see "This message was deleted"
+        await msgRef.update({
+            deleted: true,
+            text: '',
+            attachment: null
+        });
+
+        // Update lastMessage on the chat if this was the most recent message
+        const chatRef = db.collection('chats').doc(chatId);
+        const chatDoc = await chatRef.get();
+        if (chatDoc.exists && chatDoc.data().lastMessage) {
+            // Fetch the latest non-deleted message
+            const latestSnap = await chatRef.collection('messages')
+                .where('deleted', '!=', true)
+                .orderBy('deleted')
+                .orderBy('createdAt', 'desc')
+                .limit(1)
+                .get();
+
+            if (!latestSnap.empty) {
+                const latestMsg = latestSnap.docs[0].data();
+                await chatRef.update({
+                    lastMessage: latestMsg.text || (latestMsg.attachment ? `[Sent an ${latestMsg.attachment.type}]` : ''),
+                    lastMessageTime: latestMsg.createdAt
+                });
+            } else {
+                await chatRef.update({
+                    lastMessage: 'This message was deleted',
+                    lastMessageTime: new Date().toISOString()
+                });
+            }
+        }
+
+        res.json({ message: 'Message deleted' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 export const getMessages = async (req, res) => {
     try {
         const { chatId } = req.params;
@@ -144,32 +227,36 @@ export const getChats = async (req, res) => {
             .map(doc => ({ id: doc.id, ...doc.data() }))
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-        // Populate participant details if missing or stale
+        // Populate participant details and block status
         const populatedChats = await Promise.all(chats.map(async (chat) => {
             const otherUserId = chat.participants.find(p => p !== uid);
             if (!otherUserId) return chat;
 
-            // If we already have details, we could skip, but let's fetch fresh to be safe and fix the "Unknown" issue
-            // To optimize, checking if chat.participantDetails?.[otherUserId] exists would be better for reads, 
-            // but the user has "Unknown User" now, so let's force fetch at least for missing ones.
-            // Let's just fetch for all for simplicty and correctness.
-
             try {
-                const userDoc = await db.collection('users').doc(otherUserId).get();
+                const [userDoc, blockStatus] = await Promise.all([
+                    db.collection('users').doc(otherUserId).get(),
+                    checkBlocked(uid, otherUserId)
+                ]);
+
+                let participantDetails = chat.participantDetails || {};
                 if (userDoc.exists) {
                     const userData = userDoc.data();
-                    return {
-                        ...chat,
-                        participantDetails: {
-                            ...chat.participantDetails,
-                            [otherUserId]: {
-                                name: userData.displayName || 'Unknown User',
-                                photo: userData.photoURL || null,
-                                isVerified: userData.isVerified || false
-                            }
+                    participantDetails = {
+                        ...participantDetails,
+                        [otherUserId]: {
+                            name: userData.displayName || 'Unknown User',
+                            photo: userData.photoURL || null,
+                            isVerified: userData.isVerified || false
                         }
                     };
                 }
+
+                return {
+                    ...chat,
+                    participantDetails,
+                    blockedByMe: blockStatus.blockedByMe,
+                    blockedByOther: blockStatus.blockedByOther
+                };
             } catch (err) {
                 console.error("Error fetching user details for chat:", err);
             }
@@ -227,6 +314,80 @@ export const markChatRead = async (req, res) => {
         });
 
         res.json({ message: 'Chat marked as read' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Block a user
+export const blockUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { uid } = req.user;
+
+        if (userId === uid) {
+            return res.status(400).json({ error: 'You cannot block yourself' });
+        }
+
+        await db.collection('users').doc(uid).collection('blockedUsers').doc(userId).set({
+            blockedAt: new Date().toISOString()
+        });
+
+        res.json({ message: 'User blocked' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Unblock a user
+export const unblockUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { uid } = req.user;
+
+        await db.collection('users').doc(uid).collection('blockedUsers').doc(userId).delete();
+
+        res.json({ message: 'User unblocked' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Get list of blocked user profiles
+export const getBlockedUsers = async (req, res) => {
+    try {
+        const { uid } = req.user;
+
+        const snapshot = await db.collection('users').doc(uid).collection('blockedUsers').get();
+        const blockedProfiles = await Promise.all(snapshot.docs.map(async (doc) => {
+            const userDoc = await db.collection('users').doc(doc.id).get();
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                return {
+                    uid: doc.id,
+                    displayName: userData.displayName || 'User',
+                    photoURL: userData.photoURL || null,
+                    blockedAt: doc.data().blockedAt
+                };
+            }
+            return { uid: doc.id, displayName: 'Deleted User' };
+        }));
+
+        res.json(blockedProfiles);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Check block status between current user and another user
+export const checkBlockStatus = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { uid } = req.user;
+
+        const status = await checkBlocked(uid, userId);
+
+        res.json(status);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

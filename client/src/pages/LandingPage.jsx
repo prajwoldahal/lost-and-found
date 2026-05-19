@@ -26,6 +26,7 @@ export default function LandingPage() {
 
     return (
         <div className="min-h-screen">
+
             {/* Hero Section */}
             <div className={`relative ${isDarkMode ? 'bg-[#0F172A] text-white' : 'bg-slate-50 text-slate-900'} py-32 transition-colors duration-500 overflow-hidden`}>
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/10 opacity-50"></div>
@@ -213,9 +214,9 @@ export default function LandingPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div>
-                            <h3 className="text-2xl font-bold mb-4">Lost & Found</h3>
+                            <h3 className="text-2xl font-bold mb-4">{t('appName')}</h3>
                             <p className="text-gray-400">
-                                Helping reunite people with their lost belongings through community and technology.
+                                {t('heroSubtitle')}
                             </p>
                         </div>
                         <div>

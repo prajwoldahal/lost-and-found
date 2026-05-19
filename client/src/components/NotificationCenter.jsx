@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { Bell, X, Check, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { listenToNotifications } from '../services/notificationService';
 import { notificationAPI } from '../services/api';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 
-const NotificationItem = ({ notification, onClick, onDelete, getIcon, formatTime }) => {
+const NotificationItem = ({ notification, onClick, onDelete, getIcon, formatTime, t }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const messageRef = useRef(null);
     const [isLongMessage, setIsLongMessage] = useState(false);
@@ -45,7 +46,7 @@ const NotificationItem = ({ notification, onClick, onDelete, getIcon, formatTime
                                 }}
                                 className="text-[10px] font-black text-primary uppercase tracking-widest mt-1 hover:underline"
                             >
-                                {isExpanded ? 'Show less' : 'Read full message'}
+                                {isExpanded ? t('showLess') : t('readFullMessage')}
                             </button>
                         )}
                     </div>
@@ -55,7 +56,7 @@ const NotificationItem = ({ notification, onClick, onDelete, getIcon, formatTime
                         </p>
                         {notification.link && notification.link.trim() !== '' && (
                             <span className="text-[9px] font-black text-primary/60 uppercase tracking-widest flex items-center gap-1">
-                                Click to view <span className="text-lg leading-none">→</span>
+                                {t('clickToView')} <span className="text-lg leading-none">→</span>
                             </span>
                         )}
                     </div>
@@ -76,6 +77,7 @@ const NotificationItem = ({ notification, onClick, onDelete, getIcon, formatTime
 };
 
 export default function NotificationCenter() {
+    const { t } = useTranslation();
     const { currentUser } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
@@ -260,14 +262,14 @@ export default function NotificationCenter() {
                 <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 max-h-[600px] flex flex-col animate-in fade-in slide-in-from-top-2 duration-200">
                     {/* Header */}
                     <div className="p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-gray-50/50 dark:bg-gray-900/50">
-                        <h3 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight">Activity</h3>
+                        <h3 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight">{t('activity')}</h3>
                         <div className="flex items-center gap-2">
                             {unreadCount > 0 && (
                                 <button
                                     onClick={handleMarkAllRead}
                                     className="text-[10px] font-bold text-primary dark:text-blue-400 hover:underline uppercase tracking-widest"
                                 >
-                                    Clear All
+                                    {t('clearAll')}
                                 </button>
                             )}
                             <button
@@ -290,8 +292,8 @@ export default function NotificationCenter() {
                                 <div className="bg-gray-50 dark:bg-gray-900/50 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
                                     <Bell className="h-8 w-8 text-gray-300 dark:text-gray-600" />
                                 </div>
-                                <p className="font-bold text-gray-900 dark:text-white">All caught up!</p>
-                                <p className="text-xs text-gray-500 mt-1">No new alerts at the moment.</p>
+                                <p className="font-bold text-gray-900 dark:text-white">{t('allCaughtUp')}</p>
+                                <p className="text-xs text-gray-500 mt-1">{t('noNewAlerts')}</p>
                             </div>
                         ) : (
                             <div className="divide-y divide-gray-50 dark:divide-gray-700">
@@ -303,6 +305,7 @@ export default function NotificationCenter() {
                                         onDelete={handleDeleteNotification}
                                         getIcon={getNotificationIcon}
                                         formatTime={formatTime}
+                                        t={t}
                                     />
                                 ))}
                             </div>
@@ -318,7 +321,7 @@ export default function NotificationCenter() {
                             }}
                             className="text-[11px] font-black text-gray-500 hover:text-primary dark:hover:text-blue-400 transition uppercase tracking-widest"
                         >
-                            Configure Preferences
+                            {t('configurePreferences')}
                         </button>
                     </div>
                 </div>

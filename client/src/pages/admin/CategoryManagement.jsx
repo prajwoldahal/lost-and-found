@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { adminAPI, postAPI } from '../../services/api';
 import { Plus, Edit2, Trash2, MapPin, Tag, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export default function CategoryManagement() {
+    const { t } = useTranslation();
     const [categories, setCategories] = useState([]);
     const [locations, setLocations] = useState([]); // Simplified for now
     const [loading, setLoading] = useState(true);
@@ -20,12 +22,6 @@ export default function CategoryManagement() {
             const response = await adminAPI.getCategories();
             const fetchedCats = response.data;
 
-            if (fetchedCats.length === 0) {
-                // Seed default categories if empty
-                const defaultCats = ['Electronics', 'Documents', 'Accessories', 'Clothing', 'Keys', 'Bags', 'Pets', 'Other'];
-                // We won't auto-seed to avoid write spam, just show empty
-            }
-
             setCategories(fetchedCats);
 
             // Locations would follow similar pattern
@@ -33,7 +29,7 @@ export default function CategoryManagement() {
             // To keep it simple for this session, I'll focus on Categories which are used in app
         } catch (error) {
             console.error('Error fetching data:', error);
-            toast.error('Failed to load data');
+            toast.error(t('failedToLoadData'));
         } finally {
             setLoading(false);
         }
@@ -41,7 +37,7 @@ export default function CategoryManagement() {
 
     const handleAddCategory = async () => {
         if (!newCategoryName.trim()) {
-            toast.error('Please enter a category name');
+            toast.error(t('enterCategoryName'));
             return;
         }
 
@@ -57,22 +53,22 @@ export default function CategoryManagement() {
             setCategories([...categories, response.data]);
             setNewCategoryName('');
             setShowAddCategory(false);
-            toast.success('Category added successfully');
+            toast.success(t('categoryAddedSuccessfully'));
         } catch (error) {
             console.error('Error adding category:', error);
-            toast.error('Failed to add category');
+            toast.error(t('failedToAddCategory'));
         }
     };
 
     const handleDeleteCategory = async (catId) => {
-        if (window.confirm('Are you sure you want to delete this category?')) {
+        if (window.confirm(t('deleteCategoryConfirm'))) {
             try {
                 await adminAPI.deleteCategory(catId);
                 setCategories(categories.filter(c => c.id !== catId));
-                toast.success('Category deleted');
+                toast.success(t('categoryDeleted'));
             } catch (error) {
                 console.error('Error deleting category:', error);
-                toast.error('Failed to delete category');
+                toast.error(t('failedToDeleteCategory'));
             }
         }
     };
@@ -89,8 +85,8 @@ export default function CategoryManagement() {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                    <h1 className="text-5xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">Taxonomy Engine</h1>
-                    <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">Classify and organize community lost & found assets</p>
+                    <h1 className="text-5xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">{t('taxonomyEngine')}</h1>
+                    <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">{t('classifyOrganizeAssets')}</p>
                 </div>
             </div>
 
@@ -101,24 +97,24 @@ export default function CategoryManagement() {
                         <div className="p-3 bg-primary/10 rounded-xl">
                             <Tag className="h-6 w-6 text-primary" />
                         </div>
-                        <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">Asset Classifications</h2>
+                        <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">{t('assetClassifications')}</h2>
                     </div>
                     <button
                         onClick={() => setShowAddCategory(!showAddCategory)}
                         className="px-6 py-3 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:scale-[1.05] active:scale-[0.95] transition shadow-lg shadow-primary/30 flex items-center gap-2"
                     >
                         <Plus className="h-4 w-4" />
-                        New Classification
+                        {t('newClassification')}
                     </button>
                 </div>
 
                 {showAddCategory && (
                     <div className="mb-10 p-8 bg-gray-50 dark:bg-gray-900/50 rounded-[2rem] border border-gray-100 dark:border-gray-700 animate-in slide-in-from-top-4 duration-300">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-4">Define New Category</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-4">{t('defineNewCategory')}</label>
                         <div className="flex flex-col md:flex-row gap-4">
                             <input
                                 type="text"
-                                placeholder="Enter classification name (e.g., Cryptography)"
+                                placeholder={t('enterClassificationName')}
                                 value={newCategoryName}
                                 onChange={(e) => setNewCategoryName(e.target.value)}
                                 className="flex-1 px-6 py-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white text-sm font-bold transition-all"
@@ -128,13 +124,13 @@ export default function CategoryManagement() {
                                     onClick={handleAddCategory}
                                     className="px-8 py-4 bg-green-600 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-green-700 transition"
                                 >
-                                    Confirm
+                                    {t('confirm')}
                                 </button>
                                 <button
                                     onClick={() => setShowAddCategory(false)}
                                     className="px-8 py-4 bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500 rounded-2xl font-black uppercase tracking-widest text-[10px] border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                                 >
-                                    Abort
+                                    {t('abort')}
                                 </button>
                             </div>
                         </div>
@@ -156,10 +152,12 @@ export default function CategoryManagement() {
                                         <Trash2 className="h-4 w-4" />
                                     </button>
                                 </div>
-                                <h3 className="font-black text-gray-900 dark:text-white uppercase tracking-tight mb-1">{category.name}</h3>
+                                <h3 className="font-black text-gray-900 dark:text-white uppercase tracking-tight mb-1">
+                                    {t(category.name.toLowerCase(), { defaultValue: category.name })}
+                                </h3>
                                 <div className="flex items-center justify-between mt-4">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Active Scale</span>
-                                    <span className="px-2 py-0.5 bg-primary/5 dark:bg-primary/10 text-primary text-[9px] font-black rounded-md">{category.itemCount || 0} Assets</span>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('activeScale')}</span>
+                                    <span className="px-2 py-0.5 bg-primary/5 dark:bg-primary/10 text-primary text-[9px] font-black rounded-md">{category.itemCount || 0} {t('assetsCount')}</span>
                                 </div>
                             </div>
                         ))}
@@ -167,7 +165,7 @@ export default function CategoryManagement() {
                 ) : (
                     <div className="text-center py-20 border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-[2.5rem]">
                         <Tag className="h-16 w-16 text-gray-100 dark:text-gray-900 mx-auto mb-6" />
-                        <p className="font-black uppercase tracking-widest text-[10px] text-gray-400">The taxonomy is currently vacant.</p>
+                        <p className="font-black uppercase tracking-widest text-[10px] text-gray-400">{t('taxonomyVacant')}</p>
                     </div>
                 )}
             </div>
@@ -177,8 +175,8 @@ export default function CategoryManagement() {
                     <MapPin className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                    <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">Geographic Framework</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-tight">Location management is offloaded to Google Maps Autocomplete for global precision.</p>
+                    <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">{t('geographicFramework')}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-tight">{t('locationManagementInfo')}</p>
                 </div>
             </div>
         </div>

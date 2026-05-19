@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { postAPI } from '../services/api';
 import ItemsMap from '../components/ItemsMap';
 import VerifiedBadge from '../components/VerifiedBadge';
+import { useTranslation } from 'react-i18next';
 import { Search as SearchIcon, Filter, MapPin, Calendar, Tag, SlidersHorizontal, X, Map as MapIcon, Grid3x3, Loader2 } from 'lucide-react';
 
 export default function Search() {
+    const { t } = useTranslation();
     const [searchTerm, setSearchTerm] = useState('');
     const [items, setItems] = useState([]);
     const [filteredItems, setFilteredItems] = useState([]);
@@ -21,6 +23,8 @@ export default function Search() {
 
     const [radiusFilter, setRadiusFilter] = useState('3');
     const [userLocation, setUserLocation] = useState(null);
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     const categories = ['All', 'Electronics', 'Documents', 'Accessories', 'Pets', 'Clothing', 'Keys', 'Bags', 'Other'];
     const statuses = ['All', 'Active', 'Claimed', 'Returned'];
 
@@ -141,6 +145,20 @@ export default function Search() {
             });
         }
 
+        // Date Filter
+        if (startDate || endDate) {
+            result = result.filter(item => {
+                const itemDate = new Date(item.date || item.createdAt);
+                if (startDate && new Date(startDate) > itemDate) return false;
+                if (endDate) {
+                    const end = new Date(endDate);
+                    end.setHours(23, 59, 59, 999);
+                    if (end < itemDate) return false;
+                }
+                return true;
+            });
+        }
+
         // Sorting
         switch (sortBy) {
             case 'recent':
@@ -165,7 +183,7 @@ export default function Search() {
         }
 
         setFilteredItems(result);
-    }, [searchTerm, typeFilter, categoryFilter, statusFilter, sortBy, radiusFilter, userLocation, items]);
+    }, [searchTerm, typeFilter, categoryFilter, statusFilter, sortBy, radiusFilter, userLocation, items, startDate, endDate]);
 
     const clearFilters = () => {
         setSearchTerm('');
@@ -174,6 +192,8 @@ export default function Search() {
         setStatusFilter('all');
         setSortBy('recent');
         setRadiusFilter('all'); // Reset radius too
+        setStartDate('');
+        setEndDate('');
     };
 
     const formatDate = (dateStr, timestamp) => {
@@ -186,8 +206,8 @@ export default function Search() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* Header */}
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Search Lost & Found Items</h1>
-                <p className="text-gray-600 dark:text-gray-400">Find items that have been lost or found in your community</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('searchItems')}</h1>
+                <p className="text-gray-600 dark:text-gray-400">{t('searchDescription')}</p>
             </div>
 
             {/* Search Bar */}
@@ -197,7 +217,7 @@ export default function Search() {
                         <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <input
                             type="text"
-                            placeholder="Search by title, description, category, or location..."
+                            placeholder={t('searchPlaceholder')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:text-white"
@@ -216,7 +236,7 @@ export default function Search() {
                         className="px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center gap-2 font-medium"
                     >
                         <Filter className="h-5 w-5" />
-                        {showFilters ? 'Hide' : 'Show'} Filters
+                        {showFilters ? 'Hide' : 'Show'} {t('filters')}
                     </button>
                 </div>
             </div>
@@ -227,34 +247,34 @@ export default function Search() {
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                             <SlidersHorizontal className="h-5 w-5" />
-                            Filters
+                            {t('filters')}
                         </h3>
                         <button
                             onClick={clearFilters}
                             className="text-sm text-primary hover:text-primary-dark font-medium"
                         >
-                            Clear All
+                            {t('clearAll')}
                         </button>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                         {/* Type Filter */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('type')}</label>
                             <select
                                 value={typeFilter}
                                 onChange={(e) => setTypeFilter(e.target.value)}
                                 className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:text-white"
                             >
-                                <option value="all">All Items</option>
-                                <option value="lost">Lost Only</option>
-                                <option value="found">Found Only</option>
+                                <option value="all">{t('allItems')}</option>
+                                <option value="lost">{t('lostItems')}</option>
+                                <option value="found">{t('foundItems')}</option>
                             </select>
                         </div>
 
                         {/* Category Filter */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('category')}</label>
                             <select
                                 value={categoryFilter}
                                 onChange={(e) => setCategoryFilter(e.target.value)}
@@ -268,7 +288,7 @@ export default function Search() {
 
                         {/* Status Filter */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('active')}/{t('pending')}</label>
                             <select
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -283,7 +303,7 @@ export default function Search() {
                         {/* Radius Filter */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center justify-between">
-                                Distance
+                                {t('distance')}
                                 {!userLocation && <span className="text-[10px] text-orange-500">(Loc Required)</span>}
                             </label>
                             <select
@@ -302,16 +322,43 @@ export default function Search() {
 
                         {/* Sort By */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sort By</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('sortBy')}</label>
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
                                 className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:text-white"
                             >
-                                <option value="recent">Most Recent</option>
-                                <option value="oldest">Oldest First</option>
-                                <option value="views">Most Viewed</option>
+                                <option value="recent">{t('newest')}</option>
+                                <option value="oldest">{t('oldest')}</option>
                             </select>
+                        </div>
+
+                        {/* Start Date */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('startDate')}</label>
+                            <div className="relative">
+                                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:text-white"
+                                />
+                            </div>
+                        </div>
+
+                        {/* End Date */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('endDate')}</label>
+                            <div className="relative">
+                                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:text-white"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -336,7 +383,7 @@ export default function Search() {
                             }`}
                     >
                         <Grid3x3 className="h-4 w-4" />
-                        Grid
+                        {t('gridView')}
                     </button>
                     <button
                         onClick={() => setViewMode('map')}
@@ -346,7 +393,7 @@ export default function Search() {
                             }`}
                     >
                         <MapIcon className="h-4 w-4" />
-                        Map
+                        {t('mapView')}
                     </button>
                 </div>
             </div>
@@ -370,7 +417,7 @@ export default function Search() {
                                         <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-600">
-                                            No Image
+                                            {t('noImage')}
                                         </div>
                                     )}
                                     <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold text-white ${item.type === 'lost' ? 'bg-red-500' : 'bg-green-500'
@@ -417,13 +464,13 @@ export default function Search() {
                 ) : (
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-12 text-center border border-gray-100 dark:border-gray-700">
                         <SearchIcon className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No items found</h3>
-                        <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-sm mx-auto">Try adjusting your search or filters to find what you're looking for.</p>
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('noItemsFound')}</h3>
+                        <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-sm mx-auto">{t('searchNoResultsDesc')}</p>
                         <button
                             onClick={clearFilters}
                             className="px-8 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark transition font-bold shadow-lg shadow-primary/20"
                         >
-                            Clear All Filters
+                            {t('clearFilters')}
                         </button>
                     </div>
                 )

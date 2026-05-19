@@ -309,7 +309,7 @@ export default function Profile() {
                                         </div>
                                     </div>
                                     <div className="flex flex-wrap gap-4">
-                                        <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-700 font-bold text-xs uppercase tracking-tight shadow-sm"><Mail className="h-4 w-4 text-primary" />{currentUser?.email || userData?.email}</div>
+                                        <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-700 font-bold text-xs uppercase tracking-tight shadow-sm overflow-hidden"><Mail className="h-4 w-4 text-primary flex-shrink-0" /><span className="break-all">{currentUser?.email || userData?.email}</span></div>
                                         {userData?.phone && <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-700 font-bold text-xs uppercase tracking-tight shadow-sm"><Phone className="h-4 w-4 text-primary" />{userData.phone}</div>}
                                         <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-700 font-bold text-xs uppercase tracking-tight shadow-sm"><Calendar className="h-4 w-4 text-primary" />Joined {formatDate(null, userData?.createdAt)}</div>
                                     </div>

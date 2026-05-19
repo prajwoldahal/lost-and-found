@@ -57,16 +57,17 @@ export default function Navbar() {
 
     const userLinks = [
         { path: '/dashboard', label: t('dashboard'), icon: Package },
+        { path: '/create-post', label: t('createPost'), icon: PlusCircle, mobileOnly: true },
         { path: '/search', label: t('search'), icon: Search },
         { path: '/messages', label: t('messages'), icon: MessageCircle },
         { path: '/rewards', label: t('rewards'), icon: Trophy },
     ];
 
     const adminLinks = [
-        { path: '/admin', label: 'Dashboard', icon: Shield },
-        { path: '/admin/users', label: 'Users', icon: Users },
-        { path: '/admin/posts', label: 'Posts', icon: Package },
-        { path: '/admin/reports', label: 'Reports', icon: Flag },
+        { path: '/admin', label: t('dashboard'), icon: Shield },
+        { path: '/admin/users', label: t('users'), icon: Users },
+        { path: '/admin/posts', label: t('posts'), icon: Package },
+        { path: '/admin/reports', label: t('reports'), icon: Flag },
     ];
 
     const links = userData?.isAdmin ? adminLinks : userLinks;
@@ -90,7 +91,7 @@ export default function Navbar() {
                             {/* Desktop Navigation */}
                             {currentUser && (
                                 <div className="hidden md:flex items-center space-x-1">
-                                    {links.map((link) => (
+                                    {links.filter(l => !l.mobileOnly).map((link) => (
                                         <Link
                                             key={link.path}
                                             to={link.path}
@@ -127,6 +128,25 @@ export default function Navbar() {
                                     {/* Notifications */}
                                     <NotificationCenter />
 
+                                    {/* Quick Toggles for Authenticated */}
+                                    <div className="hidden sm:flex items-center gap-1 bg-slate-50 dark:bg-gray-800/50 p-1 rounded-xl border border-slate-100 dark:border-gray-700 mx-1">
+                                        <button
+                                            onClick={toggleTheme}
+                                            className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-gray-700 text-slate-500 dark:text-slate-400 transition-colors"
+                                            title={isDarkMode ? t('lightMode') : t('darkMode')}
+                                        >
+                                            {isDarkMode ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                                        </button>
+                                        <button
+                                            onClick={toggleLanguage}
+                                            className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-gray-700 text-slate-500 dark:text-slate-400 transition-colors flex items-center gap-1"
+                                            title={t('language')}
+                                        >
+                                            <Globe className="h-3.5 w-3.5" />
+                                            <span className="text-[9px] font-black uppercase">{i18n.language}</span>
+                                        </button>
+                                    </div>
+
                                     {/* Profile Dropdown */}
                                     <div className="relative" ref={dropdownRef}>
                                         <button
@@ -139,7 +159,7 @@ export default function Navbar() {
                                                     <VerifiedBadge verified={userData?.isVerified} size="h-3 w-3" />
                                                 </p>
                                                 <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none">
-                                                    {userData?.isAdmin ? 'Admin' : 'Member'}
+                                                    {userData?.isAdmin ? t('admin') : t('member')}
                                                 </p>
                                             </div>
                                             <div className="relative">
@@ -263,6 +283,24 @@ export default function Navbar() {
                                 </>
                             ) : !loading ? (
                                 <div className="flex items-center gap-2">
+                                    {/* Quick Toggles for Guest */}
+                                    <div className="hidden sm:flex items-center gap-2 mr-2 bg-slate-50 dark:bg-gray-800/50 p-1 rounded-xl border border-slate-100 dark:border-gray-700">
+                                        <button
+                                            onClick={toggleTheme}
+                                            className="p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 text-slate-500 dark:text-slate-400 transition-colors"
+                                            title={isDarkMode ? t('lightMode') : t('darkMode')}
+                                        >
+                                            {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                                        </button>
+                                        <button
+                                            onClick={toggleLanguage}
+                                            className="p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 text-slate-500 dark:text-slate-400 transition-colors flex items-center gap-1.5"
+                                            title={t('language')}
+                                        >
+                                            <Globe className="h-4 w-4" />
+                                            <span className="text-[10px] font-black uppercase">{i18n.language}</span>
+                                        </button>
+                                    </div>
                                     <Link to="/login" className="px-5 py-2.5 text-sm font-bold text-slate-600 hover:text-primary dark:text-slate-400 dark:hover:text-white transition-colors">
                                         {t('login')}
                                     </Link>

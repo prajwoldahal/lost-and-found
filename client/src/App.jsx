@@ -53,6 +53,7 @@ function App() {
                         <Route path="/legal-disclaimer" element={<Layout><LegalDisclaimer /></Layout>} />
                         <Route path="/privacy-policy" element={<Layout><PrivacyPolicy /></Layout>} />
                         <Route path="/suspended" element={<Suspended />} />
+                        <Route path="/post/:id" element={<Layout><PostDetails /></Layout>} />
 
                         {/* Protected User Routes */}
                         <Route path="/dashboard" element={
@@ -88,11 +89,6 @@ function App() {
                         <Route path="/my-posts" element={
                             <RequireAuth>
                                 <Layout><MyPosts /></Layout>
-                            </RequireAuth>
-                        } />
-                        <Route path="/post/:id" element={
-                            <RequireAuth>
-                                <Layout><PostDetails /></Layout>
                             </RequireAuth>
                         } />
                         {/* Claim route removed */}

@@ -4,10 +4,11 @@ import {
     createUserWithEmailAndPassword,
     signInWithPopup,
     signOut,
-    onAuthStateChanged,
+    onIdTokenChanged,
     updateProfile,
     sendPasswordResetEmail,
-    sendEmailVerification
+    sendEmailVerification,
+    verifyBeforeUpdateEmail
 } from 'firebase/auth';
 import { auth, googleProvider } from '../services/firebase';
 
@@ -27,7 +28,7 @@ export function AuthProvider({ children }) {
 
     // Initial session setup and auth state listener
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        const unsubscribe = onIdTokenChanged(auth, async (user) => {
             // Safety timeout for profile fetch
             const profileTimer = setTimeout(() => {
                 if (loading) {
@@ -269,6 +270,16 @@ export function AuthProvider({ children }) {
         }
     }
 
+    async function updateUserEmail(newEmail) {
+        if (!currentUser) return;
+        try {
+            await verifyBeforeUpdateEmail(currentUser, newEmail);
+        } catch (error) {
+            console.error('Update Email Error:', error);
+            throw error;
+        }
+    }
+
     const value = {
         currentUser,
         userData,
@@ -280,6 +291,7 @@ export function AuthProvider({ children }) {
         resetPassword,
         sendVerification,
         updateProfileData,
+        updateUserEmail,
         loading
     };
 

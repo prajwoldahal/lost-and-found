@@ -16,8 +16,10 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { formatDistanceToNow } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminLogs() {
+    const { t } = useTranslation();
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [levelFilter, setLevelFilter] = useState('all');
@@ -46,21 +48,21 @@ export default function AdminLogs() {
             setLogs(response.data);
         } catch (error) {
             console.error('❌ Error fetching logs:', error);
-            toast.error('Failed to load logs: ' + (error.response?.data?.error || error.message));
+            toast.error(t('failedToLoadLogs') + ': ' + (error.response?.data?.error || error.message));
         } finally {
             setLoading(false);
         }
     };
 
     const handleClearOldLogs = async () => {
-        if (!window.confirm('Are you sure you want to delete logs older than 30 days?')) return;
+        if (!window.confirm(t('clearOldLogsConfirm'))) return;
 
         try {
             const response = await logAPI.clearOldLogs(30);
             toast.success(response.data.message);
             fetchLogs();
         } catch (error) {
-            toast.error('Failed to clear logs');
+            toast.error(t('error'));
         }
     };
 
@@ -72,7 +74,7 @@ export default function AdminLogs() {
         link.href = url;
         link.download = `logs-${new Date().toISOString()}.json`;
         link.click();
-        toast.success('Logs exported successfully');
+        toast.success(t('logsExportedSuccessfully'));
     };
 
     const filteredLogs = logs.filter(log => {
@@ -114,33 +116,33 @@ export default function AdminLogs() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
-                    <h1 className="text-5xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">System Logs</h1>
-                    <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">Monitor system activities and events</p>
+                    <h1 className="text-5xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">{t('systemLogs')}</h1>
+                    <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">{t('monitorSystemActivities')}</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => setAutoRefresh(!autoRefresh)}
                         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition ${autoRefresh
-                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
                             }`}
                     >
                         <RefreshCw className={`h-4 w-4 ${autoRefresh ? 'animate-spin' : ''}`} />
-                        Auto-Refresh
+                        {t('autoRefresh')}
                     </button>
                     <button
                         onClick={handleExport}
                         className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition"
                     >
                         <Download className="h-4 w-4" />
-                        Export
+                        {t('export')}
                     </button>
                     <button
                         onClick={handleClearOldLogs}
                         className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-xl text-[10px] font-black uppercase tracking-widest hover:scale-[1.02] transition"
                     >
                         <Trash2 className="h-4 w-4" />
-                        Clear Old
+                        {t('clearOld')}
                     </button>
                 </div>
             </div>
@@ -152,7 +154,7 @@ export default function AdminLogs() {
                         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <input
                             type="text"
-                            placeholder="Search logs by message, action, or user..."
+                            placeholder={t('searchLogsPlaceholder')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white text-sm font-bold transition-all"
@@ -165,10 +167,10 @@ export default function AdminLogs() {
                             onChange={(e) => setLevelFilter(e.target.value)}
                             className="w-full appearance-none pl-12 pr-10 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white text-[10px] font-black uppercase tracking-widest cursor-pointer"
                         >
-                            <option value="all">All Levels</option>
-                            <option value="info">Info</option>
-                            <option value="warning">Warning</option>
-                            <option value="error">Error</option>
+                            <option value="all">{t('allLevels')}</option>
+                            <option value="info">{t('info')}</option>
+                            <option value="warning">{t('warning')}</option>
+                            <option value="error">{t('errorTitle')}</option>
                         </select>
                     </div>
                 </div>
@@ -180,11 +182,11 @@ export default function AdminLogs() {
                     <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-700">
                         <thead className="bg-gray-50/50 dark:bg-gray-900/50">
                             <tr>
-                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">Level</th>
-                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">Message</th>
-                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">User</th>
-                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">Action</th>
-                                <th className="px-8 py-5 text-right text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">Time</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{t('level')}</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{t('message')}</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{t('user')}</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{t('action')}</th>
+                                <th className="px-8 py-5 text-right text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{t('timestamp')}</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
@@ -194,7 +196,7 @@ export default function AdminLogs() {
                                         <td className="px-8 py-6">
                                             <span className={`flex items-center gap-2 px-3 py-1 text-[10px] font-black rounded-lg uppercase tracking-widest border ${getLevelColor(log.level)}`}>
                                                 {getLevelIcon(log.level)}
-                                                {log.level}
+                                                {t(log.level === 'error' ? 'errorTitle' : log.level)}
                                             </span>
                                         </td>
                                         <td className="px-8 py-6">
@@ -206,16 +208,16 @@ export default function AdminLogs() {
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-2">
                                                 <User className="h-4 w-4 text-gray-400" />
-                                                <span className="text-xs font-medium text-gray-600 dark:text-gray-300">{log.userEmail || 'System'}</span>
+                                                <span className="text-xs font-medium text-gray-600 dark:text-gray-300">{log.userEmail || t('system')}</span>
                                             </div>
                                         </td>
                                         <td className="px-8 py-6">
-                                            <span className="text-xs font-black text-gray-700 dark:text-gray-200 uppercase tracking-tight">{log.action || 'N/A'}</span>
+                                            <span className="text-xs font-black text-gray-700 dark:text-gray-200 uppercase tracking-tight">{log.action || t('unspecified')}</span>
                                         </td>
                                         <td className="px-8 py-6 text-right">
                                             <div className="flex items-center justify-end gap-2 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
                                                 <Clock className="h-3 w-3" />
-                                                {log.timestamp ? formatDistanceToNow(new Date(log.timestamp), { addSuffix: true }) : 'N/A'}
+                                                {log.timestamp ? formatDistanceToNow(new Date(log.timestamp), { addSuffix: true }) : t('unspecified')}
                                             </div>
                                         </td>
                                     </tr>
@@ -223,7 +225,7 @@ export default function AdminLogs() {
                             ) : (
                                 <tr>
                                     <td colSpan="5" className="px-8 py-16 text-center text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest opacity-50 italic">
-                                        No logs found
+                                        {t('noLogsFound')}
                                     </td>
                                 </tr>
                             )}

@@ -100,7 +100,7 @@ export default function MyPosts() {
                     <div className="h-16 w-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
                     <Package className="absolute inset-0 m-auto h-6 w-6 text-primary animate-pulse" />
                 </div>
-                <p className="mt-6 text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[10px]">Loading your items...</p>
+                <p className="mt-6 text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[10px]">{t('loadingYourItems')}</p>
             </div>
         );
     }
@@ -112,9 +112,9 @@ export default function MyPosts() {
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                     <div className="space-y-2">
-                        <h1 className="text-3xl font-black uppercase tracking-tighter">Your Posted Items</h1>
+                        <h1 className="text-3xl font-black uppercase tracking-tighter">{t('yourPostedItems')}</h1>
                         <p className="text-primary-light font-bold uppercase tracking-widest text-[10px] opacity-90">
-                            Manage {posts.length} {posts.length === 1 ? 'item' : 'items'} reported by you
+                            {t('manageItems', { count: posts.length })}
                         </p>
                     </div>
                     <Link
@@ -122,7 +122,7 @@ export default function MyPosts() {
                         className="group bg-white text-primary hover:bg-gray-50 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all shadow-xl hover:-translate-y-1 active:translate-y-0 flex items-center gap-3 w-fit"
                     >
                         <PlusCircle className="h-4 w-4" />
-                        Post New Item
+                        {t('postNewItem')}
                     </Link>
                 </div>
             </div>
@@ -135,7 +135,7 @@ export default function MyPosts() {
                         <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-primary transition-colors" />
                         <input
                             type="text"
-                            placeholder="Search your items..."
+                            placeholder={t('searchYourItems')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full pl-12 pr-6 py-4 bg-gray-50 dark:bg-gray-950/50 border border-gray-100 dark:border-gray-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/50 dark:text-white font-bold transition-all text-xs"
@@ -166,8 +166,8 @@ export default function MyPosts() {
                                 onChange={(e) => setSortBy(e.target.value)}
                                 className="bg-transparent border-none focus:ring-0 text-[10px] font-black uppercase tracking-widest text-gray-700 dark:text-gray-300 cursor-pointer appearance-none"
                             >
-                                <option value="newest" className="dark:bg-gray-900 border-none">Newest First</option>
-                                <option value="oldest" className="dark:bg-gray-900 border-none">Oldest First</option>
+                                <option value="newest" className="dark:bg-gray-900 border-none">{t('newest')}</option>
+                                <option value="oldest" className="dark:bg-gray-900 border-none">{t('oldest')}</option>
                             </select>
                         </div>
                     </div>
@@ -193,7 +193,7 @@ export default function MyPosts() {
                                     ) : (
                                         <div className="flex flex-col items-center justify-center h-full text-gray-300 dark:text-gray-700">
                                             <Package className="h-12 w-12 opacity-20" />
-                                            <span className="text-[10px] font-bold uppercase tracking-widest mt-2">No Image Available</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest mt-2">{t('noImage')}</span>
                                         </div>
                                     )}
 
@@ -219,14 +219,14 @@ export default function MyPosts() {
 
                                     <div className="grid grid-cols-2 gap-4 py-6 border-y border-gray-50 dark:border-gray-800 mb-8">
                                         <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Date Reported</label>
+                                            <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{t('dateReported')}</label>
                                             <div className="flex items-center gap-2 text-xs font-bold text-gray-700 dark:text-gray-300">
                                                 <Clock className="h-3.5 w-3.5 text-primary" />
                                                 {postDate}
                                             </div>
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Location</label>
+                                            <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{t('location')}</label>
                                             <div className="flex items-center gap-2 text-xs font-bold text-gray-700 dark:text-gray-300">
                                                 <MapPin className="h-3.5 w-3.5 text-primary" />
                                                 <span className="truncate">{post.locationName || 'Unspecified'}</span>
@@ -240,13 +240,13 @@ export default function MyPosts() {
                                             to={`/post/${post.id}`}
                                             className="flex-1 py-4 bg-gray-950 text-white dark:bg-primary dark:hover:bg-primary-dark rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg hover:bg-gray-800 hover:-translate-y-1 active:translate-y-0 transition-all text-center"
                                         >
-                                            View
+                                            {t('view')}
                                         </Link>
                                         <Link
                                             to={`/edit-post/${post.id}`}
                                             className="flex-1 py-4 bg-blue-50 dark:bg-blue-900/10 text-primary dark:text-blue-400 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-sm hover:bg-blue-100 dark:hover:bg-blue-900/20 hover:-translate-y-1 active:translate-y-0 transition-all text-center border border-primary/10"
                                         >
-                                            Edit
+                                            {t('edit')}
                                         </Link>
                                         <button
                                             onClick={() => handleDelete(post.id)}
@@ -271,11 +271,11 @@ export default function MyPosts() {
                     <div className="bg-gray-50 dark:bg-gray-950 p-10 rounded-full inline-block mb-8">
                         <Search className="h-16 w-16 text-gray-200 dark:text-gray-800" />
                     </div>
-                    <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter mb-4 italic">No Items Found</h3>
+                    <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter mb-4 italic">{t('noItemsFound')}</h3>
                     <p className="text-gray-500 dark:text-gray-400 mb-12 max-w-sm mx-auto font-bold uppercase tracking-widest text-[10px] leading-relaxed">
                         {searchTerm
-                            ? `No items matching "${searchTerm}" were found in your post history.`
-                            : "You haven't posted any items yet. Start by reporting something you found or lost."
+                            ? t('noItemsMatchingSearch', { term: searchTerm })
+                            : t('noItemsPostedYet')
                         }
                     </p>
 
@@ -283,7 +283,7 @@ export default function MyPosts() {
                         onClick={() => { setSearchTerm(''); setTypeFilter('all'); }}
                         className="px-10 py-5 border-2 border-primary/20 hover:border-primary text-primary rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all"
                     >
-                        Clear All Filters
+                        {t('clearFilters')}
                     </button>
                 </div>
             )}

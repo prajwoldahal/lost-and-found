@@ -106,7 +106,7 @@ export default function Login() {
                             <div className="flex justify-between items-center mb-1 ml-1">
                                 <label htmlFor="password" className="block text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">{t('password')}</label>
                                 <Link to="/forgot-password" virtual="true" className="text-[10px] font-black text-primary hover:text-primary-dark uppercase tracking-widest">
-                                    Forgot Password?
+                                    {t('forgotPassword')}
                                 </Link>
                             </div>
                             <div className="relative">
@@ -136,7 +136,7 @@ export default function Login() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
+                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
                         >
                             {t('signIn')}
                         </button>
@@ -149,7 +149,7 @@ export default function Login() {
                             <div className="w-full border-t border-slate-200 dark:border-gray-700"></div>
                         </div>
                         <div className="relative flex justify-center text-xs uppercase font-black tracking-widest">
-                            <span className="px-3 bg-white dark:bg-gray-900 text-slate-400 dark:text-slate-500">Or continue with</span>
+                            <span className="px-3 bg-white dark:bg-gray-900 text-slate-400 dark:text-slate-500">{t('orContinueWith')}</span>
                         </div>
                     </div>
 
