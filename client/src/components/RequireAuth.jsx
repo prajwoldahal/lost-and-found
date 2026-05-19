@@ -1,6 +1,10 @@
+// File: RequireAuth.jsx
+// Description: Auth Guard Layer: Protects user routes by redirecting unlogged visitors back to the login screen.
+
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+// React Component: Renders the RequireAuth user interface elements dynamically
 export default function RequireAuth({ children }) {
     const { currentUser, userData, loading } = useAuth();
     const location = useLocation();

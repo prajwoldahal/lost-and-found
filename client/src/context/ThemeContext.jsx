@@ -1,3 +1,6 @@
+// File: ThemeContext.jsx
+// Description: Theme Context: Manages the light and dark mode theme switching system for the frontend styling.
+
 import { createContext, useContext, useEffect, useState } from 'react';
 
 const ThemeContext = createContext();
@@ -8,7 +11,8 @@ export function ThemeProvider({ children }) {
         return saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
     });
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (isDarkMode) {
             document.documentElement.classList.add('dark');
             localStorage.setItem('theme', 'dark');

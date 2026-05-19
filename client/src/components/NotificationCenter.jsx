@@ -1,3 +1,6 @@
+// File: NotificationCenter.jsx
+// Description: Live Notification Drawer: Lists pop-up alerts, system notifications, claim updates, and redirects on click.
+
 import { useState, useEffect, useRef } from 'react';
 import { Bell, X, Check, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -12,7 +15,8 @@ const NotificationItem = ({ notification, onClick, onDelete, getIcon, formatTime
     const messageRef = useRef(null);
     const [isLongMessage, setIsLongMessage] = useState(false);
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (messageRef.current) {
             setIsLongMessage(messageRef.current.scrollHeight > 60); // Roughly 3 lines
         }
@@ -76,6 +80,7 @@ const NotificationItem = ({ notification, onClick, onDelete, getIcon, formatTime
     );
 };
 
+// React Component: Renders the NotificationCenter user interface elements dynamically
 export default function NotificationCenter() {
     const { t } = useTranslation();
     const { currentUser } = useAuth();
@@ -89,7 +94,8 @@ export default function NotificationCenter() {
     const navigate = useNavigate();
 
     // Listen to notifications in real-time
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (!currentUser?.uid) {
             setLoading(false);
             return;
@@ -145,7 +151,8 @@ export default function NotificationCenter() {
     }, [currentUser?.uid]);
 
     // Merge and update unread count
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         const merged = [...realNotifications, ...chatNotifications].sort((a, b) => {
             const dateA = new Date(a.createdAt);
             const dateB = new Date(b.createdAt);
@@ -161,7 +168,8 @@ export default function NotificationCenter() {
     }, [realNotifications, chatNotifications]);
 
     // Close dropdown when clicking outside
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setIsOpen(false);

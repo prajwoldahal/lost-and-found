@@ -1,3 +1,6 @@
+// File: MyPosts.jsx
+// Description: My Posts Page: Lets logged-in users view their uploaded items, edit descriptions, resolve listings, or delete posts.
+
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { postAPI } from '../services/api';
@@ -13,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '../context/ThemeContext';
 
+// React Component: Renders the MyPosts user interface elements dynamically
 export default function MyPosts() {
     const { isDarkMode } = useTheme();
     const { t } = useTranslation();
@@ -28,7 +32,8 @@ export default function MyPosts() {
     const [typeFilter, setTypeFilter] = useState('all');
     const [sortBy, setSortBy] = useState('newest');
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (!currentUser) return;
         fetchMyPosts();
     }, [currentUser]);

@@ -1,3 +1,6 @@
+// File: Dashboard.jsx
+// Description: Dashboard Feed: The central public notice board showing all active lost or found item posts in a grid with custom filters.
+
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -7,6 +10,7 @@ import VerifiedBadge from '../components/VerifiedBadge';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Calendar, Tag, Search, Loader2, Trophy, Award, Crown, TrendingUp } from 'lucide-react';
 
+// React Component: Renders the Dashboard user interface elements dynamically
 export default function Dashboard() {
     const { t } = useTranslation();
     const { currentUser, userData } = useAuth();
@@ -21,14 +25,16 @@ export default function Dashboard() {
     const [userLocation, setUserLocation] = useState(null);
 
     // Auto-redirect admin to admin panel
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (userData?.isAdmin) {
             navigate('/admin');
         }
     }, [userData, navigate]);
 
     // Get user location
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         const handleLocationError = (error) => {
             console.error('Geolocation error:', error);
             // Default to a fallback location (e.g., Kathmandu) if permission denied
@@ -52,7 +58,8 @@ export default function Dashboard() {
     }, []);
 
     // Fetch posts from backend
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (!currentUser) return;
 
         const fetchPosts = async () => {
@@ -71,7 +78,8 @@ export default function Dashboard() {
     }, [currentUser, filter]);
 
     // Fetch leaderboard
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
                 const response = await userAPI.getLeaderboard();
@@ -84,7 +92,8 @@ export default function Dashboard() {
     }, []);
 
     // Apply filters
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         let result = posts;
 
         if (filter !== 'all' && filter !== 'near_me') {

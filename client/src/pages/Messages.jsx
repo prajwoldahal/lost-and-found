@@ -1,3 +1,6 @@
+// File: Messages.jsx
+// Description: Real-time Chat Page: Secure inbox holding conversations, real-time message streams, return arrangements, and user block toggles.
+
 import { useState, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -8,6 +11,7 @@ import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import EmojiPicker from 'emoji-picker-react';
 
+// React Component: Renders the Messages user interface elements dynamically
 export default function Messages() {
     const { currentUser, userData } = useAuth();
     const [activeTab, setActiveTab] = useState('messages'); // 'messages' or 'requests'
@@ -45,7 +49,8 @@ export default function Messages() {
 
     const openChatId = searchParams.get('chatId');
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (!currentUser) return;
         const fetchChats = async () => {
             try {
@@ -67,7 +72,8 @@ export default function Messages() {
     }, [currentUser, openChatId]);
 
     // Refresh selectedChat's block status when chats refresh
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (selectedChat && chats.length > 0) {
             const updatedChat = chats.find(c => c.id === selectedChat.id);
             if (updatedChat) {
@@ -81,7 +87,8 @@ export default function Messages() {
         }
     }, [chats]);
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (!selectedChat) return;
         setLoadingMessages(true);
         const fetchMessages = async () => {

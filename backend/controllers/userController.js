@@ -1,7 +1,11 @@
+// File: userController.js
+// Description: User Profile Controller: Edits user profiles, retrieves user score leaderboards, and registers avatar uploads.
+
 import { db, auth } from '../config/firebase.js';
 import { uploadToCloudinary } from '../utils/cloudinaryUpload.js';
 
 // Upload avatar photo to Cloudinary
+// Controller Action: Handles requests to uploadAvatar, reads parameters, interacts with database, and sends json results back
 export const uploadAvatar = async (req, res) => {
     try {
         const { uid } = req.params;
@@ -23,6 +27,7 @@ export const uploadAvatar = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to createUser, reads parameters, interacts with database, and sends json results back
 export const createUser = async (req, res) => {
     try {
         const { email, displayName, photoURL } = req.body;
@@ -65,6 +70,7 @@ export const createUser = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to getUser, reads parameters, interacts with database, and sends json results back
 export const getUser = async (req, res) => {
     try {
         let { uid } = req.params;
@@ -125,6 +131,7 @@ export const getUser = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to updateUser, reads parameters, interacts with database, and sends json results back
 export const updateUser = async (req, res) => {
     try {
         let { uid } = req.params;
@@ -180,6 +187,7 @@ export const updateUser = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to deleteUser, reads parameters, interacts with database, and sends json results back
 export const deleteUser = async (req, res) => {
     try {
         const { uid } = req.user; // Securely take UID from auth token
@@ -211,6 +219,7 @@ export const deleteUser = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to getLeaderboard, reads parameters, interacts with database, and sends json results back
 export const getLeaderboard = async (req, res) => {
     try {
         const snapshot = await db.collection('users')
@@ -272,6 +281,7 @@ export const updateUserPoints = async (uid, pointsDelta, itemsReturnedDelta = 0,
 };
 
 // Report User
+// Controller Action: Handles requests to reportUser, reads parameters, interacts with database, and sends json results back
 export const reportUser = async (req, res) => {
     try {
         const { uid: reportedUserId } = req.params;

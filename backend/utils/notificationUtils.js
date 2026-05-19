@@ -1,3 +1,6 @@
+// File: notificationUtils.js
+// Description: Notification Helper Functions: Automatically generates alert logs and database records on claim updates.
+
 import { db } from '../config/firebase.js';
 
 /**

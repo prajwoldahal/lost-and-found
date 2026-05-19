@@ -1,6 +1,10 @@
+// File: logController.js
+// Description: Audit Log Controller: Queries, writes, and prunes administrative security audit logs.
+
 import { db } from '../config/firebase.js';
 
 // Get logs with filtering
+// Controller Action: Handles requests to getLogs, reads parameters, interacts with database, and sends json results back
 export const getLogs = async (req, res) => {
     try {
         console.log('📋 Get Logs Request - User:', req.user?.email);
@@ -51,6 +55,7 @@ export const getLogs = async (req, res) => {
 };
 
 // Create a new log entry
+// Controller Action: Handles requests to createLog, reads parameters, interacts with database, and sends json results back
 export const createLog = async (req, res) => {
     try {
         const { level, message, action, metadata } = req.body;
@@ -76,6 +81,7 @@ export const createLog = async (req, res) => {
 };
 
 // Clear old logs (optional - for maintenance)
+// Controller Action: Handles requests to clearOldLogs, reads parameters, interacts with database, and sends json results back
 export const clearOldLogs = async (req, res) => {
     try {
         const { daysOld = 30 } = req.query;

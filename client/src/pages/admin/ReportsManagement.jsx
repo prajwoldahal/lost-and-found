@@ -1,16 +1,21 @@
+// File: ReportsManagement.jsx
+// Description: Module: Handles ReportsManagement logical operations.
+
 import { useState, useEffect } from 'react';
 import { adminAPI } from '../../services/api';
 import { Flag, CheckCircle, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
+// React Component: Renders the ReportsManagement user interface elements dynamically
 export default function ReportsManagement() {
     const { t } = useTranslation();
     const [reports, setReports] = useState([]);
     const [statusFilter, setStatusFilter] = useState('all');
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         fetchReports();
     }, []);
 

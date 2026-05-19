@@ -1,3 +1,6 @@
+// File: main.jsx
+// Description: Module: Handles main logical operations.
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'

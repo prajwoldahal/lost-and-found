@@ -1,3 +1,6 @@
+// File: ClaimVerification.jsx
+// Description: Module: Handles ClaimVerification logical operations.
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -16,6 +19,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+// React Component: Renders the ClaimVerification user interface elements dynamically
 export default function ClaimVerification() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -41,7 +45,8 @@ export default function ClaimVerification() {
         { value: 'drivingLicense', label: 'Driving License' }
     ];
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         const fetchPost = async () => {
             try {
                 const response = await postAPI.getOne(id);

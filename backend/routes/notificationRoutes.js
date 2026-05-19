@@ -1,3 +1,6 @@
+// File: notificationRoutes.js
+// Description: Notification API Endpoints: Defines URLs to get unread alerts, read notifications, and delete alerts.
+
 import express from 'express';
 import { db } from '../config/firebase.js';
 import { authMiddleware } from '../middleware/auth.js';
@@ -7,6 +10,7 @@ const router = express.Router();
 router.use(authMiddleware);
 
 // GET /api/notifications - Get all notifications for current user
+// Router Endpoint: Listens for incoming GET requests at the path "/"
 router.get('/', async (req, res) => {
     try {
         const { uid } = req.user;
@@ -25,6 +29,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/notifications/unread-count
+// Router Endpoint: Listens for incoming GET requests at the path "/unread-count"
 router.get('/unread-count', async (req, res) => {
     try {
         const { uid } = req.user;
@@ -41,6 +46,7 @@ router.get('/unread-count', async (req, res) => {
 });
 
 // PUT /api/notifications/:id/read - Mark notification as read
+// Router Endpoint: Listens for incoming PUT requests at the path "/:id/read"
 router.put('/:id/read', async (req, res) => {
     try {
         const { uid } = req.user;
@@ -58,6 +64,7 @@ router.put('/:id/read', async (req, res) => {
 });
 
 // DELETE /api/notifications/:id
+// Router Endpoint: Listens for incoming DELETE requests at the path "/:id"
 router.delete('/:id', async (req, res) => {
     try {
         const { uid } = req.user;

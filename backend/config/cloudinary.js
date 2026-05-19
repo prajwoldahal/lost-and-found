@@ -1,3 +1,6 @@
+// File: cloudinary.js
+// Description: Cloudinary Configuration: Initializes media hosting connections for profile avatars and claim photos.
+
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
 

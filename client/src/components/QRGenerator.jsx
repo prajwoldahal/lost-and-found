@@ -1,5 +1,9 @@
+// File: QRGenerator.jsx
+// Description: QR Code Renderer: Turns individual item links into scannable QR images for physical flyers.
+
 import QRCode from 'react-qr-code';
 
+// React Component: Renders the QRGenerator user interface elements dynamically
 export default function QRGenerator({ value }) {
     const downloadQR = () => {
         try {

@@ -1,3 +1,6 @@
+// File: AdminSidebar.jsx
+// Description: Module: Handles AdminSidebar logical operations.
+
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -17,6 +20,7 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+// React Component: Renders the AdminSidebar user interface elements dynamically
 export default function AdminSidebar() {
     const { t } = useTranslation();
     const location = useLocation();

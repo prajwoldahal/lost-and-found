@@ -1,3 +1,6 @@
+// File: auth.js
+// Description: Security Guard Middleware: Validates JWT session tokens, decrypts identities using Firebase Admin, and blocks non-admins.
+
 import { auth, db } from '../config/firebase.js';
 import fs from 'fs';
 import path from 'path';
@@ -14,6 +17,7 @@ const logAuth = (msg) => {
 /**
  * Middleware to verify Firebase ID tokens and attach user profile to req.user
  */
+// Controller Action: Handles requests to authMiddleware, reads parameters, interacts with database, and sends json results back
 export const authMiddleware = async (req, res, next) => {
     try {
         const authHeader = req.header('Authorization');
@@ -67,6 +71,7 @@ export const authMiddleware = async (req, res, next) => {
  * Middleware that populates req.user if a valid token is present,
  * but allows the request to continue if no token is provided.
  */
+// Controller Action: Handles requests to optionalAuthMiddleware, reads parameters, interacts with database, and sends json results back
 export const optionalAuthMiddleware = async (req, res, next) => {
     try {
         const authHeader = req.header('Authorization');
@@ -100,6 +105,7 @@ export const optionalAuthMiddleware = async (req, res, next) => {
 /**
  * Middleware to restrict access to admin users
  */
+// Controller Action: Handles requests to adminMiddleware, reads parameters, interacts with database, and sends json results back
 export const adminMiddleware = async (req, res, next) => {
     try {
         // req.user is populated by authMiddleware which runs before this

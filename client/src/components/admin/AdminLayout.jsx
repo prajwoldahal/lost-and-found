@@ -1,6 +1,10 @@
+// File: AdminLayout.jsx
+// Description: Admin Panel Sidebar Layout: Navigation sidebar for moderators to jump between logs, claims, and reports.
+
 import AdminSidebar from './AdminSidebar';
 import { useTranslation } from 'react-i18next';
 
+// React Component: Renders the AdminLayout user interface elements dynamically
 export default function AdminLayout({ children }) {
     const { t, i18n } = useTranslation();
 

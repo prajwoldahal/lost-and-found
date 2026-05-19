@@ -1,5 +1,9 @@
+// File: Layout.jsx
+// Description: Main Layout Wrapper: Standard framing for the website, rendering the top Navbar and global footer.
+
 import Navbar from './Navbar';
 
+// React Component: Renders the Layout user interface elements dynamically
 export default function Layout({ children }) {
     return (
         <div className="min-h-screen bg-background dark:bg-gray-950 text-slate-900 dark:text-white flex flex-col transition-colors duration-500 font-outfit">

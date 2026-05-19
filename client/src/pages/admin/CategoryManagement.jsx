@@ -1,9 +1,13 @@
+// File: CategoryManagement.jsx
+// Description: Module: Handles CategoryManagement logical operations.
+
 import { useState, useEffect } from 'react';
 import { adminAPI, postAPI } from '../../services/api';
 import { Plus, Edit2, Trash2, MapPin, Tag, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
+// React Component: Renders the CategoryManagement user interface elements dynamically
 export default function CategoryManagement() {
     const { t } = useTranslation();
     const [categories, setCategories] = useState([]);
@@ -12,7 +16,8 @@ export default function CategoryManagement() {
     const [showAddCategory, setShowAddCategory] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         fetchData();
     }, []);
 

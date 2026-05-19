@@ -1,3 +1,6 @@
+// File: chatService.js
+// Description: Chat Service: Helper scripts managing chat listings, message structures, and real-time database listener connections.
+
 import { db, storage } from './firebase';
 import {
     collection,

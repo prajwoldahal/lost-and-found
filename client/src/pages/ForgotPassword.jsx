@@ -1,3 +1,6 @@
+// File: ForgotPassword.jsx
+// Description: ForgotPassword Page: Allows users to input their email and request a secure Firebase password reset link.
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -5,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Mail, ArrowLeft, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+// React Component: Renders the ForgotPassword user interface elements dynamically
 export default function ForgotPassword() {
     const { t } = useTranslation();
     const [email, setEmail] = useState('');

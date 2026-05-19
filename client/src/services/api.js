@@ -1,3 +1,6 @@
+// File: api.js
+// Description: API Axios Client: Configures network request parameters, registers automated JWT token auth headers, and handles HTTP calls to Node.js backend routes.
+
 import axios from 'axios';
 import { auth } from './firebase';
 

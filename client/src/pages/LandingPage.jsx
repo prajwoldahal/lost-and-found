@@ -1,3 +1,6 @@
+// File: LandingPage.jsx
+// Description: Landing Page: The attractive public welcoming homepage featuring statistics, search portals, and community instructions.
+
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
@@ -6,6 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Search, MapPin, Shield, MessageCircle, QrCode, Globe, ArrowRight, CheckCircle, Moon, Sun } from 'lucide-react';
 
+// React Component: Renders the LandingPage user interface elements dynamically
 export default function LandingPage() {
     const { t, i18n } = useTranslation();
     const { currentUser, logout } = useAuth();
@@ -13,7 +17,8 @@ export default function LandingPage() {
     const navigate = useNavigate();
 
     // Redirect authenticated users to dashboard
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (currentUser) {
             navigate('/dashboard');
         }

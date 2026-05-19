@@ -1,3 +1,6 @@
+// File: AdminDashboard.jsx
+// Description: Module: Handles AdminDashboard logical operations.
+
 import { useState, useEffect } from 'react';
 import { Users, FileText, Flag, TrendingUp, Clock, Activity, Loader2, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -17,6 +20,7 @@ import {
     Area
 } from 'recharts';
 
+// React Component: Renders the AdminDashboard user interface elements dynamically
 export default function AdminDashboard() {
     const { t } = useTranslation();
     const [loading, setLoading] = useState(true);
@@ -33,7 +37,8 @@ export default function AdminDashboard() {
     });
     const [recentPosts, setRecentPosts] = useState([]);
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         const fetchStats = async () => {
             try {
                 console.log('🔄 Fetching admin stats...');

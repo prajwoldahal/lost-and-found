@@ -1,3 +1,6 @@
+// File: pdfGenerator.js
+// Description: Module: Handles pdfGenerator logical operations.
+
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 

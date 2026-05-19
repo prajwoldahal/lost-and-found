@@ -1,3 +1,6 @@
+// File: uploadMiddleware.js
+// Description: Multer Upload Middleware: Manages incoming file multi-part streams, keeping uploaded photos safely in memory.
+
 import multer from 'multer';
 
 const storage = multer.memoryStorage();

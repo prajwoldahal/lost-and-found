@@ -1,3 +1,6 @@
+// File: ItemsMap.jsx
+// Description: Dashboard Map View: Renders custom markers on a Leaflet map representing nearby lost or found posts.
+
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import 'leaflet/dist/leaflet.css';
@@ -10,7 +13,8 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 // Component to handle map center changes
 function MapController({ center }) {
     const map = useMap();
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (center) {
             map.flyTo(center, map.getZoom(), { duration: 1.5 });
         }
@@ -42,6 +46,7 @@ const UserLocationIcon = L.divIcon({
 });
 
 
+// React Component: Renders the ItemsMap user interface elements dynamically
 export default function ItemsMap({ items, center = [27.7172, 85.3240], userLocation }) {
     return (
         <div style={{ height: '500px', width: '100%', borderRadius: '0.75rem', overflow: 'hidden' }}>

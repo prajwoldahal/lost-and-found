@@ -1,3 +1,6 @@
+// File: CreatePost.jsx
+// Description: Create Post Page: Multi-step report form where community members upload lost or found item details, attach photos, and pin maps.
+
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -7,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { Loader2, Upload, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+// React Component: Renders the CreatePost user interface elements dynamically
 export default function CreatePost() {
     const { t } = useTranslation();
     const { currentUser, userData } = useAuth();
@@ -28,7 +32,8 @@ export default function CreatePost() {
     const [isDragging, setIsDragging] = useState(false);
     const [existingMedia, setExistingMedia] = useState([]);
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (isEditMode) {
             const fetchPost = async () => {
                 try {

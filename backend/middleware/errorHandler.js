@@ -1,3 +1,6 @@
+// File: errorHandler.js
+// Description: Error Handler Middleware: Catches unexpected controller bugs, logs errors, and returns clean JSON failures.
+
 export const errorHandler = (err, req, res, next) => {
     console.error(err.stack);
 

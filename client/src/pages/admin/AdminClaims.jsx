@@ -1,16 +1,21 @@
+// File: AdminClaims.jsx
+// Description: Module: Handles AdminClaims logical operations.
+
 import { useState, useEffect } from 'react';
 import { claimAPI } from '../../services/api';
 import { Check, X, Shield, Eye, Loader2, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
+// React Component: Renders the AdminClaims user interface elements dynamically
 export default function AdminClaims() {
     const { t } = useTranslation();
     const [claims, setClaims] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedClaim, setSelectedClaim] = useState(null);
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         const fetchClaims = async () => {
             try {
                 const response = await claimAPI.getAllAdmin();

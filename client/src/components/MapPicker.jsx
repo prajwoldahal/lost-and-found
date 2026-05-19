@@ -1,3 +1,6 @@
+// File: MapPicker.jsx
+// Description: Interactive Map Coordinate Picker: Lets users click on a Leaflet map to capture Latitude and Longitude during reporting.
+
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -48,7 +51,8 @@ function LocationMarker({ position, setPosition }) {
 // Component to handle map center changes
 function MapController({ center }) {
     const map = useMapEvents({});
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (center) {
             map.flyTo(center, map.getZoom());
         }
@@ -56,6 +60,7 @@ function MapController({ center }) {
     return null;
 }
 
+// React Component: Renders the MapPicker user interface elements dynamically
 export default function MapPicker({ location, onLocationSelect }) {
     const [center, setCenter] = useState({ lat: 27.7172, lng: 85.3240 }); // Default: Kathmandu
     const [loadingLocation, setLoadingLocation] = useState(false);

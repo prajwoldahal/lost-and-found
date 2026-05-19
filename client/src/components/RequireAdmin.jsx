@@ -1,6 +1,10 @@
+// File: RequireAdmin.jsx
+// Description: Admin Guard Layer: Protects moderator dashboards by blocking regular user accounts.
+
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+// React Component: Renders the RequireAdmin user interface elements dynamically
 export default function RequireAdmin({ children }) {
     const { currentUser, userData, loading } = useAuth();
 

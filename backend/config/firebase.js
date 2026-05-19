@@ -1,3 +1,6 @@
+// File: firebase.js
+// Description: Firebase Core Config: Initializes the frontend connection to Google Firebase Auth, Firestore Database, and Cloud Storage.
+
 import admin from 'firebase-admin';
 import dotenv from 'dotenv';
 import { readFileSync, existsSync } from 'fs';

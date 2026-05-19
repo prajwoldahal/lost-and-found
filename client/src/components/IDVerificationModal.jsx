@@ -1,8 +1,12 @@
+// File: IDVerificationModal.jsx
+// Description: ID Verification Dialog: Form enabling users to submit copies of identity cards for admin checkmark reviews.
+
 import { useState } from 'react';
 import { X, Upload, Shield, CheckCircle, AlertTriangle, Loader2, PlusCircle } from 'lucide-react';
 import { claimAPI, userAPI } from '../services/api';
 import toast from 'react-hot-toast';
 
+// React Component: Renders the IDVerificationModal user interface elements dynamically
 export default function IDVerificationModal({ isOpen, onClose, onConfirm, item, isAccountVerification = false }) {
     const [idType, setIdType] = useState('');
     const [idNumber, setIdNumber] = useState('');

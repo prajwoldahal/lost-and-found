@@ -1,3 +1,6 @@
+// File: AdminSettings.jsx
+// Description: Module: Handles AdminSettings logical operations.
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { adminAPI } from '../../services/api';
@@ -7,6 +10,7 @@ import {
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
+// React Component: Renders the AdminSettings user interface elements dynamically
 export default function AdminSettings() {
     const { t } = useTranslation();
     const { userData } = useAuth();
@@ -19,7 +23,8 @@ export default function AdminSettings() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         fetchSettings();
     }, []);
 

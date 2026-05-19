@@ -1,3 +1,6 @@
+// File: notificationService.js
+// Description: Notification Service: Triggers user alerts, updates message unread badge counts, and reads notification databases.
+
 import { db } from './firebase';
 import {
     collection,

@@ -1,3 +1,6 @@
+// File: Search.jsx
+// Description: Search Portal: Features filters for dates, locations, categories, and keywords to help searchers find specific lost belongings.
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { postAPI } from '../services/api';
@@ -6,6 +9,7 @@ import VerifiedBadge from '../components/VerifiedBadge';
 import { useTranslation } from 'react-i18next';
 import { Search as SearchIcon, Filter, MapPin, Calendar, Tag, SlidersHorizontal, X, Map as MapIcon, Grid3x3, Loader2 } from 'lucide-react';
 
+// React Component: Renders the Search user interface elements dynamically
 export default function Search() {
     const { t } = useTranslation();
     const [searchTerm, setSearchTerm] = useState('');
@@ -47,7 +51,8 @@ export default function Search() {
     };
 
     // Get user location
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -68,7 +73,8 @@ export default function Search() {
     }, []);
 
     // Fetch items from Firestore
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         setLoading(true);
         // Safety timeout
         const timer = setTimeout(() => {
@@ -98,7 +104,8 @@ export default function Search() {
     }, []);
 
     // Filter items
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         let result = [...items];
 
         // Search filter

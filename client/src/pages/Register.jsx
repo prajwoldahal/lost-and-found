@@ -1,3 +1,6 @@
+// File: Register.jsx
+// Description: User Registration Page: Form checking password strength and user details to register a new user in Firebase Auth and Node.js.
+
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -5,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Shield, Upload, CheckCircle, Info, Eye, EyeOff, Check, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+// React Component: Renders the Register user interface elements dynamically
 export default function Register() {
     const { t } = useTranslation();
     const { signup, loginWithGoogle } = useAuth();

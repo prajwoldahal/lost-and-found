@@ -1,3 +1,6 @@
+// File: VerifyEmail.jsx
+// Description: Verify Email Page: Simple screen asking new signups to verify their email address before accessing the feed.
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -5,6 +8,7 @@ import { Mail, RefreshCw, LogOut, Loader2, CheckCircle2, AlertCircle } from 'luc
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
+// React Component: Renders the VerifyEmail user interface elements dynamically
 export default function VerifyEmail() {
     const { t } = useTranslation();
     const { currentUser, logout, sendVerification } = useAuth();
@@ -12,7 +16,8 @@ export default function VerifyEmail() {
     const [cooldown, setCooldown] = useState(0);
     const navigate = useNavigate();
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (!currentUser) {
             navigate('/login');
             return;

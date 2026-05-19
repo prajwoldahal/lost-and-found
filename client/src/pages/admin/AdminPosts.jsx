@@ -1,3 +1,6 @@
+// File: AdminPosts.jsx
+// Description: Module: Handles AdminPosts logical operations.
+
 import { useState, useEffect } from 'react';
 import { adminAPI } from '../../services/api';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +20,7 @@ import {
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
+// React Component: Renders the AdminPosts user interface elements dynamically
 export default function AdminPosts() {
     const { t } = useTranslation();
     const [posts, setPosts] = useState([]);
@@ -37,7 +41,8 @@ export default function AdminPosts() {
     // Post image preview modal
     const [previewPost, setPreviewPost] = useState(null);
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         fetchPosts();
     }, []);
 

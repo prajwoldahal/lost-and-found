@@ -1,3 +1,6 @@
+// File: AdminLogin.jsx
+// Description: Module: Handles AdminLogin logical operations.
+
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
@@ -5,6 +8,7 @@ import toast from 'react-hot-toast';
 import { Shield, Lock, Mail, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+// React Component: Renders the AdminLogin user interface elements dynamically
 export default function AdminLogin() {
     const { t } = useTranslation();
     const { adminLogin } = useAuth();

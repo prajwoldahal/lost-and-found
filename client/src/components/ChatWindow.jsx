@@ -1,9 +1,13 @@
+// File: ChatWindow.jsx
+// Description: Chat Conversation Thread: Renders real-time message lines, read receipts, sender alignments, and input forms.
+
 import { useState, useEffect, useRef } from 'react';
 import { listenToChatMessages, sendMessage } from '../services/chatService';
 import { useAuth } from '../context/AuthContext';
 import { Send, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+// React Component: Renders the ChatWindow user interface elements dynamically
 export default function ChatWindow({ chatId, currentUserId, otherUserId }) {
     const { userData } = useAuth();
     const [messages, setMessages] = useState([]);
@@ -17,12 +21,14 @@ export default function ChatWindow({ chatId, currentUserId, otherUserId }) {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
     // Listen to messages in real-time
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (!chatId) {
             setLoading(false);
             return;

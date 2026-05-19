@@ -1,3 +1,6 @@
+// File: Navbar.jsx
+// Description: Top Navigation Bar: Responsive header managing theme changes, language switching (English/Nepali), and inbox alerts.
+
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
@@ -7,6 +10,7 @@ import { LogOut, User, Globe, PlusCircle, Shield, MessageCircle, Trophy, AlertTr
 import { useState, useRef, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 
+// React Component: Renders the Navbar user interface elements dynamically
 export default function Navbar() {
     const { t, i18n } = useTranslation();
     const { currentUser, userData, logout, loading } = useAuth();
@@ -22,7 +26,8 @@ export default function Navbar() {
     const isActive = (path) => location.pathname === path;
 
     // Close dropdown on click outside
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         function handleClickOutside(event) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowProfileDropdown(false);

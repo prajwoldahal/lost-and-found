@@ -1,3 +1,6 @@
+// File: Settings.jsx
+// Description: Settings Page: Secure dashboard to edit display names, upload profile avatars, request email modifications, and delete accounts.
+
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +19,7 @@ import { updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 
 import { auth } from '../services/firebase';
 import VerifiedBadge from '../components/VerifiedBadge';
 
+// React Component: Renders the Settings user interface elements dynamically
 export default function Settings() {
     const { currentUser, userData, logout, updateProfileData, updateUserEmail } = useAuth();
     const { isDarkMode, toggleTheme } = useTheme();
@@ -145,7 +149,8 @@ export default function Settings() {
             setUploadingPhoto(false);
         }
     };
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (currentUser) {
             fetchUserData();
             fetchBlockedUsers();
@@ -176,7 +181,8 @@ export default function Settings() {
         }
     };
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         const params = new URLSearchParams(location.search);
         const sectionParam = params.get('section');
         if (sectionParam) {

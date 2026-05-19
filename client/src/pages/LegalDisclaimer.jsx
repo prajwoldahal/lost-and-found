@@ -1,6 +1,10 @@
+// File: LegalDisclaimer.jsx
+// Description: Legal Disclaimer Page: Contains liability notices, terms of service agreements, and legal guidelines for returns.
+
 import { Link } from 'react-router-dom';
 import { AlertTriangle, Shield, Phone } from 'lucide-react';
 
+// React Component: Renders the LegalDisclaimer user interface elements dynamically
 export default function LegalDisclaimer() {
     return (
         <div className="min-h-screen bg-gray-50 py-12">

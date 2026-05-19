@@ -1,3 +1,6 @@
+// File: PostDetails.jsx
+// Description: Post Details Page: Displays full description, photos, scannable QRs, Leaflet maps, and claim buttons for one specific post.
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { postAPI, chatAPI, userAPI, claimAPI, blockAPI } from '../services/api';
@@ -33,6 +36,7 @@ let DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
+// React Component: Renders the PostDetails user interface elements dynamically
 export default function PostDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -63,7 +67,8 @@ export default function PostDetails() {
     const [isBlockedByOther, setIsBlockedByOther] = useState(false);
     const [isBlocking, setIsBlocking] = useState(false);
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         const fetchPostAndCreator = async () => {
             try {
                 setLoading(true);
@@ -93,13 +98,15 @@ export default function PostDetails() {
     }, [id]);
 
     // Update creator if it's the current user and userData changes (e.g. photo sync)
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (currentUser && creator && currentUser.uid === creator.uid && userData) {
             setCreator(prev => ({ ...prev, ...userData }));
         }
     }, [userData, currentUser, creator?.uid]);
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         // Check for existing chat
         const checkExistingChat = async () => {
             if (!currentUser || !id) return;
@@ -118,7 +125,8 @@ export default function PostDetails() {
         if (id && currentUser) checkExistingChat();
     }, [id, currentUser]);
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         const checkBlock = async () => {
             if (!currentUser || !post?.createdBy) return;
             try {

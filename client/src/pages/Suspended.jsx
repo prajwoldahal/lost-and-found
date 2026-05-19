@@ -1,15 +1,20 @@
+// File: Suspended.jsx
+// Description: Suspension screen: Displayed if an administrator suspends or bans a user account for policy violations.
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { Navigate } from 'react-router-dom';
 import { ShieldAlert, LogOut, Mail, Clock } from 'lucide-react';
 
+// React Component: Renders the Suspended user interface elements dynamically
 export default function Suspended() {
     const { t } = useTranslation();
     const { userData, logout } = useAuth();
     const [timeLeft, setTimeLeft] = useState('');
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (!userData?.suspendedUntil) return;
 
         const timer = setInterval(() => {

@@ -1,3 +1,6 @@
+// File: server.js
+// Description: Backend Main Engine: Sets up Express routes, applies global middleware (CORS, JSON parsers), and runs on port 5000.
+
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';

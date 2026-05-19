@@ -1,3 +1,6 @@
+// File: chatController.js
+// Description: Chat Controller: Manages messaging, creates chat threads, handles read receipts, and registers blocked users.
+
 import { db } from '../config/firebase.js';
 import { uploadToCloudinary } from '../utils/cloudinaryUpload.js';
 
@@ -13,6 +16,7 @@ const checkBlocked = async (uid1, uid2) => {
     };
 };
 
+// Controller Action: Handles requests to createChat, reads parameters, interacts with database, and sends json results back
 export const createChat = async (req, res) => {
     try {
         const { recipientId, postId, postTitle, message } = req.body;
@@ -81,6 +85,7 @@ export const createChat = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to sendMessage, reads parameters, interacts with database, and sends json results back
 export const sendMessage = async (req, res) => {
     try {
         const { chatId, text } = req.body;
@@ -142,6 +147,7 @@ export const sendMessage = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to deleteMessage, reads parameters, interacts with database, and sends json results back
 export const deleteMessage = async (req, res) => {
     try {
         const { chatId, messageId } = req.params;
@@ -198,6 +204,7 @@ export const deleteMessage = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to getMessages, reads parameters, interacts with database, and sends json results back
 export const getMessages = async (req, res) => {
     try {
         const { chatId } = req.params;
@@ -215,6 +222,7 @@ export const getMessages = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to getChats, reads parameters, interacts with database, and sends json results back
 export const getChats = async (req, res) => {
     try {
         const { uid } = req.user;
@@ -269,6 +277,7 @@ export const getChats = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to acceptChat, reads parameters, interacts with database, and sends json results back
 export const acceptChat = async (req, res) => {
     try {
         const { chatId } = req.params;
@@ -291,6 +300,7 @@ export const acceptChat = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to rejectChat, reads parameters, interacts with database, and sends json results back
 export const rejectChat = async (req, res) => {
     try {
         const { chatId } = req.params;
@@ -301,6 +311,7 @@ export const rejectChat = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to markChatRead, reads parameters, interacts with database, and sends json results back
 export const markChatRead = async (req, res) => {
     try {
         const { chatId } = req.params;
@@ -320,6 +331,7 @@ export const markChatRead = async (req, res) => {
 };
 
 // Block a user
+// Controller Action: Handles requests to blockUser, reads parameters, interacts with database, and sends json results back
 export const blockUser = async (req, res) => {
     try {
         const { userId } = req.params;
@@ -340,6 +352,7 @@ export const blockUser = async (req, res) => {
 };
 
 // Unblock a user
+// Controller Action: Handles requests to unblockUser, reads parameters, interacts with database, and sends json results back
 export const unblockUser = async (req, res) => {
     try {
         const { userId } = req.params;
@@ -354,6 +367,7 @@ export const unblockUser = async (req, res) => {
 };
 
 // Get list of blocked user profiles
+// Controller Action: Handles requests to getBlockedUsers, reads parameters, interacts with database, and sends json results back
 export const getBlockedUsers = async (req, res) => {
     try {
         const { uid } = req.user;
@@ -380,6 +394,7 @@ export const getBlockedUsers = async (req, res) => {
 };
 
 // Check block status between current user and another user
+// Controller Action: Handles requests to checkBlockStatus, reads parameters, interacts with database, and sends json results back
 export const checkBlockStatus = async (req, res) => {
     try {
         const { userId } = req.params;

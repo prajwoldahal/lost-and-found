@@ -1,3 +1,6 @@
+// File: cloudinaryUpload.js
+// Description: Cloudinary Media Helper: Handles resizing, optimizing, and transferring local memory streams to Cloudinary cloud hosts.
+
 import cloudinary from '../config/cloudinary.js';
 
 export const uploadToCloudinary = (fileBuffer, folder = 'lost-and-found') => {

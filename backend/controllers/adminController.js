@@ -1,7 +1,11 @@
+// File: adminController.js
+// Description: Admin Controller: Handles moderator dashboards, user banning, category resets, and government ID approvals.
+
 import { db, auth as firebaseAuth } from '../config/firebase.js';
 import { updateUserPoints } from './userController.js';
 import { createNotification, sendProximityAlerts } from '../utils/notificationUtils.js';
 
+// Controller Action: Handles requests to getStats, reads parameters, interacts with database, and sends json results back
 export const getStats = async (req, res) => {
     try {
         console.log('📊 Admin Stats Request - User:', req.user?.email, 'UID:', req.user?.uid);
@@ -76,6 +80,7 @@ export const getStats = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to approvePost, reads parameters, interacts with database, and sends json results back
 export const approvePost = async (req, res) => {
     try {
         const { id } = req.params;
@@ -133,6 +138,7 @@ export const approvePost = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to rejectPost, reads parameters, interacts with database, and sends json results back
 export const rejectPost = async (req, res) => {
     try {
         const { id } = req.params;
@@ -181,6 +187,7 @@ export const rejectPost = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to deletePostAdmin, reads parameters, interacts with database, and sends json results back
 export const deletePostAdmin = async (req, res) => {
     try {
         const { id } = req.params;
@@ -230,6 +237,7 @@ export const deletePostAdmin = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to getAllPostsAdmin, reads parameters, interacts with database, and sends json results back
 export const getAllPostsAdmin = async (req, res) => {
     try {
         const snapshot = await db.collection('posts').get();
@@ -245,6 +253,7 @@ export const getAllPostsAdmin = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to getUsers, reads parameters, interacts with database, and sends json results back
 export const getUsers = async (req, res) => {
     try {
         console.log('👥 Get Users Request - User:', req.user?.email);
@@ -263,6 +272,7 @@ export const getUsers = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to getReports, reads parameters, interacts with database, and sends json results back
 export const getReports = async (req, res) => {
     try {
         const reportsSnapshot = await db.collection('reports').get();
@@ -273,6 +283,7 @@ export const getReports = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to updateReportStatus, reads parameters, interacts with database, and sends json results back
 export const updateReportStatus = async (req, res) => {
     try {
         const { id } = req.params;
@@ -284,6 +295,7 @@ export const updateReportStatus = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to syncUsers, reads parameters, interacts with database, and sends json results back
 export const syncUsers = async (req, res) => {
     try {
         console.log('Starting user synchronization...');
@@ -340,6 +352,7 @@ export const syncUsers = async (req, res) => {
 };
 
 // Ban a user
+// Controller Action: Handles requests to banUser, reads parameters, interacts with database, and sends json results back
 export const banUser = async (req, res) => {
     try {
         const { id } = req.params;
@@ -401,6 +414,7 @@ export const banUser = async (req, res) => {
 };
 
 // Unban a user
+// Controller Action: Handles requests to unbanUser, reads parameters, interacts with database, and sends json results back
 export const unbanUser = async (req, res) => {
     try {
         const { id } = req.params;
@@ -447,6 +461,7 @@ export const unbanUser = async (req, res) => {
 };
 
 // Verify User Identity
+// Controller Action: Handles requests to verifyUserIdentity, reads parameters, interacts with database, and sends json results back
 export const verifyUserIdentity = async (req, res) => {
     try {
         const { id } = req.params;
@@ -492,6 +507,7 @@ export const verifyUserIdentity = async (req, res) => {
 };
 
 // Reject User Identity Verification
+// Controller Action: Handles requests to rejectUserIdentity, reads parameters, interacts with database, and sends json results back
 export const rejectUserIdentity = async (req, res) => {
     try {
         const { id } = req.params;
@@ -536,6 +552,7 @@ export const rejectUserIdentity = async (req, res) => {
     }
 };
 // System Settings
+// Controller Action: Handles requests to getSystemSettings, reads parameters, interacts with database, and sends json results back
 export const getSystemSettings = async (req, res) => {
     try {
         const doc = await db.collection('system').doc('settings').get();
@@ -558,6 +575,7 @@ export const getSystemSettings = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to updateSystemSettings, reads parameters, interacts with database, and sends json results back
 export const updateSystemSettings = async (req, res) => {
     try {
         const updates = {

@@ -1,3 +1,6 @@
+// File: AdminLogs.jsx
+// Description: Module: Handles AdminLogs logical operations.
+
 import { useState, useEffect } from 'react';
 import { logAPI } from '../../services/api';
 import {
@@ -18,6 +21,7 @@ import toast from 'react-hot-toast';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 
+// React Component: Renders the AdminLogs user interface elements dynamically
 export default function AdminLogs() {
     const { t } = useTranslation();
     const [logs, setLogs] = useState([]);
@@ -26,11 +30,13 @@ export default function AdminLogs() {
     const [searchQuery, setSearchQuery] = useState('');
     const [autoRefresh, setAutoRefresh] = useState(false);
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         fetchLogs();
     }, [levelFilter]);
 
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (autoRefresh) {
             const interval = setInterval(fetchLogs, 5000); // Refresh every 5 seconds
             return () => clearInterval(interval);

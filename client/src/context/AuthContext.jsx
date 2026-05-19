@@ -1,3 +1,6 @@
+// File: AuthContext.jsx
+// Description: Authentication Context: Manages global user login states, handles signup/login routines with Firebase, and synchronizes user profile records with the database backend.
+
 import { createContext, useContext, useState, useEffect } from 'react';
 import {
     signInWithEmailAndPassword,
@@ -27,7 +30,8 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
     // Initial session setup and auth state listener
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         const unsubscribe = onIdTokenChanged(auth, async (user) => {
             // Safety timeout for profile fetch
             const profileTimer = setTimeout(() => {

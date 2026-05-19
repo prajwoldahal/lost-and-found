@@ -1,6 +1,10 @@
+// File: PrivacyPolicy.jsx
+// Description: Privacy Policy Page: Outlines rules regarding user data collection, Firebase accounts, and Cloudinary photo storage.
+
 import { Link } from 'react-router-dom';
 import { Shield, Lock, Eye, Database, UserX, FileText } from 'lucide-react';
 
+// React Component: Renders the PrivacyPolicy user interface elements dynamically
 export default function PrivacyPolicy() {
     return (
         <div className="min-h-screen bg-gray-50 py-12">

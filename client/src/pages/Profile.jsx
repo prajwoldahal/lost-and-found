@@ -1,3 +1,6 @@
+// File: Profile.jsx
+// Description: User Profile Page: Public-facing card showing rewards badges, active posts count, and total returned items points.
+
 import { useState, useEffect, useRef } from 'react';
 import { Link, useSearchParams, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -9,6 +12,7 @@ import toast from 'react-hot-toast';
 import { storage } from '../services/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
+// React Component: Renders the Profile user interface elements dynamically
 export default function Profile() {
     return <Navigate to="/settings?section=profile" replace />;
     const { currentUser, userData, loading: authLoading, updateProfileData, logout } = useAuth();
@@ -35,7 +39,8 @@ export default function Profile() {
     });
 
     // Check for verify query parameter
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (searchParams.get('verify') === 'true') {
             setShowVerificationModal(true);
             searchParams.delete('verify');
@@ -44,7 +49,8 @@ export default function Profile() {
     }, [searchParams, setSearchParams]);
 
     // Update editedData when userData is loaded
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         if (userData) {
             setEditedData({
                 displayName: userData.displayName || userData.name || '',
@@ -56,7 +62,8 @@ export default function Profile() {
     }, [userData]);
 
     // Fetch user posts and claims
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         const fetchData = async () => {
             if (!currentUserId) return;
 

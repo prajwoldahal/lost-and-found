@@ -1,3 +1,6 @@
+// File: Login.jsx
+// Description: User Login Page: Secure portal for users to access their dashboard using their email and password or Google Sign-In.
+
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -5,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+// React Component: Renders the Login user interface elements dynamically
 export default function Login() {
     const { t } = useTranslation();
     const { login, loginWithGoogle } = useAuth();

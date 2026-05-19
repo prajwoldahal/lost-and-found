@@ -1,3 +1,6 @@
+// File: authController.js
+// Description: Auth Controller: Synchronizes Firebase accounts with backend databases and configures admin roles.
+
 import { auth, db } from '../config/firebase.js';
 
 /**
@@ -5,6 +8,7 @@ import { auth, db } from '../config/firebase.js';
  */
 
 // Register a new user
+// Controller Action: Handles requests to register, reads parameters, interacts with database, and sends json results back
 export const register = async (req, res) => {
     try {
         const { email, password, name } = req.body;
@@ -54,6 +58,7 @@ export const register = async (req, res) => {
 // Login simulation / ID Token check
 // Usually, login is done on the client side using Firebase SDK. 
 // The client then sends the ID Token to the backend.
+// Controller Action: Handles requests to login, reads parameters, interacts with database, and sends json results back
 export const login = async (req, res) => {
     try {
         const { idToken } = req.body;
@@ -98,6 +103,7 @@ export const login = async (req, res) => {
 
 
 // Get profile (Protected route)
+// Controller Action: Handles requests to getProfile, reads parameters, interacts with database, and sends json results back
 export const getProfile = async (req, res) => {
     // req.user is populated by the authMiddleware
     if (!req.user) {
@@ -107,6 +113,7 @@ export const getProfile = async (req, res) => {
 };
 
 // Update user profile
+// Controller Action: Handles requests to updateUserProfile, reads parameters, interacts with database, and sends json results back
 export const updateUserProfile = async (req, res) => {
     try {
         const { uid } = req.user;
@@ -135,6 +142,7 @@ export const updateUserProfile = async (req, res) => {
 };
 
 // Admin only route
+// Controller Action: Handles requests to adminDashboard, reads parameters, interacts with database, and sends json results back
 export const adminDashboard = async (req, res) => {
     res.json({
         message: 'Welcome to the Admin Dashboard',

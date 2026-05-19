@@ -1,3 +1,6 @@
+// File: ReportUserModal.jsx
+// Description: Report User Dialog: Allows users to flag abusive community members directly for administrative review.
+
 import { useState } from 'react';
 import { X, AlertTriangle, Send, Loader2, Shield, User } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -11,6 +14,7 @@ const REASONS = [
     { id: 'other', label: 'Other' }
 ];
 
+// React Component: Renders the ReportUserModal user interface elements dynamically
 export default function ReportUserModal({ isOpen, onClose, userId, userName }) {
     const [reason, setReason] = useState('');
     const [details, setDetails] = useState('');

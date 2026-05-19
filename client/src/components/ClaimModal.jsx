@@ -1,8 +1,12 @@
+// File: ClaimModal.jsx
+// Description: Item Claim Form: Pop-up overlay forcing claimers to submit detailed proof, descriptions, and verification docs.
+
 import { useState } from 'react';
 import { X, CheckCircle, AlertCircle, Shield, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+// React Component: Renders the ClaimModal user interface elements dynamically
 export default function ClaimModal({ isOpen, onClose, onConfirm, item }) {
     const { userData } = useAuth();
     const navigate = useNavigate();

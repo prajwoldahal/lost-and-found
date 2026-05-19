@@ -1,8 +1,12 @@
+// File: claimController.js
+// Description: Claim Controller: Manages lost/found matches, reviews verification documents, and processes rewards points.
+
 import { db } from '../config/firebase.js';
 import { updateUserPoints } from './userController.js';
 import { uploadToCloudinary } from '../utils/cloudinaryUpload.js';
 import { createNotification } from '../utils/notificationUtils.js';
 
+// Controller Action: Handles requests to createClaim, reads parameters, interacts with database, and sends json results back
 export const createClaim = async (req, res) => {
     try {
         const { postId, itemTitle, idType, idNumber, message } = req.body;
@@ -73,6 +77,7 @@ export const createClaim = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to getMyClaims, reads parameters, interacts with database, and sends json results back
 export const getMyClaims = async (req, res) => {
     try {
         const { uid } = req.user;
@@ -87,6 +92,7 @@ export const getMyClaims = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to getAllClaimsAdmin, reads parameters, interacts with database, and sends json results back
 export const getAllClaimsAdmin = async (req, res) => {
     try {
         const snapshot = await db.collection('claims')
@@ -100,6 +106,7 @@ export const getAllClaimsAdmin = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to updateClaimStatus, reads parameters, interacts with database, and sends json results back
 export const updateClaimStatus = async (req, res) => {
     try {
         const { id } = req.params;

@@ -1,3 +1,6 @@
+// File: Rewards.jsx
+// Description: Rewards Page: Lists total points, badge tiers, and a global leaderboard ranking users by returned-items points.
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Trophy, Award, Star, TrendingUp, Medal, Crown, ChevronUp, ChevronDown } from 'lucide-react';
@@ -6,6 +9,7 @@ import VerifiedBadge from '../components/VerifiedBadge';
 import { useTranslation } from 'react-i18next';
 import { userAPI } from '../services/api';
 
+// React Component: Renders the Rewards user interface elements dynamically
 export default function Rewards() {
     const { t } = useTranslation();
     const { userData } = useAuth();
@@ -13,7 +17,8 @@ export default function Rewards() {
     const [loading, setLoading] = useState(true);
 
     // Fetch real leaderboard data
-    useEffect(() => {
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
                 const response = await userAPI.getLeaderboard();

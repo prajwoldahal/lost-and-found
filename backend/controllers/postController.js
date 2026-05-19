@@ -1,8 +1,12 @@
+// File: postController.js
+// Description: Post Controller: Manages database CRUD actions, processes image attachments, handles reports, and lists dashboard feeds.
+
 import { db } from '../config/firebase.js';
 import { updateUserPoints } from './userController.js';
 import { sendProximityAlerts } from '../utils/notificationUtils.js';
 import { uploadToCloudinary } from '../utils/cloudinaryUpload.js';
 
+// Controller Action: Handles requests to createPost, reads parameters, interacts with database, and sends json results back
 export const createPost = async (req, res) => {
     try {
         const { title, description, type, category, date, creatorName, creatorPhoto } = req.body;
@@ -61,6 +65,7 @@ export const createPost = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to getPosts, reads parameters, interacts with database, and sends json results back
 export const getPosts = async (req, res) => {
     try {
         const { type, category, limit = 50 } = req.query;
@@ -104,6 +109,7 @@ export const getPosts = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to getPost, reads parameters, interacts with database, and sends json results back
 export const getPost = async (req, res) => {
     try {
         const { id } = req.params;
@@ -119,6 +125,7 @@ export const getPost = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to updatePost, reads parameters, interacts with database, and sends json results back
 export const updatePost = async (req, res) => {
     try {
         const { id } = req.params;
@@ -150,6 +157,7 @@ export const updatePost = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to deletePost, reads parameters, interacts with database, and sends json results back
 export const deletePost = async (req, res) => {
     try {
         const { id } = req.params;
@@ -160,6 +168,7 @@ export const deletePost = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to getUserPosts, reads parameters, interacts with database, and sends json results back
 export const getUserPosts = async (req, res) => {
     try {
         const { uid } = req.user;
@@ -178,6 +187,7 @@ export const getUserPosts = async (req, res) => {
     }
 };
 
+// Controller Action: Handles requests to reportPost, reads parameters, interacts with database, and sends json results back
 export const reportPost = async (req, res) => {
     try {
         const { id } = req.params;
@@ -200,6 +210,7 @@ export const reportPost = async (req, res) => {
 };
 
 // Mark item as returned
+// Controller Action: Handles requests to markAsReturned, reads parameters, interacts with database, and sends json results back
 export const markAsReturned = async (req, res) => {
     try {
         const { id } = req.params;

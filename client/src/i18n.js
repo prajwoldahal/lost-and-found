@@ -1,3 +1,6 @@
+// File: i18n.js
+// Description: Module: Handles i18n logical operations.
+
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import enJSON from './locales/en.json';

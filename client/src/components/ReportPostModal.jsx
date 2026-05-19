@@ -1,3 +1,6 @@
+// File: ReportPostModal.jsx
+// Description: Flag Post Dialog: Allows users to report offensive, fraudulent, or rule-breaking listings directly to admins.
+
 import { useState } from 'react';
 import { X, AlertTriangle, Send, Loader2, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -11,6 +14,7 @@ const REASONS = [
     { id: 'scam', label: 'Possible scam or fraud' }
 ];
 
+// React Component: Renders the ReportPostModal user interface elements dynamically
 export default function ReportPostModal({ isOpen, onClose, postId, postTitle }) {
     const [reason, setReason] = useState('');
     const [details, setDetails] = useState('');
