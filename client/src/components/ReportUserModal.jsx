@@ -2,7 +2,7 @@
 // Description: Report User Dialog: Allows users to flag abusive community members directly for administrative review.
 
 import { useState } from 'react';
-import { X, AlertTriangle, Send, Loader2, Shield, User } from 'lucide-react';
+import { X, AlertTriangle, Send, Loader2, Shield, User, Image as ImageIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { userAPI } from '../services/api';
 
@@ -18,25 +18,36 @@ const REASONS = [
 export default function ReportUserModal({ isOpen, onClose, userId, userName }) {
     const [reason, setReason] = useState('');
     const [details, setDetails] = useState('');
+    const [photos, setPhotos] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     if (!isOpen) return null;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!reason) {
-            toast.error('Please select a reason for reporting');
+        if (!reason || !details.trim()) {
+            toast.error('Please select a reason and provide details for reporting');
             return;
         }
 
         setIsSubmitting(true);
         try {
-            await userAPI.report(userId, { reason, details });
+            let formData = new FormData();
+            formData.append('reason', reason);
+            formData.append('details', details);
+            if (photos && photos.length > 0) {
+                photos.forEach(photo => {
+                    formData.append('photos', photo);
+                });
+            }
+
+            await userAPI.report(userId, formData);
             toast.success('User report submitted successfully.');
             onClose();
             // Reset form
             setReason('');
             setDetails('');
+            setPhotos([]);
         } catch (error) {
             console.error("Report error:", error);
             toast.error("Failed to submit report. Please try again.");
@@ -102,6 +113,41 @@ export default function ReportUserModal({ isOpen, onClose, userId, userName }) {
                             />
                         </div>
 
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-1">Attach Photos (Optional)</label>
+                            <div className="flex gap-2 items-center flex-wrap">
+                                {photos.map((photo, index) => (
+                                    <div key={index} className="relative w-16 h-16 rounded-xl overflow-hidden group">
+                                        <img src={URL.createObjectURL(photo)} alt="Upload preview" className="w-full h-full object-cover" />
+                                        <button 
+                                            type="button"
+                                            onClick={() => setPhotos(prev => prev.filter((_, i) => i !== index))}
+                                            className="absolute inset-0 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+                                        ><X className="h-4 w-4" /></button>
+                                    </div>
+                                ))}
+                                {photos.length < 5 && (
+                                    <label className="w-16 h-16 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center cursor-pointer hover:border-red-500 hover:text-red-500 text-gray-400 transition">
+                                        <ImageIcon className="h-6 w-6" />
+                                        <input 
+                                            type="file" 
+                                            accept="image/*" 
+                                            multiple 
+                                            className="hidden" 
+                                            onChange={(e) => {
+                                                const files = Array.from(e.target.files);
+                                                if (photos.length + files.length > 5) {
+                                                    toast.error("Maximum 5 photos allowed");
+                                                    return;
+                                                }
+                                                setPhotos(prev => [...prev, ...files]);
+                                            }} 
+                                        />
+                                    </label>
+                                )}
+                            </div>
+                        </div>
+
                         <div className="flex gap-3 pt-4 border-t border-gray-50 dark:border-gray-800">
                             <button
                                 type="button"
@@ -112,7 +158,7 @@ export default function ReportUserModal({ isOpen, onClose, userId, userName }) {
                             </button>
                             <button
                                 type="submit"
-                                disabled={isSubmitting || !reason}
+                                disabled={isSubmitting || !reason || !details.trim()}
                                 className="flex-1 py-4 bg-red-600 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-red-600/20 hover:bg-red-700 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                             >
                                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Shield className="h-4 w-4" />}

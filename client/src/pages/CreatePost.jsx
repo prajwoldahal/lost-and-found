@@ -33,7 +33,7 @@ export default function CreatePost() {
     const [existingMedia, setExistingMedia] = useState([]);
 
     // Side Effect: This code block executes automatically when this page mounts on the user screen
-useEffect(() => {
+    useEffect(() => {
         if (isEditMode) {
             const fetchPost = async () => {
                 try {
@@ -247,14 +247,14 @@ useEffect(() => {
                                 onClick={() => setType('lost')}
                                 className={`p-4 rounded-xl border-2 font-medium transition ${type === 'lost' ? 'border-red-500 bg-red-50 text-red-700' : 'border-gray-200 hover:border-gray-300'}`}
                             >
-                                🔍 {t('lost')}
+                                {t('lost')}
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setType('found')}
                                 className={`p-4 rounded-xl border-2 font-medium transition ${type === 'found' ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 hover:border-gray-300'}`}
                             >
-                                ✅ {t('found')}
+                                {t('found')}
                             </button>
                         </div>
                     </div>

@@ -95,7 +95,7 @@ useEffect(() => {
 
                             {/* Desktop Navigation */}
                             {currentUser && (
-                                <div className="hidden md:flex items-center space-x-1">
+                                <div className="hidden lg:flex items-center space-x-1">
                                     {links.filter(l => !l.mobileOnly).map((link) => (
                                         <Link
                                             key={link.path}
@@ -121,14 +121,14 @@ useEffect(() => {
                                     {!userData?.isAdmin && (
                                         <Link
                                             to="/create-post"
-                                            className="hidden sm:flex items-center gap-2 bg-primary dark:bg-primary-dark text-white hover:bg-primary-dark dark:hover:bg-primary px-5 py-2.5 rounded-xl transition-all duration-300 font-bold shadow-lg shadow-primary/20 active:scale-95"
+                                            className="hidden lg:flex items-center gap-2 bg-primary dark:bg-primary-dark text-white hover:bg-primary-dark dark:hover:bg-primary px-5 py-2.5 rounded-xl transition-all duration-300 font-bold shadow-lg shadow-primary/20 active:scale-95"
                                         >
                                             <PlusCircle className="h-4 w-4" />
                                             <span>{t('createPost')}</span>
                                         </Link>
                                     )}
 
-                                    <div className="w-px h-6 bg-slate-100 dark:bg-gray-800 mx-2 hidden sm:block" />
+                                    <div className="w-px h-6 bg-slate-100 dark:bg-gray-800 mx-2 hidden lg:block" />
 
                                     {/* Notifications */}
                                     <NotificationCenter />
@@ -318,7 +318,7 @@ useEffect(() => {
                             {/* Mobile Menu Toggle */}
                             <button
                                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                                className="md:hidden p-2 rounded-xl text-slate-500 hover:bg-slate-50 dark:hover:bg-gray-800"
+                                className="lg:hidden p-2 rounded-xl text-slate-500 hover:bg-slate-50 dark:hover:bg-gray-800"
                             >
                                 {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                             </button>
@@ -328,7 +328,7 @@ useEffect(() => {
 
                 {/* Mobile Menu */}
                 {isMobileMenuOpen && currentUser && (
-                    <div className="md:hidden border-t border-slate-100 dark:border-gray-800 px-4 py-4 space-y-2 bg-white dark:bg-gray-900 animate-in slide-in-from-top-2 duration-300">
+                    <div className="lg:hidden border-t border-slate-100 dark:border-gray-800 px-4 py-4 space-y-2 bg-white dark:bg-gray-900 animate-in slide-in-from-top-2 duration-300">
                         {links.map((link) => (
                             <Link
                                 key={link.path}

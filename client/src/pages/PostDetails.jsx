@@ -10,7 +10,7 @@ import {
     Calendar, MapPin, Tag, User, MessageCircle, Share2,
     AlertCircle, ChevronLeft, Loader2, Map as MapIcon,
     CheckCircle2, Clock, MapIcon as MapMarker, Shield,
-    QrCode, X, AlertTriangle, Send, Download, FileCheck, Package, Info, Camera
+    QrCode, X, AlertTriangle, Send, Download, FileCheck, Package, Info, Camera, Trash2
 } from 'lucide-react';
 import { generateReturnReceipt } from '../utils/pdfGenerator';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -22,6 +22,7 @@ import IDVerificationModal from '../components/IDVerificationModal';
 import QRGenerator from '../components/QRGenerator';
 import ReportPostModal from '../components/ReportPostModal';
 import ReportUserModal from '../components/ReportUserModal';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 // Fix for default Leaflet markers not showing
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -66,6 +67,8 @@ export default function PostDetails() {
     const [isBlockedByMe, setIsBlockedByMe] = useState(false);
     const [isBlockedByOther, setIsBlockedByOther] = useState(false);
     const [isBlocking, setIsBlocking] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     // Side Effect: This code block executes automatically when this page mounts on the user screen
 useEffect(() => {
@@ -245,6 +248,20 @@ useEffect(() => {
         }
     };
 
+    const handleDeletePost = async () => {
+        try {
+            setIsDeleting(true);
+            await postAPI.delete(post.id);
+            toast.success(t('postDeleted', 'Post deleted successfully'));
+            setShowDeleteConfirm(false);
+            navigate('/dashboard');
+        } catch (error) {
+            console.error('Delete post error:', error);
+            toast.error(t('deletePostError', 'Failed to delete post'));
+            setIsDeleting(false);
+        }
+    };
+
     const handleClaim = async () => {
         if (isClaiming) return;
 
@@ -387,6 +404,17 @@ useEffect(() => {
                                 <Camera className="h-5 w-5" />
                                 <span className="text-sm font-bold hidden sm:inline">Edit</span>
                             </Link>
+                        )}
+                        {currentUser && currentUser.uid === post.createdBy && (
+                            <button
+                                onClick={() => setShowDeleteConfirm(true)}
+                                disabled={isDeleting}
+                                className="p-3 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 border border-red-100/50 rounded-xl shadow-sm hover:bg-red-100 dark:hover:bg-red-900/20 transition hover:shadow-md flex items-center gap-2 disabled:opacity-50"
+                                title="Delete Post"
+                            >
+                                {isDeleting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Trash2 className="h-5 w-5" />}
+                                <span className="text-sm font-bold hidden sm:inline">Delete</span>
+                            </button>
                         )}
 
                         {currentUser && currentUser.uid !== post.createdBy && (
@@ -746,6 +774,17 @@ useEffect(() => {
                     )
                 }
             </div>
+
+            <ConfirmDialog 
+                isOpen={showDeleteConfirm}
+                onClose={() => setShowDeleteConfirm(false)}
+                onConfirm={handleDeletePost}
+                title={t('deletePostTitle', 'Delete Post')}
+                message={t('deletePostMessage', 'Are you sure you want to delete this post? This action cannot be undone.')}
+                confirmText={t('delete', 'Delete')}
+                isLoading={isDeleting}
+            />
+
             {/* Claim Submission Modal */}
             {showClaimModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">

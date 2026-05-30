@@ -10,6 +10,66 @@ import VerifiedBadge from '../components/VerifiedBadge';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Calendar, Tag, Search, Loader2, Trophy, Award, Crown, TrendingUp } from 'lucide-react';
 
+// Simple cache to store fetched user display names and photos
+const userCache = new Map();
+
+// Component to fetch and display a user's display name with caching
+function UserNameDisplay({ userId, fallback }) {
+  const [displayName, setDisplayName] = useState(fallback);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (!userId) return;
+    // Check cache first
+    const cached = userCache.get(userId);
+    if (cached && cached.displayName) {
+      setDisplayName(cached.displayName);
+      return;
+    }
+    // Fetch from backend
+    userAPI.get(userId)
+      .then(res => {
+        const name = res.data?.displayName || fallback;
+        const photo = res.data?.photoURL || null;
+        userCache.set(userId, { displayName: name, photoURL: photo });
+        if (isMounted) setDisplayName(name);
+      })
+      .catch(err => {
+        console.error('Failed to fetch user data:', err);
+        if (isMounted) setDisplayName(fallback);
+      });
+    return () => { isMounted = false; };
+  }, [userId, fallback]);
+
+  return <>{displayName}</>;
+}
+
+// Component to fetch and display a user's avatar with caching
+// Component to fetch and display a user's avatar (always fetches latest photo)
+function UserAvatar({ userId, fallback, className, alt }) {
+  const [photoURL, setPhotoURL] = useState(fallback);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (!userId) return;
+    // Fetch latest photo URL from backend
+    userAPI.get(userId)
+      .then(res => {
+        const photo = res.data?.photoURL || fallback;
+        if (isMounted) setPhotoURL(photo);
+      })
+      .catch(err => {
+        console.error('Failed to fetch avatar:', err);
+        if (isMounted) setPhotoURL(fallback);
+      });
+    return () => { isMounted = false; };
+  }, [userId, fallback]);
+
+  return <img src={photoURL} className={className} alt={alt} />;
+}
+
+// React Component: Renders the Dashboard user interface elements dynamically
+
 // React Component: Renders the Dashboard user interface elements dynamically
 export default function Dashboard() {
     const { t } = useTranslation();
@@ -306,13 +366,20 @@ export default function Dashboard() {
                                 </div>
                                 <div className="p-6">
                                     <div className="flex items-center gap-2 mb-4">
-                                        <img
-                                            src={post.creatorPhoto || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
-                                            alt={post.creatorName || 'User'}
-                                            className="h-8 w-8 rounded-full border-2 border-white dark:border-gray-700 shadow-sm object-cover"
-                                        />
+                                            <UserAvatar
+                                                userId={post.createdBy}
+                                                fallback={post.creatorPhoto || `https://api.dicebear.com/7.x/avataaars/svg?seed=default`}
+                                                className="h-8 w-8 rounded-full border-2 border-white dark:border-gray-700 shadow-sm object-cover"
+                                                alt={post.creatorName || 'User'}
+                                            />
                                         <div>
-                                            <p className="text-xs font-bold text-gray-900 dark:text-white leading-none">{post.creatorName || t('member')}</p>
+                                                <p className="text-xs font-bold text-gray-900 dark:text-white leading-none">
+                                                    {
+                                                        (currentUser && post.createdBy === currentUser.uid)
+                                                            ? (userData?.displayName || t('member'))
+                                                            : <UserNameDisplay userId={post.createdBy} fallback={post.creatorName || t('member')} />
+                                                    }
+                                                </p>
                                             <p className="text-[10px] text-gray-500 dark:text-gray-400">{t('communityScout')}</p>
                                         </div>
                                     </div>
@@ -330,7 +397,7 @@ export default function Dashboard() {
                                         </div>
                                         <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                             <Tag className="h-3.5 w-3.5" />
-                                            {post.category}
+                                            {t(post.category?.toLowerCase() || '', post.category)}
                                         </div>
                                     </div>
                                 </div>

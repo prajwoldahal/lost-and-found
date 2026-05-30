@@ -73,7 +73,7 @@ useEffect(() => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Reward Economy */}
-                <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 border border-gray-100 dark:border-gray-700 shadow-sm">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
                     <h3 className="font-extrabold text-lg mb-6 flex items-center gap-3 text-gray-900 dark:text-white">
                         <div className="p-2 bg-amber-100 dark:bg-amber-950/30 rounded-lg">
                             <Trophy className="h-5 w-5 text-amber-600 dark:text-amber-400" />
@@ -98,7 +98,7 @@ useEffect(() => {
                 </div>
 
                 {/* Moderation Policy */}
-                <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 border border-gray-100 dark:border-gray-700 shadow-sm">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
                     <h3 className="font-extrabold text-lg mb-6 flex items-center gap-3 text-gray-900 dark:text-white">
                         <div className="p-2 bg-blue-100 dark:bg-blue-950/30 rounded-lg">
                             <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
@@ -123,7 +123,7 @@ useEffect(() => {
             </div>
 
             {/* System Status */}
-            <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 border border-gray-100 dark:border-gray-700 shadow-sm">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
                 <h3 className="font-extrabold text-lg mb-6 flex items-center gap-3 text-gray-900 dark:text-white">
                     <div className="p-2 bg-red-100 dark:bg-red-950/30 rounded-lg">
                         <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
@@ -148,7 +148,7 @@ useEffect(() => {
                 <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="px-12 py-4 bg-primary text-white rounded-2xl hover:bg-primary-dark hover:scale-[1.02] active:scale-[0.98] transition-all font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 flex items-center gap-3 disabled:opacity-50"
+                    className="px-8 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark transition font-bold text-xs shadow-sm flex items-center gap-2 disabled:opacity-50"
                 >
                     {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
                     {t('saveSystemConfig')}

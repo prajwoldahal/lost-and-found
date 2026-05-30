@@ -4,6 +4,12 @@
 import { db } from '../config/firebase.js';
 import { uploadToCloudinary } from '../utils/cloudinaryUpload.js';
 
+const getAttachmentPlaceholder = (type) => {
+    if (!type) return '';
+    const article = (type === 'image' || type === 'audio') ? 'an' : 'a';
+    return `[Sent ${article} ${type}]`;
+};
+
 // Helper: check if either user has blocked the other
 const checkBlocked = async (uid1, uid2) => {
     const [block1, block2] = await Promise.all([
@@ -134,7 +140,7 @@ export const sendMessage = async (req, res) => {
         await chatRef.collection('messages').add(messageData);
 
         // Update last message
-        const lastMsgText = text || (attachment ? `[Sent an ${attachment.type}]` : '');
+        const lastMsgText = text || getAttachmentPlaceholder(attachment?.type);
         await chatRef.update({
             lastMessage: lastMsgText,
             lastMessageTime: new Date().toISOString(),
@@ -176,18 +182,18 @@ export const deleteMessage = async (req, res) => {
         const chatRef = db.collection('chats').doc(chatId);
         const chatDoc = await chatRef.get();
         if (chatDoc.exists && chatDoc.data().lastMessage) {
-            // Fetch the latest non-deleted message
+            // Fetch the last 10 messages to find the most recent non-deleted one without requiring a composite index
             const latestSnap = await chatRef.collection('messages')
-                .where('deleted', '!=', true)
-                .orderBy('deleted')
                 .orderBy('createdAt', 'desc')
-                .limit(1)
+                .limit(10)
                 .get();
 
-            if (!latestSnap.empty) {
-                const latestMsg = latestSnap.docs[0].data();
+            const latestDoc = latestSnap.docs.find(doc => doc.data().deleted !== true);
+
+            if (latestDoc) {
+                const latestMsg = latestDoc.data();
                 await chatRef.update({
-                    lastMessage: latestMsg.text || (latestMsg.attachment ? `[Sent an ${latestMsg.attachment.type}]` : ''),
+                    lastMessage: latestMsg.text || getAttachmentPlaceholder(latestMsg.attachment?.type),
                     lastMessageTime: latestMsg.createdAt
                 });
             } else {

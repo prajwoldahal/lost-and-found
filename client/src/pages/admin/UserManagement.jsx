@@ -118,10 +118,9 @@ useEffect(() => {
     };
 
     const handleReject = async (userId) => {
-        if (!rejectionReason.trim()) return toast.error(t('error'));
         setIsProcessing(true);
         try {
-            await adminAPI.rejectUser(userId, rejectionReason);
+            await adminAPI.rejectId(userId, { reason: rejectionReason });
             setUsers(users.map(u => u.id === userId ? { ...u, verificationPending: false } : u));
             toast.success(t('success'));
             setVerificationModalOpen(false);
@@ -161,45 +160,45 @@ useEffect(() => {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-5xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">{t('userDirectory')}</h1>
-                    <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">{t('manageCommunityAccess')}</p>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('User Directory')}</h1>
+                    <p className="text-gray-500 dark:text-gray-400 text-xs font-medium">{t('manageCommunityAccess')}</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <button
                         onClick={handleSyncUsers}
                         disabled={syncing}
-                        className="flex items-center gap-3 px-6 py-3 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:scale-[1.02] active:scale-[0.98] transition shadow-lg shadow-indigo-200 dark:shadow-none disabled:opacity-50"
+                        className="flex items-center gap-2 px-4 py-2.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-xl font-bold text-xs hover:bg-indigo-200 transition disabled:opacity-50"
                     >
                         <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
                         {syncing ? t('syncingBase') : t('synchronizeUsers')}
                     </button>
-                    <div className="bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center">
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('active')}</span>
-                        <span className="text-sm font-black text-gray-900 dark:text-white">{filteredUsers.length}</span>
+                    <div className="bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col items-center min-w-[48px]">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase">{t('active')}</span>
+                        <span className="text-sm font-bold text-gray-900 dark:text-white">{filteredUsers.length}</span>
                     </div>
                 </div>
             </div>
 
             {/* Filters */}
-            <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 border border-gray-100 dark:border-gray-700">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="relative">
-                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <input
                             type="text"
                             placeholder={t('searchPlaceholderUserManagement')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white text-sm font-bold transition-all"
+                            className="w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white text-sm font-medium transition-all"
                         />
                     </div>
                     <div className="relative">
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="w-full appearance-none px-6 py-3.5 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white text-sm font-black uppercase tracking-widest cursor-pointer"
+                            className="w-full appearance-none px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white text-sm font-medium cursor-pointer"
                         >
                             <option value="all">{t('allAccessLevels')}</option>
                             <option value="active">{t('activeMembers')}</option>
@@ -214,50 +213,50 @@ useEffect(() => {
             </div>
 
             {/* Users Table */}
-            <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-700">
                         <thead className="bg-gray-50/50 dark:bg-gray-900/50">
                             <tr>
-                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{t('memberIdentity')}</th>
-                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{t('communications')}</th>
-                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{t('onboarding')}</th>
-                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{t('accessState')}</th>
-                                <th className="px-8 py-5 text-right text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em]">{t('authority')}</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">{t('memberIdentity')}</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">{t('communications')}</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">{t('onboarding')}</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">{t('accessState')}</th>
+                                <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">{t('authority')}</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
                             {filteredUsers.map((user) => (
                                 <tr key={user.id} className="hover:bg-primary/5 dark:hover:bg-primary/5 transition duration-150 group">
-                                    <td className="px-8 py-6">
-                                        <div className="flex items-center gap-4">
-                                            <div className="relative">
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="relative flex-shrink-0">
                                                 <img
                                                     src={user.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
                                                     alt={user.displayName}
-                                                    className="w-12 h-12 rounded-2xl border-2 border-white dark:border-gray-700 shadow-lg object-cover"
+                                                    className="w-10 h-10 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm object-cover"
                                                 />
-                                                <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${(user.status || 'active') === 'active' ? 'bg-green-500' : 'bg-red-500'}`} />
+                                                <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white dark:border-gray-800 ${(user.status || 'active') === 'active' ? 'bg-green-500' : 'bg-red-500'}`} />
                                             </div>
                                             <div className="flex flex-col">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight group-hover:text-primary transition">{user.displayName || user.name || 'Anonymous'}</span>
+                                                    <span className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-primary transition">{user.displayName || user.name || 'Anonymous'}</span>
                                                     {user.isAdmin && (
-                                                        <span className="flex items-center gap-1.5 px-2 py-0.5 bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-500 text-[9px] font-black rounded-lg border border-amber-100 dark:border-amber-900/50 uppercase tracking-widest">
+                                                        <span className="flex items-center gap-1 px-1.5 py-0.5 bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-500 text-[10px] font-bold rounded border border-amber-100 dark:border-amber-900/50 uppercase">
                                                             <ShieldCheck className="h-3 w-3" />
                                                             {t('supreme')}
                                                         </span>
                                                     )}
                                                 </div>
-                                                <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-0.5">{t('communityMember')}</span>
+                                                <span className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{t('communityMember')}</span>
                                                 {user.verificationPending && (
-                                                    <span className="mt-1 flex items-center gap-1 text-[9px] font-black text-blue-500 uppercase tracking-tight">
+                                                    <span className="mt-0.5 flex items-center gap-1 text-[10px] font-medium text-blue-500">
                                                         <Clock className="h-2.5 w-2.5 animate-pulse" />
                                                         {t('pendingIdentityReview')}
                                                     </span>
                                                 )}
                                                 {user.isVerified && (
-                                                    <span className="mt-1 flex items-center gap-1 text-[9px] font-black text-green-500 uppercase tracking-tight">
+                                                    <span className="mt-0.5 flex items-center gap-1 text-[10px] font-medium text-green-500">
                                                         <ShieldCheck className="h-2.5 w-2.5" />
                                                         {t('identityVerified')}
                                                     </span>
@@ -265,46 +264,46 @@ useEffect(() => {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6">
-                                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 font-medium">
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                                             <Mail className="h-3.5 w-3.5 text-gray-400" />
                                             {user.email}
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6">
+                                    <td className="px-6 py-4">
                                         <div className="flex flex-col">
-                                            <span className="text-xs font-black text-gray-700 dark:text-gray-200 uppercase tracking-tight">{formatDate(user.createdAt)}</span>
-                                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{t('accountCreated')}</span>
+                                            <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">{formatDate(user.createdAt)}</span>
+                                            <span className="text-[10px] text-gray-400 uppercase">{t('accountCreated')}</span>
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6">
-                                        <span className={`px-3 py-1 text-[10px] font-black rounded-lg uppercase tracking-widest border transition-all ${(user.status || 'active') === 'active'
-                                            ? 'bg-green-50 text-green-600 border-green-100 dark:bg-green-950/30 dark:border-green-900/50'
-                                            : 'bg-red-50 text-red-600 border-red-100 dark:bg-red-950/30 dark:border-red-900/50'
+                                    <td className="px-6 py-4">
+                                        <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg border ${(user.status || 'active') === 'active'
+                                            ? 'bg-green-50 text-green-700 border-green-100 dark:bg-green-950/30 dark:border-green-900/50 dark:text-green-400'
+                                            : 'bg-red-50 text-red-700 border-red-100 dark:bg-red-950/30 dark:border-red-900/50 dark:text-red-400'
                                             }`}>
                                             {(user.status ? t(user.status) : t('active'))}
                                         </span>
                                     </td>
-                                    <td className="px-8 py-6 text-right">
-                                        <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition duration-200">
+                                    <td className="px-6 py-4 text-right">
+                                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition duration-200">
                                             {(user.status || 'active') === 'active' ? (
                                                 <button
                                                     onClick={() => {
                                                         setSelectedUser(user);
                                                         setSuspensionModalOpen(true);
                                                     }}
-                                                    className="p-3 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-600 hover:text-white dark:hover:bg-red-600 transition shadow-sm"
+                                                    className="p-2 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-600 hover:text-white dark:hover:bg-red-600 transition"
                                                     title={t('suspendUser')}
                                                 >
-                                                    <UserX className="h-5 w-5" />
+                                                    <UserX className="h-4 w-4" />
                                                 </button>
                                             ) : (
                                                 <button
                                                     onClick={() => handleUpdateStatus(user.id, 'active')}
-                                                    className="p-3 bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 rounded-xl hover:bg-green-600 hover:text-white dark:hover:bg-green-600 transition shadow-sm"
+                                                    className="p-2 bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 rounded-lg hover:bg-green-600 hover:text-white dark:hover:bg-green-600 transition"
                                                     title={t('activateUser')}
                                                 >
-                                                    <UserCheck className="h-5 w-5" />
+                                                    <UserCheck className="h-4 w-4" />
                                                 </button>
                                             )}
                                             {user.verificationPending && (
@@ -313,14 +312,14 @@ useEffect(() => {
                                                         setSelectedUser(user);
                                                         setVerificationModalOpen(true);
                                                     }}
-                                                    className="p-3 bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-600 hover:text-white transition shadow-sm"
+                                                    className="p-2 bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-600 hover:text-white transition"
                                                     title={t('reviewVerification')}
                                                 >
-                                                    <ShieldAlert className="h-5 w-5" />
+                                                    <ShieldAlert className="h-4 w-4" />
                                                 </button>
                                             )}
-                                            <button className="p-3 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-xl hover:bg-gray-900 hover:text-white transition shadow-sm">
-                                                <Eye className="h-5 w-5" />
+                                            <button className="p-2 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-lg hover:bg-gray-800 hover:text-white transition">
+                                                <Eye className="h-4 w-4" />
                                             </button>
                                         </div>
                                     </td>
@@ -333,45 +332,45 @@ useEffect(() => {
 
             {/* Suspension Modal */}
             {suspensionModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
-                    <div className="bg-white dark:bg-gray-800 rounded-[3rem] shadow-2xl w-full max-w-md overflow-hidden border border-gray-100 dark:border-gray-700 animate-in fade-in zoom-in duration-300">
-                        <div className="px-10 py-8 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-red-50/50 dark:bg-red-950/20">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-red-50/50 dark:bg-red-950/20">
                             <div className="flex items-center gap-3 text-red-600 dark:text-red-400">
-                                <ShieldAlert className="h-6 w-6" />
-                                <h3 className="text-xl font-black uppercase tracking-tight">{t('accessControl')}</h3>
+                                <ShieldAlert className="h-5 w-5" />
+                                <h3 className="text-base font-bold">{t('accessControl')}</h3>
                             </div>
                             <button
                                 onClick={() => setSuspensionModalOpen(false)}
-                                className="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/40 text-red-400 transition"
+                                className="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 text-red-400 transition"
                             >
-                                <X className="h-6 w-6" />
+                                <X className="h-5 w-5" />
                             </button>
                         </div>
 
-                        <div className="p-10 space-y-8">
-                            <div className="flex items-center gap-4 p-5 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-700">
+                        <div className="p-6 space-y-5">
+                            <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-700">
                                 <img
                                     src={selectedUser?.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
-                                    className="h-14 w-14 rounded-xl border-2 border-white dark:border-gray-800 shadow-sm object-cover"
+                                    className="h-11 w-11 rounded-lg border border-gray-200 dark:border-gray-700 object-cover"
                                     alt=""
                                 />
                                 <div>
-                                    <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">{selectedUser?.displayName || selectedUser?.name}</p>
-                                    <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{selectedUser?.email}</p>
+                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{selectedUser?.displayName || selectedUser?.name}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">{selectedUser?.email}</p>
                                 </div>
                             </div>
 
-                            <div className="space-y-6">
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                        <Clock className="h-4 w-4" />
+                            <div className="space-y-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-gray-500 flex items-center gap-1.5">
+                                        <Clock className="h-3.5 w-3.5" />
                                         {t('suspensionDuration')}
                                     </label>
                                     <div className="relative">
                                         <select
                                             value={suspensionDuration}
                                             onChange={(e) => setSuspensionDuration(e.target.value)}
-                                            className="w-full appearance-none px-6 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500 dark:text-white text-sm font-black uppercase tracking-widest transition cursor-pointer"
+                                            className="w-full appearance-none px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 dark:text-white text-sm font-medium transition cursor-pointer"
                                         >
                                             <option value="0.0416">{t('oneHourWarning')}</option>
                                             <option value="0.5">{t('twelveHoursShort')}</option>
@@ -381,40 +380,40 @@ useEffect(() => {
                                             <option value="30">{t('oneMonthCritical')}</option>
                                             <option value="permanent">{t('permanentPurge')}</option>
                                         </select>
-                                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                                             <ShieldCheck className="h-4 w-4" />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-gray-500">
                                         {t('enforcementRationale')}
                                     </label>
                                     <textarea
                                         value={suspensionReason}
                                         onChange={(e) => setSuspensionReason(e.target.value)}
                                         placeholder={t('articulateEnforcementReason')}
-                                        className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent dark:text-white text-sm font-medium transition h-32 resize-none"
+                                        className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 dark:text-white text-sm transition h-28 resize-none"
                                     />
-                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight italic">
+                                    <p className="text-[10px] text-gray-400 italic">
                                         {t('userWillReceiveNotification')}
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="px-10 py-8 bg-gray-50/50 dark:bg-gray-900/50 flex items-center justify-end gap-5">
+                        <div className="px-6 py-4 bg-gray-50/50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-700 flex items-center justify-end gap-3">
                             <button
                                 onClick={() => setSuspensionModalOpen(false)}
-                                className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest hover:text-gray-900 dark:hover:text-white transition"
+                                className="text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition"
                             >
                                 {t('reconsider')}
                             </button>
                             <button
                                 onClick={() => handleUpdateStatus(selectedUser.id, 'suspended', suspensionReason, suspensionDuration)}
                                 disabled={!suspensionReason.trim()}
-                                className="px-8 py-4 bg-red-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-2xl shadow-red-500/30"
+                                className="px-5 py-2.5 bg-red-600 text-white text-xs font-bold rounded-xl hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {t('enforceSuspension')}
                             </button>
@@ -425,43 +424,43 @@ useEffect(() => {
 
             {/* Verification Review Modal */}
             {verificationModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
-                    <div className="bg-white dark:bg-gray-800 rounded-[3rem] shadow-2xl w-full max-w-2xl overflow-hidden border border-gray-100 dark:border-gray-700 animate-in fade-in zoom-in duration-300">
-                        <div className="px-10 py-8 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-blue-50/50 dark:bg-blue-950/20">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
+                        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-blue-50/50 dark:bg-blue-950/20">
                             <div className="flex items-center gap-3 text-blue-600 dark:text-blue-400">
-                                <ShieldCheck className="h-6 w-6" />
-                                <h3 className="text-xl font-black uppercase tracking-tight">{t('identityReview')}</h3>
+                                <ShieldCheck className="h-5 w-5" />
+                                <h3 className="text-base font-bold">{t('identityReview')}</h3>
                             </div>
                             <button
                                 onClick={() => setVerificationModalOpen(false)}
-                                className="p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/40 text-blue-400 transition"
+                                className="p-1.5 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 text-blue-400 transition"
                             >
-                                <X className="h-6 w-6" />
+                                <X className="h-5 w-5" />
                             </button>
                         </div>
 
-                        <div className="p-10 space-y-8 overflow-y-auto max-h-[70vh]">
+                        <div className="p-6 space-y-5 overflow-y-auto max-h-[70vh]">
                             {/* User Header */}
-                            <div className="flex items-center gap-4 p-5 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-700">
+                            <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-700">
                                 <img
                                     src={selectedUser?.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
-                                    className="h-16 w-16 rounded-2xl border-2 border-white dark:border-gray-800 shadow-sm object-cover"
+                                    className="h-14 w-14 rounded-xl border border-gray-200 dark:border-gray-700 object-cover shadow-sm"
                                     alt=""
                                 />
                                 <div>
-                                    <p className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight">{selectedUser?.displayName || selectedUser?.name}</p>
+                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{selectedUser?.displayName || selectedUser?.name}</p>
                                     <div className="flex gap-4 mt-1">
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t('idType')}: <span className="text-gray-900 dark:text-white">{selectedUser?.idType}</span></p>
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t('idNumber')}: <span className="text-gray-900 dark:text-white">{selectedUser?.idNumber}</span></p>
+                                        <p className="text-xs text-gray-500">{t('idType')}: <span className="font-semibold text-gray-700 dark:text-gray-300">{selectedUser?.idType}</span></p>
+                                        <p className="text-xs text-gray-500">{t('idNumber')}: <span className="font-semibold text-gray-700 dark:text-gray-300">{selectedUser?.idNumber}</span></p>
                                     </div>
                                 </div>
                             </div>
 
                             {/* ID Photos */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-3">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">{t('frontSidePhoto')}</p>
-                                    <div className="relative group rounded-3xl overflow-hidden border-2 border-gray-100 dark:border-gray-700 aspect-[4/3] bg-gray-50 dark:bg-gray-900">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <p className="text-xs font-bold text-gray-500 uppercase">{t('frontSidePhoto')}</p>
+                                    <div className="relative group rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 aspect-[4/3] bg-gray-50 dark:bg-gray-900">
                                         <img
                                             src={selectedUser?.idFrontUrl || selectedUser?.idImageUrl}
                                             className="w-full h-full object-contain"
@@ -471,17 +470,17 @@ useEffect(() => {
                                             href={selectedUser?.idFrontUrl || selectedUser?.idImageUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-black uppercase text-[10px] tracking-widest"
+                                            className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-bold text-xs"
                                         >
                                             {t('viewFullSize')}
                                         </a>
                                     </div>
                                 </div>
 
-                                {selectedUser?.idBackUrl && (
-                                    <div className="space-y-3">
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">{t('backSidePhoto')}</p>
-                                        <div className="relative group rounded-3xl overflow-hidden border-2 border-gray-100 dark:border-gray-700 aspect-[4/3] bg-gray-50 dark:bg-gray-900">
+                                {selectedUser?.idType === 'citizenship' && selectedUser?.idBackUrl && (
+                                    <div className="space-y-2">
+                                        <p className="text-xs font-bold text-gray-500 uppercase">{t('backSidePhoto')}</p>
+                                        <div className="relative group rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 aspect-[4/3] bg-gray-50 dark:bg-gray-900">
                                             <img
                                                 src={selectedUser?.idBackUrl}
                                                 className="w-full h-full object-contain"
@@ -491,7 +490,7 @@ useEffect(() => {
                                                 href={selectedUser?.idBackUrl}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-black uppercase text-[10px] tracking-widest"
+                                                className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white font-bold text-xs"
                                             >
                                                 {t('viewFullSize')}
                                             </a>
@@ -501,36 +500,36 @@ useEffect(() => {
                             </div>
 
                             {/* Rejection Rationale */}
-                            <div className="space-y-3 border-t border-gray-100 dark:border-gray-700 pt-8">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('rejectionRationaleOptional')}</label>
+                            <div className="space-y-1.5 border-t border-gray-100 dark:border-gray-700 pt-5">
+                                <label className="text-xs font-bold text-gray-500 uppercase">{t('rejectionRationaleOptional')}</label>
                                 <textarea
                                     value={rejectionReason}
                                     onChange={(e) => setRejectionReason(e.target.value)}
                                     placeholder={t('explainRejectionReason')}
-                                    className="w-full px-6 py-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white text-sm font-medium transition h-24 resize-none"
+                                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white text-sm transition h-20 resize-none"
                                 />
                             </div>
                         </div>
 
-                        <div className="px-10 py-8 bg-gray-50/50 dark:bg-gray-900/50 flex items-center justify-between gap-5">
+                        <div className="px-6 py-4 bg-gray-50/50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between gap-4">
                             <button
                                 onClick={() => setVerificationModalOpen(false)}
-                                className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest hover:text-gray-900 dark:hover:text-white transition"
+                                className="text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition"
                             >
                                 {t('closePortfolio')}
                             </button>
-                            <div className="flex gap-4">
+                            <div className="flex gap-3">
                                 <button
                                     onClick={() => handleReject(selectedUser.id)}
                                     disabled={isProcessing}
-                                    className="px-8 py-4 bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-red-600 hover:text-white transition disabled:opacity-50"
+                                    className="px-5 py-2.5 bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-bold text-xs rounded-xl hover:bg-red-600 hover:text-white transition disabled:opacity-50"
                                 >
                                     {t('rejectIdentity')}
                                 </button>
                                 <button
                                     onClick={() => handleVerify(selectedUser.id)}
                                     disabled={isProcessing}
-                                    className="px-8 py-4 bg-green-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-green-700 transition disabled:opacity-50 shadow-xl shadow-green-500/20"
+                                    className="px-5 py-2.5 bg-green-600 text-white font-bold text-xs rounded-xl hover:bg-green-700 transition disabled:opacity-50"
                                 >
                                     {isProcessing ? t('processing') : t('verifyIdentity')}
                                 </button>

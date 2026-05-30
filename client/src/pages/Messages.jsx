@@ -10,10 +10,12 @@ import { MessageCircle, Send, ArrowLeft, Search, Clock, Loader2, Paperclip, Imag
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import EmojiPicker from 'emoji-picker-react';
+import { useTranslation } from 'react-i18next';
 
 // React Component: Renders the Messages user interface elements dynamically
 export default function Messages() {
     const { currentUser, userData } = useAuth();
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('messages'); // 'messages' or 'requests'
 
     const [searchParams] = useSearchParams();
@@ -36,30 +38,40 @@ export default function Messages() {
     const [isReporting, setIsReporting] = useState(false);
     const [reportReason, setReportReason] = useState('');
     const [reportDetails, setReportDetails] = useState('');
+    const [reportPhotos, setReportPhotos] = useState([]);
     const [showReportModal, setShowReportModal] = useState(false);
 
     // Block States
     const [showBlockConfirm, setShowBlockConfirm] = useState(false);
 
-    // Delete message state
+    // Delete message states
     const [deletingMessageId, setDeletingMessageId] = useState(null);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [messageIdToDelete, setMessageIdToDelete] = useState(null);
 
     const messagesEndRef = useRef(null);
     const fileInputRef = useRef(null);
+    const lastMessageCountRef = useRef(0);
+    const lastMessageIdRef = useRef(null);
+    const isInitialLoadRef = useRef(true);
+    const hasAutoSelectedRef = useRef(false);
 
     const openChatId = searchParams.get('chatId');
 
     // Side Effect: This code block executes automatically when this page mounts on the user screen
-useEffect(() => {
+    useEffect(() => {
         if (!currentUser) return;
         const fetchChats = async () => {
             try {
                 const response = await chatAPI.getChats();
                 setChats(response.data);
                 setLoadingChats(false);
-                if (openChatId && !selectedChat) {
+                if (openChatId && !hasAutoSelectedRef.current) {
                     const chatToSelect = response.data.find(c => c.id === openChatId);
-                    if (chatToSelect) setSelectedChat(chatToSelect);
+                    if (chatToSelect) {
+                        setSelectedChat(chatToSelect);
+                        hasAutoSelectedRef.current = true;
+                    }
                 }
             } catch (err) {
                 console.error(err);
@@ -71,53 +83,86 @@ useEffect(() => {
         return () => clearInterval(interval);
     }, [currentUser, openChatId]);
 
-    // Refresh selectedChat's block status when chats refresh
-    // Side Effect: This code block executes automatically when this page mounts on the user screen
-useEffect(() => {
+    // Refresh selectedChat's details and automatically mark active chat as read
+    useEffect(() => {
         if (selectedChat && chats.length > 0) {
             const updatedChat = chats.find(c => c.id === selectedChat.id);
             if (updatedChat) {
-                setSelectedChat(prev => ({
-                    ...prev,
-                    blockedByMe: updatedChat.blockedByMe,
-                    blockedByOther: updatedChat.blockedByOther,
-                    participantDetails: updatedChat.participantDetails
-                }));
-            }
-        }
-    }, [chats]);
-
-    // Side Effect: This code block executes automatically when this page mounts on the user screen
-useEffect(() => {
-        if (!selectedChat) return;
-        setLoadingMessages(true);
-        const fetchMessages = async () => {
-            try {
-                const response = await chatAPI.getMessages(selectedChat.id);
-                setMessages(response.data);
-                setLoadingMessages(false);
-                setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
-
-                // Mark as read if there are unread messages
-                const unreadCount = selectedChat.unreadCount?.[currentUser.uid] || 0;
+                // If the active chat has unread messages, mark them as read immediately
+                const unreadCount = updatedChat.unreadCount?.[currentUser.uid] || 0;
                 if (unreadCount > 0) {
-                    await chatAPI.markRead(selectedChat.id);
-                    // Optimistic update
+                    chatAPI.markRead(selectedChat.id).catch(console.error);
+                    // Reset unread count locally in chats list
                     setChats(prev => prev.map(c =>
                         c.id === selectedChat.id
                             ? { ...c, unreadCount: { ...c.unreadCount, [currentUser.uid]: 0 } }
                             : c
                     ));
                 }
-            } catch (err) {
-                console.error(err);
-                setLoadingMessages(false);
+
+                // Sync block status and other details
+                setSelectedChat(prev => ({
+                    ...prev,
+                    blockedByMe: updatedChat.blockedByMe,
+                    blockedByOther: updatedChat.blockedByOther,
+                    participantDetails: updatedChat.participantDetails,
+                    unreadCount: { ...updatedChat.unreadCount, [currentUser.uid]: 0 }
+                }));
             }
-        };
-        fetchMessages();
-        const interval = setInterval(fetchMessages, 3000); // Polling for messages
+        }
+    }, [chats, selectedChat?.id]);
+
+    const fetchMessages = async (showLoading = false) => {
+        if (!selectedChat) return;
+        if (showLoading) setLoadingMessages(true);
+        try {
+            const response = await chatAPI.getMessages(selectedChat.id);
+            setMessages(response.data);
+            if (showLoading) setLoadingMessages(false);
+        } catch (err) {
+            console.error(err);
+            if (showLoading) setLoadingMessages(false);
+        }
+    };
+
+    // Reset message tracking refs on chat switch so it always scrolls to bottom cleanly
+    useEffect(() => {
+        if (!selectedChat) return;
+        lastMessageCountRef.current = 0;
+        lastMessageIdRef.current = null;
+        isInitialLoadRef.current = true;
+        setMessages([]);
+    }, [selectedChat?.id]);
+
+    // Side Effect: This code block executes automatically when this page mounts on the user screen
+    useEffect(() => {
+        if (!selectedChat) return;
+        fetchMessages(true);
+        const interval = setInterval(() => fetchMessages(false), 3000); // Polling for messages
         return () => clearInterval(interval);
     }, [selectedChat?.id]);
+
+    const scrollToBottom = (behavior = 'smooth') => {
+        setTimeout(() => {
+            if (messagesEndRef.current) {
+                messagesEndRef.current.scrollIntoView({ behavior, block: 'end' });
+            }
+        }, 80);
+    };
+
+    // Scroll to bottom when messages array length or the last message changes (avoids scrolling on every poll)
+    useEffect(() => {
+        if (!loadingMessages && messages.length > 0) {
+            const lastMsg = messages[messages.length - 1];
+            if (messages.length !== lastMessageCountRef.current || lastMsg?.id !== lastMessageIdRef.current) {
+                const behavior = isInitialLoadRef.current ? 'auto' : 'smooth';
+                scrollToBottom(behavior);
+                isInitialLoadRef.current = false;
+                lastMessageCountRef.current = messages.length;
+                lastMessageIdRef.current = lastMsg?.id;
+            }
+        }
+    }, [messages, loadingMessages]);
 
     const handleSendMessage = async (e) => {
         if (e) e.preventDefault();
@@ -134,6 +179,7 @@ useEffect(() => {
             }
 
             await chatAPI.sendMessage(formData);
+            await fetchMessages(false);
 
             setMessageText('');
             setSelectedFile(null);
@@ -165,14 +211,20 @@ useEffect(() => {
         setFileType(type);
     };
 
-    const handleDeleteMessage = async (messageId) => {
-        if (!window.confirm("Delete this message? It will show as 'deleted' for both users.")) return;
+    const handleDeleteClick = (messageId) => {
+        setMessageIdToDelete(messageId);
+        setShowDeleteConfirm(true);
+    };
+
+    const confirmDeleteMessage = async () => {
+        if (!messageIdToDelete) return;
         try {
-            setDeletingMessageId(messageId);
-            await chatAPI.deleteMessage(selectedChat.id, messageId);
+            setDeletingMessageId(messageIdToDelete);
+            setShowDeleteConfirm(false);
+            await chatAPI.deleteMessage(selectedChat.id, messageIdToDelete);
             // Optimistic update: mark as deleted locally
             setMessages(prev => prev.map(m =>
-                m.id === messageId ? { ...m, deleted: true, text: '', attachment: null } : m
+                m.id === messageIdToDelete ? { ...m, deleted: true, text: '', attachment: null } : m
             ));
             toast.success("Message deleted");
         } catch (error) {
@@ -180,6 +232,7 @@ useEffect(() => {
             toast.error("Failed to delete message");
         } finally {
             setDeletingMessageId(null);
+            setMessageIdToDelete(null);
         }
     };
 
@@ -221,17 +274,27 @@ useEffect(() => {
     };
 
     const handleReportUser = async () => {
-        if (!reportReason.trim()) return;
+        if (!reportReason.trim() || !reportDetails.trim()) return;
         try {
             setIsReporting(true);
-            await userAPI.report(selectedChat.participants.find(id => id !== currentUser.uid), {
-                reason: reportReason,
-                details: reportDetails ? `${reportDetails} (Reported from chat: ${selectedChat.id})` : `Reported from chat: ${selectedChat.id}`
-            });
+            const reportedUserId = selectedChat.participants.find(id => id !== currentUser.uid);
+            
+            let formData = new FormData();
+            formData.append('reason', reportReason);
+            formData.append('details', reportDetails);
+            
+            if (reportPhotos && reportPhotos.length > 0) {
+                reportPhotos.forEach(photo => {
+                    formData.append('photos', photo);
+                });
+            }
+
+            await userAPI.report(reportedUserId, formData);
             toast.success("User reported to admin");
             setShowReportModal(false);
             setReportReason('');
             setReportDetails('');
+            setReportPhotos([]);
         } catch (err) {
             toast.error("Failed to submit report");
         } finally {
@@ -307,7 +370,7 @@ useEffect(() => {
         <div className="h-[calc(100dvh-8rem)] min-h-[500px] flex flex-col md:flex-row gap-4 text-gray-800 dark:text-gray-200">
             <div className={`${selectedChat ? 'hidden md:flex' : 'flex'} w-full md:w-1/3 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden flex-col`}>
                 <div className="p-4 border-b bg-gradient-to-r from-primary to-primary-dark text-white">
-                    <h2 className="text-xl font-bold mb-3 flex items-center gap-2"><MessageCircle className="h-6 w-6" />Messages</h2>
+                    <h2 className="text-xl font-bold mb-3 flex items-center gap-2"><MessageCircle className="h-6 w-6" />{t('messages', 'Messages')}</h2>
 
                     {/* Tabs */}
                     <div className="flex bg-white/20 p-1 rounded-lg mb-4">
@@ -315,13 +378,13 @@ useEffect(() => {
                             onClick={() => setActiveTab('messages')}
                             className={`flex-1 py-1.5 text-xs font-bold rounded-md transition ${activeTab === 'messages' ? 'bg-white text-primary shadow-sm' : 'text-white hover:bg-white/10'}`}
                         >
-                            Chats
+                            {t('chats', 'Chats')}
                         </button>
                         <button
                             onClick={() => setActiveTab('requests')}
                             className={`flex-1 py-1.5 text-xs font-bold rounded-md transition ${activeTab === 'requests' ? 'bg-white text-primary shadow-sm' : 'text-white hover:bg-white/10'}`}
                         >
-                            Requests
+                            {t('requests', 'Requests')}
                             {chats.filter(c => c.status === 'pending' && c.requesterId !== currentUser.uid).length > 0 &&
                                 <span className="ml-1 bg-red-500 text-white text-[10px] px-1.5 rounded-full">
                                     {chats.filter(c => c.status === 'pending' && c.requesterId !== currentUser.uid).length}
@@ -331,7 +394,7 @@ useEffect(() => {
                     </div>
 
                     <div className="relative">
-                        <input type="text" placeholder="Search chats..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-100 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm" />
+                        <input type="text" placeholder={t('searchChats', 'Search chats...')} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-blue-100 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm" />
                         <Search className="absolute left-3 top-3 h-4 w-4 text-blue-100" />
                     </div>
                 </div>
@@ -378,7 +441,7 @@ useEffect(() => {
                                             ) : (
                                                 <div className="flex justify-between items-center">
                                                     <p className={`text-xs truncate ${unreadCount > 0 ? 'text-gray-900 dark:text-white font-bold' : 'text-gray-500 dark:text-gray-400 font-medium'}`}>
-                                                        {chat.status === 'pending' ? 'Request Sent' : (chat.lastMessage || 'No messages yet')}
+                                                        {chat.status === 'pending' ? t('requestSent', 'Request Sent') : (chat.lastMessage || t('noMessagesYet', 'No messages yet'))}
                                                     </p>
                                                     {unreadCount > 0 && (
                                                         <span className="bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-black shadow-lg shadow-primary/20">
@@ -392,7 +455,7 @@ useEffect(() => {
                                 </button>
                             );
                         })
-                    ) : <div className="p-8 text-center text-gray-500"><MessageCircle className="h-12 w-12 mx-auto mb-3 text-gray-300" /><p className="text-sm">No {activeTab} found</p></div>}
+                    ) : <div className="p-8 text-center text-gray-500"><MessageCircle className="h-12 w-12 mx-auto mb-3 text-gray-300" /><p className="text-sm">{t('noItemsFound', 'No {{item}} found', { item: activeTab === 'messages' ? t('chats', 'Chats') : t('requests', 'Requests') })}</p></div>}
                 </div>
             </div>
             <div className={`${selectedChat ? 'flex' : 'hidden md:flex'} flex-1 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden flex-col`}>
@@ -447,7 +510,7 @@ useEffect(() => {
                                                         {/* Delete button for own messages */}
                                                         {isMe && !isDeleted && (
                                                             <button
-                                                                onClick={() => handleDeleteMessage(msg.id)}
+                                                                onClick={() => handleDeleteClick(msg.id)}
                                                                 disabled={deletingMessageId === msg.id}
                                                                 className="absolute -left-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full bg-red-50 dark:bg-red-900/30 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/50"
                                                                 title="Delete message"
@@ -698,10 +761,42 @@ useEffect(() => {
                                                 placeholder="Provide more context (optional)..."
                                                 className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition dark:text-white min-h-[100px] resize-none"
                                             />
+                                            
+                                            <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2 mt-4">Attach Photos (Optional)</label>
+                                            <div className="flex gap-2 items-center flex-wrap mb-6">
+                                                {reportPhotos.map((photo, index) => (
+                                                    <div key={index} className="relative w-16 h-16 rounded-xl overflow-hidden group">
+                                                        <img src={URL.createObjectURL(photo)} alt="Upload preview" className="w-full h-full object-cover" />
+                                                        <button 
+                                                            onClick={() => setReportPhotos(prev => prev.filter((_, i) => i !== index))}
+                                                            className="absolute inset-0 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+                                                        ><X className="h-4 w-4" /></button>
+                                                    </div>
+                                                ))}
+                                                {reportPhotos.length < 5 && (
+                                                    <label className="w-16 h-16 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center cursor-pointer hover:border-red-500 hover:text-red-500 text-gray-400 transition">
+                                                        <ImageIcon className="h-6 w-6" />
+                                                        <input 
+                                                            type="file" 
+                                                            accept="image/*" 
+                                                            multiple 
+                                                            className="hidden" 
+                                                            onChange={(e) => {
+                                                                const files = Array.from(e.target.files);
+                                                                if (reportPhotos.length + files.length > 5) {
+                                                                    toast.error("Maximum 5 photos allowed");
+                                                                    return;
+                                                                }
+                                                                setReportPhotos(prev => [...prev, ...files]);
+                                                            }} 
+                                                        />
+                                                    </label>
+                                                )}
+                                            </div>
                                         </div>
                                         <button
                                             onClick={handleReportUser}
-                                            disabled={!reportReason || isReporting}
+                                            disabled={!reportReason || !reportDetails.trim() || isReporting}
                                             className="w-full bg-red-500 text-white font-black uppercase tracking-widest py-4 rounded-2xl hover:bg-red-600 transition disabled:opacity-50 shadow-xl shadow-red-500/20 flex items-center justify-center gap-2"
                                         >
                                             {isReporting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Submit Report'}
@@ -710,8 +805,44 @@ useEffect(() => {
                                 </div>
                             </div>
                         )}
+
+                        {/* Delete Message Confirmation Modal */}
+                        {showDeleteConfirm && (
+                            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+                                <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-gray-100 dark:border-gray-700 animate-in zoom-in-95 duration-200">
+                                    <div className="flex flex-col items-center text-center gap-4">
+                                        <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-full">
+                                            <Trash2 className="h-8 w-8 text-red-500" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-black text-gray-900 dark:text-white">Delete Message?</h3>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                                                Are you sure you want to delete this message? It will show as "deleted" for both users.
+                                            </p>
+                                        </div>
+                                        <div className="flex gap-3 w-full">
+                                            <button
+                                                onClick={() => {
+                                                    setShowDeleteConfirm(false);
+                                                    setMessageIdToDelete(null);
+                                                }}
+                                                className="flex-1 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold text-sm rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                onClick={confirmDeleteMessage}
+                                                className="flex-1 py-3 bg-red-500 text-white font-bold text-sm rounded-xl hover:bg-red-600 transition shadow-lg shadow-red-500/20"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </>
-                ) : <div className="flex-1 flex flex-col items-center justify-center text-gray-500 p-8 bg-gray-50/50 dark:bg-gray-900/30"><div className="bg-white dark:bg-gray-800 p-8 rounded-full shadow-xl border border-gray-100 dark:border-gray-700 mb-6"><MessageCircle className="h-16 w-16 text-primary" /></div><h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3 uppercase tracking-tight">Select a Conversation</h3><p className="max-w-xs text-center text-gray-500 dark:text-gray-400 font-medium">Choose a chat from the sidebar to start messaging with other community members.</p></div>}
+                ) : <div className="flex-1 flex flex-col items-center justify-center text-gray-500 p-8 bg-gray-50/50 dark:bg-gray-900/30"><div className="bg-white dark:bg-gray-800 p-8 rounded-full shadow-xl border border-gray-100 dark:border-gray-700 mb-6"><MessageCircle className="h-16 w-16 text-primary" /></div><h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3 uppercase tracking-tight">{t('selectAConversation', 'Select a Conversation')}</h3><p className="max-w-xs text-center text-gray-500 dark:text-gray-400 font-medium">{t('chooseAChatDesc', 'Choose a chat from the sidebar to start messaging with other community members.')}</p></div>}
             </div>
         </div>
     );

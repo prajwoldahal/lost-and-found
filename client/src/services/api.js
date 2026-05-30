@@ -66,6 +66,14 @@ export const userAPI = {
     },
     delete: (uid) => api.delete(`/users/${uid}`),
     getLeaderboard: () => api.get('/users/leaderboard'),
+    report: (uid, data) => {
+        if (data instanceof FormData) {
+            return api.post(`/users/${uid}/report`, data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+        }
+        return api.post(`/users/${uid}/report`, data);
+    },
 };
 
 // Post API
@@ -127,7 +135,7 @@ export const adminAPI = {
     updateReportStatus: (id, status) => api.put(`/admin/reports/${id}/status`, { status }),
     unbanUser: (id) => api.put(`/admin/users/${id}/unban`),
     verifyUser: (id) => api.put(`/admin/users/${id}/verify`),
-    rejectId: (id, data) => api.put(`/admin/users/${id}/reject`, data),
+    rejectId: (id, data) => api.put(`/admin/users/${id}/reject-verification`, data),
     getSystemSettings: () => api.get('/admin/settings'),
     updateSystemSettings: (data) => api.put('/admin/settings', data),
     getCategories: () => api.get('/categories'),

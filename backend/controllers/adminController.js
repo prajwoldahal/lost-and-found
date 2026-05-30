@@ -485,6 +485,18 @@ export const verifyUserIdentity = async (req, res) => {
         // Award 100 points for verification
         await updateUserPoints(id, 100, 0, 'successfully verifying your identity! 🛡️');
 
+        // Notify user about verification
+        try {
+            await createNotification(id, {
+                type: 'identity_verified',
+                message: `Congratulations! Your identity has been verified. You've been awarded 100 points! 🛡️`,
+                link: '/settings?section=verification',
+                data: {}
+            });
+        } catch (notifErr) {
+            console.error('Failed to notify user about verification:', notifErr);
+        }
+
         // Log the verification action
         await db.collection('logs').add({
             level: 'info',
@@ -529,6 +541,18 @@ export const rejectUserIdentity = async (req, res) => {
         };
 
         await userRef.update(updates);
+
+        // Notify user about rejection
+        try {
+            await createNotification(id, {
+                type: 'identity_rejected',
+                message: `Your identity verification was not approved. Reason: ${updates.rejectionReason}`,
+                link: '/settings?section=verification',
+                data: { reason: updates.rejectionReason }
+            });
+        } catch (notifErr) {
+            console.error('Failed to notify user about rejection:', notifErr);
+        }
 
         // Log the rejection action
         await db.collection('logs').add({

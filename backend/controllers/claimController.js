@@ -156,6 +156,73 @@ export const updateClaimStatus = async (req, res) => {
                         claimId: id
                     }
                 });
+
+                // Notify author and auto-create chat
+                try {
+                    const authorId = postData.createdBy;
+                    const claimerId = claimData.claimerId;
+                    
+                    if (authorId !== claimerId) {
+                        const notifType = postData.type === 'found' ? 'item_claimed' : 'item_found_report';
+                        const notifMessage = postData.type === 'found' 
+                            ? `Your found item "${claimData.itemTitle}" has an approved claim! Check your messages to coordinate.`
+                            : `Good news! A report for your lost item "${claimData.itemTitle}" has been approved. Check your messages to coordinate.`;
+
+                        await createNotification(authorId, {
+                            type: notifType,
+                            message: notifMessage,
+                            link: `/messages`,
+                            data: { postId: claimData.postId, claimId: id }
+                        });
+
+                        const chatSnap = await db.collection('chats')
+                            .where('participants', 'array-contains', claimerId)
+                            .get();
+                        const existingChat = chatSnap.docs.find(doc => doc.data().participants.includes(authorId) && doc.data().postId === claimData.postId);
+
+                        if (!existingChat) {
+                            const [recipientDoc, claimerDoc] = await Promise.all([
+                                db.collection('users').doc(authorId).get(),
+                                db.collection('users').doc(claimerId).get()
+                            ]);
+                            
+                            const recipientData = recipientDoc.exists 
+                                ? { name: recipientDoc.data().displayName || 'User', photo: recipientDoc.data().photoURL || null } 
+                                : { name: 'User', photo: null };
+                            const claimerData = claimerDoc.exists
+                                ? { name: claimerDoc.data().displayName || 'Unknown', photo: claimerDoc.data().photoURL || null }
+                                : { name: 'Unknown', photo: null };
+
+                            const initialMessage = postData.type === 'found'
+                                ? `Hi, my claim for the item you found (${claimData.itemTitle}) was approved.`
+                                : `Hi, my report for finding your lost item (${claimData.itemTitle}) was approved.`;
+
+                            const newChatRef = await db.collection('chats').add({
+                                participants: [claimerId, authorId],
+                                postId: claimData.postId,
+                                postTitle: claimData.itemTitle,
+                                status: 'active',
+                                requesterId: claimerId,
+                                createdAt: new Date().toISOString(),
+                                lastMessage: initialMessage,
+                                lastMessageTime: new Date().toISOString(),
+                                unreadCount: { [authorId]: 1, [claimerId]: 0 },
+                                participantDetails: {
+                                    [claimerId]: claimerData,
+                                    [authorId]: recipientData
+                                }
+                            });
+
+                            await newChatRef.collection('messages').add({
+                                senderId: claimerId,
+                                text: initialMessage,
+                                createdAt: new Date().toISOString()
+                            });
+                        }
+                    }
+                } catch (chatError) {
+                    console.error('Error auto-creating chat or notification on approval:', chatError);
+                }
             }
         } else if (status === 'rejected') {
             // Notify claimant that claim is rejected

@@ -292,11 +292,24 @@ export const reportUser = async (req, res) => {
             return res.status(400).json({ error: "You cannot report yourself" });
         }
 
+        let photoUrls = [];
+        if (req.files && req.files.length > 0) {
+            for (const file of req.files) {
+                const result = await uploadToCloudinary(file.buffer, 'reports');
+                photoUrls.push(result.secure_url);
+            }
+        }
+
+        const reporterDoc = await db.collection('users').doc(reporterId).get();
+        const reporterName = reporterDoc.exists ? (reporterDoc.data().displayName || 'Unknown User') : 'Unknown User';
+
         await db.collection('reports').add({
             reportedUserId,
             reporterId,
+            reporterName,
             reason,
             details,
+            photoUrls,
             type: 'user',
             status: 'pending',
             createdAt: new Date().toISOString()

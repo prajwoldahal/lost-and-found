@@ -15,6 +15,7 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '../context/ThemeContext';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 // React Component: Renders the MyPosts user interface elements dynamically
 export default function MyPosts() {
@@ -29,6 +30,8 @@ export default function MyPosts() {
 
     // ui states
     const [searchTerm, setSearchTerm] = useState('');
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [postToDelete, setPostToDelete] = useState(null);
     const [typeFilter, setTypeFilter] = useState('all');
     const [sortBy, setSortBy] = useState('newest');
 
@@ -51,19 +54,23 @@ useEffect(() => {
         }
     };
 
-    const handleDelete = async (postId) => {
-        if (!window.confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
-            return;
-        }
+    const handleDeleteClick = (postId) => {
+        setPostToDelete(postId);
+        setShowDeleteConfirm(true);
+    };
 
-        setDeletingId(postId);
+    const confirmDelete = async () => {
+        if (!postToDelete) return;
+        setDeletingId(postToDelete);
         try {
-            await postAPI.delete(postId);
-            setPosts(prev => prev.filter(p => p.id !== postId));
-            toast.success("Post deleted successfully");
+            await postAPI.delete(postToDelete);
+            setPosts(prev => prev.filter(p => p.id !== postToDelete));
+            toast.success(t('postDeleted', 'Post deleted successfully'));
+            setShowDeleteConfirm(false);
+            setPostToDelete(null);
         } catch (error) {
             console.error("Error deleting post:", error);
-            toast.error("Failed to delete post");
+            toast.error(t('deletePostError', 'Failed to delete post'));
         } finally {
             setDeletingId(null);
         }
@@ -254,7 +261,7 @@ useEffect(() => {
                                             {t('edit')}
                                         </Link>
                                         <button
-                                            onClick={() => handleDelete(post.id)}
+                                            onClick={() => handleDeleteClick(post.id)}
                                             disabled={deletingId === post.id}
                                             className="p-4 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 rounded-2xl hover:bg-red-100 dark:hover:bg-red-900/20 transition-all shadow-sm flex items-center justify-center disabled:opacity-50"
                                             title="Delete Post"
@@ -292,6 +299,19 @@ useEffect(() => {
                     </button>
                 </div>
             )}
+
+            <ConfirmDialog 
+                isOpen={showDeleteConfirm}
+                onClose={() => {
+                    setShowDeleteConfirm(false);
+                    setPostToDelete(null);
+                }}
+                onConfirm={confirmDelete}
+                title={t('deletePostTitle', 'Delete Post')}
+                message={t('deletePostMessage', 'Are you sure you want to delete this post? This action cannot be undone.')}
+                confirmText={t('delete', 'Delete')}
+                isLoading={deletingId !== null}
+            />
         </div>
     );
 }

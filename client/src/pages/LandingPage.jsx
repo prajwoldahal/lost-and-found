@@ -48,7 +48,7 @@ useEffect(() => {
                         </p>
                         <div className="flex flex-col sm:flex-row justify-center gap-6 animate-fade-in" style={{ animationDelay: '0.3s' }}>
                             <Link to="/register" className="bg-primary text-white px-10 py-5 rounded-[2rem] font-black text-xl hover:bg-primary-dark transition-all duration-300 transform hover:scale-105 shadow-2xl shadow-primary/40 flex items-center justify-center gap-2">
-                                {t('getStartedFree')}
+                                {t('Get Started')}
                                 <ArrowRight className="h-6 w-6 text-accent" />
                             </Link>
                             <Link to="/login" className="glass text-slate-900 dark:text-white px-10 py-5 rounded-[2rem] font-black text-xl hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 transform hover:scale-105 shadow-2xl flex items-center justify-center gap-2">

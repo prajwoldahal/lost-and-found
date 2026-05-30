@@ -1,0 +1,399 @@
+[2026-05-24T07:59:38.808Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-24T07:59:38.815Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-24T08:21:40.899Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-24T08:21:41.129Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-24T10:57:49.617Z] Token verification error: Firebase ID token has expired. Get a fresh ID token from your client app and try again (auth/id-token-expired). See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-24T10:57:49.648Z] Token verification error: Firebase ID token has expired. Get a fresh ID token from your client app and try again (auth/id-token-expired). See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-28T06:20:19.085Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-28T06:20:19.143Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-28T08:52:03.628Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-28T08:52:03.660Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-29T06:10:02.785Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-29T06:10:03.286Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-29T06:13:53.373Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-29T06:13:53.397Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-29T06:29:02.158Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-29T06:29:02.313Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-29T09:46:02.818Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:46:44.871Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:46:52.263Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:46:58.821Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:47:02.356Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:47:09.328Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:47:13.375Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:47:16.907Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:47:21.092Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:47:26.691Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:47:30.539Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:47:32.026Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:47:37.273Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:47:39.039Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:47:40.478Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:47:49.346Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:47:49.453Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:47:54.320Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:47:55.655Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:48:01.097Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:48:02.272Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:48:05.502Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:48:06.954Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:48:14.983Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:48:15.121Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:48:17.823Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:48:29.966Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:48:30.465Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:48:45.990Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:48:47.744Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:48:49.397Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:48:52.676Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:48:53.738Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:49:11.239Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:49:11.520Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:49:12.018Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:49:16.296Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:49:18.566Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:49:24.452Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:49:25.416Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:49:32.380Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:49:46.973Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:49:47.842Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:49:50.926Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:49:51.332Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:49:53.687Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:49:55.288Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:49:58.258Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:00.049Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:02.091Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:02.316Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:08.841Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:09.583Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:13.737Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:14.604Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:17.359Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:18.934Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:23.216Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:23.419Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:24.412Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:25.972Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:32.640Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:34.525Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-29T09:50:37.622Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:18:05.927Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:18:14.773Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:18:16.486Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:18:23.865Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:18:24.387Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:18:31.456Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:18:35.091Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:18:38.680Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:18:43.765Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:18:46.699Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:18:49.860Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:18:50.623Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:18:54.361Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:18:58.797Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:05.018Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:06.977Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:11.882Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:12.920Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:17.515Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:17.631Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:17.735Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:19.495Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:27.925Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:29.608Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:29.898Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:35.248Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:37.982Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:38.473Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:41.004Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:41.936Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:46.338Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:46.921Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:47.000Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:48.044Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:49.974Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:50.286Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:56.093Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:59.050Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:59.185Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:19:59.540Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:03.164Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:05.271Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:07.221Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:07.654Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:13.290Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:15.676Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:16.507Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:16.625Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:17.144Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:19.253Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:21.165Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:21.472Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:23.881Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:24.129Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:26.576Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:30.493Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:31.223Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:32.576Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:32.888Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:33.130Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:36.112Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:41.316Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:41.731Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:43.538Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:46.145Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:50.236Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:51.036Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:53.440Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:55.316Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:58.357Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:59.081Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:20:59.818Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:02.252Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:08.257Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:08.934Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:11.929Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:15.523Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:15.581Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:15.588Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:19.319Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:20.570Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:23.188Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:24.642Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:25.681Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:27.462Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:29.378Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:29.699Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:32.997Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:35.471Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:37.270Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:39.351Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:41.764Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:42.830Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:45.054Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:48.330Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:48.957Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:50.102Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:50.832Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:53.724Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:53.879Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:56.150Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:59.179Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:59.633Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:21:59.687Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:02.329Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:02.834Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:03.989Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:06.685Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:07.547Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:07.932Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:10.544Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:11.849Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:13.349Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:13.497Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:19.802Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:20.790Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:20.898Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:22.975Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:22.995Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:23.413Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:28.117Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:29.615Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:29.748Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:30.551Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:30.845Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:33.874Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:37.428Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:37.936Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:38.594Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:40.137Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:40.805Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:42.896Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:46.208Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:47.031Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:47.279Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:47.986Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:48.068Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:52.925Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:53.664Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:56.545Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:56.609Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:58.184Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:22:58.448Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:23:02.747Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:23:03.731Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:23:04.858Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:23:05.351Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:23:06.014Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:23:06.164Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:23:15.067Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:23:16.814Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:23:23.681Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:23:34.008Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:23:40.486Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:23:50.350Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:23:56.951Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:24:04.398Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:24:12.713Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:24:21.352Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:24:29.779Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:24:42.068Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:24:51.100Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:24:58.662Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:25:08.097Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:25:16.833Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:25:25.647Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:25:34.379Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:25:43.099Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:25:52.234Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:26:33.075Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:26:40.032Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:26:40.531Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:26:42.473Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:26:42.912Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T05:26:42.989Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:04:10.592Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:10.593Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:10.993Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:10.994Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:10.998Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:10.999Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.009Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.017Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.021Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.022Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.025Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.026Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.029Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.030Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.032Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.033Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.034Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.035Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.038Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.039Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.041Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.041Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.043Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.044Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.046Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.048Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.050Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.051Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.055Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.056Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.058Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.058Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.060Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.061Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.062Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.063Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.064Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.065Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.067Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.067Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.069Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.070Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.071Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.072Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.074Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.075Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.077Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.078Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.079Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.080Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.082Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.082Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.084Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.085Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.088Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.089Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.091Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.092Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.095Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.096Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.099Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.100Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:11.102Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:11.103Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:04:15.737Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfound-b29f5" but got "lostandfoundapp-10853". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:04:15.738Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:12:01.816Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-30T06:13:54.275Z] AUTH_FAILED: Missing or malformed header. Header: Missing
+[2026-05-30T06:21:28.189Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfoundapp-10853" but got "lostandfound-b29f5". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:21:28.190Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:22:11.626Z] Token verification error: Firebase ID token has incorrect "aud" (audience) claim. Expected "lostandfoundapp-10853" but got "lostandfound-b29f5". Make sure the ID token comes from the same Firebase project as the service account used to authenticate this SDK. See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T06:22:11.628Z] AUTH_CRITICAL: Firebase Admin configuration issue detected
+[2026-05-30T06:22:44.111Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:22:45.338Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:22:46.120Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:22:53.024Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:22:53.615Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:22:56.346Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:02.678Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:03.522Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:04.629Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:09.139Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:12.512Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:13.328Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:15.973Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:22.981Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:24.034Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:24.405Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:25.383Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:29.297Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:31.907Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:37.415Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:41.903Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:42.569Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:44.313Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:46.660Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:50.722Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:52.179Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:53.437Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:53.905Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:54.843Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:23:56.753Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:00.311Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:00.759Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:01.732Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:04.752Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:06.736Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:07.428Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:09.666Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:10.408Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:13.033Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:18.197Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:20.604Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:22.658Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:22.730Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:23.314Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:24.093Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:27.970Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:30.085Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:30.882Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:30.885Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:31.377Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:33.025Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:35.524Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:38.537Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:38.541Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:38.966Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:40.408Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:42.196Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:46.735Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:46.880Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:47.403Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:50.037Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:50.236Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:50.284Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:53.298Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:24:58.671Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:25:00.600Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:25:01.148Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:25:05.945Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:25:08.363Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T06:25:10.911Z] Token verification error: 8 RESOURCE_EXHAUSTED: Quota exceeded.
+[2026-05-30T07:32:38.766Z] Token verification error: Firebase ID token has expired. Get a fresh ID token from your client app and try again (auth/id-token-expired). See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.
+[2026-05-30T07:32:38.929Z] Token verification error: Firebase ID token has expired. Get a fresh ID token from your client app and try again (auth/id-token-expired). See https://firebase.google.com/docs/auth/admin/verify-id-tokens for details on how to retrieve an ID token.

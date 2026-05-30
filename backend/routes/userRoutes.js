@@ -19,7 +19,7 @@ router.put('/:uid', authMiddleware, upload.fields([{ name: 'idFront', maxCount: 
 // Router Endpoint: Listens for incoming DELETE requests at the path "/:uid"
 router.delete('/:uid', authMiddleware, deleteUser);
 // Router Endpoint: Listens for incoming POST requests at the path "/:uid/report"
-router.post('/:uid/report', authMiddleware, reportUser);
+router.post('/:uid/report', authMiddleware, upload.array('photos', 5), reportUser);
 // Router Endpoint: Listens for incoming POST requests at the path "/:uid/avatar"
 router.post('/:uid/avatar', authMiddleware, upload.single('photo'), uploadAvatar);
 

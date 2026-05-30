@@ -62,7 +62,7 @@ useEffect(() => {
     const handleApprove = async (id) => {
         try {
             await adminAPI.approvePost(id);
-            setPosts(prev => prev.map(p => p.id === id ? { ...p, status: 'approved' } : p));
+            setPosts(prev => prev.map(p => p.id === id ? { ...p, status: 'active' } : p));
             toast.success(t('success'));
         } catch (error) {
             toast.error(t('error'));
@@ -158,14 +158,12 @@ useEffect(() => {
     }
 
     return (
-        <div className="p-8 space-y-6">
+        <div className="space-y-6 p-6">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-5xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">{t('postArchive')}</h1>
-                    <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">
-                        {t('postsShown', { shown: filteredPosts.length, total: posts.length })}
-                    </p>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('postArchive')}</h1>
+                    <p className="text-gray-500 dark:text-gray-400 text-xs font-medium mt-2">{t('postsShown', { shown: filteredPosts.length, total: posts.length })}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
                     <div className="relative flex-1 md:w-80">
@@ -175,7 +173,7 @@ useEffect(() => {
                             placeholder={t('searchPlaceholderAdminPosts')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white text-sm font-bold transition-all"
+                            className="w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white text-sm font-medium transition-all"
                         />
                     </div>
 
@@ -183,15 +181,15 @@ useEffect(() => {
                         <select
                             value={filter}
                             onChange={(e) => setFilter(e.target.value)}
-                            className="appearance-none pl-12 pr-10 py-3.5 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white text-[10px] font-black uppercase tracking-widest cursor-pointer"
+                            className="w-full appearance-none pl-11 pr-10 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary dark:text-white text-sm font-medium cursor-pointer"
                         >
-                            <option value="all">{t('allPosts')}</option>
-                            <option value="pending_approval">{t('pendingApproval')}</option>
-                            <option value="lost">{t('lost')}</option>
-                            <option value="found">{t('found')}</option>
-                            <option value="active">{t('active')}</option>
-                            <option value="approved">{t('approved')}</option>
-                            <option value="resolved">{t('resolved')}</option>
+                            <option value="all">All</option>
+<option value="pending_approval">Pending</option>
+<option value="lost">Lost</option>
+<option value="found">Found</option>
+<option value="active">Active</option>
+<option value="approved">Approved</option>
+<option value="resolved">Resolved</option>
                         </select>
                         <Filter className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
@@ -202,7 +200,7 @@ useEffect(() => {
             </div>
 
             {/* Table */}
-            <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-gray-50/50 dark:bg-gray-900/50 text-gray-400 dark:text-gray-500 text-[10px] font-black uppercase tracking-[0.2em]">
@@ -286,7 +284,7 @@ useEffect(() => {
                                             >
                                                 <ExternalLink className="h-4 w-4" />
                                             </Link>
-                                            {(post.status === 'pending_approval' || (post.status !== 'approved' && post.status !== 'resolved' && post.status !== 'returned')) && (
+                                            {post.status === 'pending_approval' && (
                                                 <>
                                                     <button
                                                         onClick={() => handleApprove(post.id)}

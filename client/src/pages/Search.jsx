@@ -25,7 +25,7 @@ export default function Search() {
     const [statusFilter, setStatusFilter] = useState('all');
     const [sortBy, setSortBy] = useState('recent');
 
-        const [userLocation, setUserLocation] = useState(null);
+    const [userLocation, setUserLocation] = useState(null);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const categories = ['All', 'Electronics', 'Documents', 'Accessories', 'Pets', 'Clothing', 'Keys', 'Bags', 'Other'];
@@ -51,7 +51,7 @@ export default function Search() {
 
     // Get user location
     // Side Effect: This code block executes automatically when this page mounts on the user screen
-useEffect(() => {
+    useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -69,7 +69,7 @@ useEffect(() => {
 
     // Fetch items from Firestore
     // Side Effect: This code block executes automatically when this page mounts on the user screen
-useEffect(() => {
+    useEffect(() => {
         setLoading(true);
         // Safety timeout
         const timer = setTimeout(() => {
@@ -100,7 +100,7 @@ useEffect(() => {
 
     // Filter items
     // Side Effect: This code block executes automatically when this page mounts on the user screen
-useEffect(() => {
+    useEffect(() => {
         let result = [...items];
 
         // Search filter
@@ -195,7 +195,7 @@ useEffect(() => {
 
             {/* Search Bar */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6 border border-gray-100 dark:border-gray-700">
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex-1 relative">
                         <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <input
@@ -264,7 +264,7 @@ useEffect(() => {
                                 className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:text-white"
                             >
                                 {categories.map(cat => (
-                                    <option key={cat} value={cat.toLowerCase()}>{cat}</option>
+                                    <option key={cat} value={cat.toLowerCase()}>{t(cat.toLowerCase(), cat)}</option>
                                 ))}
                             </select>
                         </div>
@@ -278,12 +278,12 @@ useEffect(() => {
                                 className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:text-white"
                             >
                                 {statuses.map(status => (
-                                    <option key={status} value={status.toLowerCase()}>{status}</option>
+                                    <option key={status} value={status.toLowerCase()}>{t(status.toLowerCase(), status)}</option>
                                 ))}
                             </select>
                         </div>
 
-                        
+
 
                         {/* Sort By */}
                         <div>
@@ -333,7 +333,7 @@ useEffect(() => {
             <div className="flex items-center justify-between mb-6">
                 <div className="text-gray-600 dark:text-gray-400 text-sm">
                     <span className="font-semibold text-gray-900 dark:text-white">{filteredItems.length}</span> items found
-                    
+
                 </div>
                 <div className="flex gap-2">
                     <button
@@ -407,7 +407,7 @@ useEffect(() => {
                                     <div className="space-y-2 text-xs pt-4 border-t border-gray-50 dark:border-gray-700">
                                         <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                                             <Tag className="h-4 w-4" />
-                                            <span>{item.category}</span>
+                                            <span>{t(item.category?.toLowerCase() || '', item.category)}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                                             <MapPin className="h-4 w-4" />
